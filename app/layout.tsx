@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Sidebar } from "@/components/Sidebar";
 import { SidebarInset } from "@/components/ui/sidebar";
+import { getSidebarItems } from "@/utils/sidebarItems";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,12 +25,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const role = "ADMIN"; // role fixa. posteriormente substituir pela lógica de obtenção do role
+  const items = getSidebarItems(role);
+
   return (
     <html lang="pt-BR">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Sidebar />
+        <Sidebar role={role} />
         <SidebarInset>
           {children}
         </SidebarInset>

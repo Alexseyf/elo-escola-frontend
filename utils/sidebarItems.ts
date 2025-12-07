@@ -24,110 +24,63 @@ export interface SidebarItem {
   divider?: boolean;
 }
 
-// Itens temporários da sidebar
-export const sidebarItems: SidebarItem[] = [
- {
-      id: "visao-geral",
-      label: "Visão Geral",
-      href: "/admin/dashboard?section=visao-geral",
-      icon: LayoutDashboard,
-    },
-    {
-      id: "usuarios",
-      label: "Usuários",
-      href: "/admin/dashboard?section=usuarios",
-      icon: Users,
-    },
-    {
-      id: "alunos",
-      label: "Alunos",
-      href: "/admin/dashboard?section=alunos",
-      icon: GraduationCap,
-    },
-    {
-      id: "turmas",
-      label: "Turmas",
-      href: "/admin/dashboard?section=turmas",
-      icon: BookOpen,
-    },
-    {
-      id: "diarios",
-      label: "Diários",
-      href: "/diario",
-      icon: ClipboardList,
-    },
-    {
-      id: "atividades",
-      label: "Atividades Pedagógicas",
-      href: "/admin/dashboard?section=atividades",
-      icon: FileText,
-    },
-    {
-      id: "calendario",
-      label: "Calendário",
-      href: "/admin/dashboard?section=calendario",
-      icon: CalendarDays,
-      divider: true,
-    },
-    {
-      id: "cronograma",
-      label: "Cronograma Anual",
-      href: "/admin/dashboard?section=cronograma",
-      icon: Clock,
-    },
-];
-
 // Itens da sidebar para ADMIN
 export function getAdminSidebarItems(): SidebarItem[] {
   return [
     {
       id: "visao-geral",
       label: "Visão Geral",
-      href: "/admin/dashboard?section=visao-geral",
+      href: "/visao-geral?section=visao-geral",
       icon: LayoutDashboard,
     },
     {
       id: "usuarios",
       label: "Usuários",
-      href: "/admin/dashboard?section=usuarios",
+      href: "/usuarios?section=usuarios",
       icon: Users,
     },
     {
       id: "alunos",
       label: "Alunos",
-      href: "/admin/dashboard?section=alunos",
+      href: "/alunos?section=alunos",
       icon: GraduationCap,
     },
     {
       id: "turmas",
       label: "Turmas",
-      href: "/admin/dashboard?section=turmas",
+      href: "/turmas?section=turmas",
       icon: BookOpen,
     },
     {
       id: "diarios",
       label: "Diários",
-      href: "/diario",
+      href: "/diario?section=diarios",
       icon: ClipboardList,
     },
     {
       id: "atividades",
       label: "Atividades Pedagógicas",
-      href: "/admin/dashboard?section=atividades",
+      href: "/atividades?section=atividades",
       icon: FileText,
     },
     {
       id: "calendario",
       label: "Calendário",
-      href: "/admin/dashboard?section=calendario",
+      href: "/calendario?section=calendario",
       icon: CalendarDays,
       divider: true,
     },
     {
       id: "cronograma",
       label: "Cronograma Anual",
-      href: "/admin/dashboard?section=cronograma",
+      href: "/cronograma?section=cronograma",
       icon: Clock,
+    },
+        {
+      id: "relatorios",
+      label: "Relatórios",
+      href: "/relatorios?section=relatorios",
+      icon: BarChart3,
     },
   ];
 }
@@ -138,50 +91,51 @@ export function getProfessorSidebarItems(): SidebarItem[] {
     {
       id: "visao-geral",
       label: "Visão Geral",
-      href: "/professor/dashboard?section=visao-geral",
+      href: "/visao-geral?section=visao-geral",
       icon: LayoutDashboard,
     },
     {
       id: "minhas-turmas",
       label: "Minhas Turmas",
-      href: "/professor/dashboard?section=minhas-turmas",
+      href: "/minhas-turmas?section=minhas-turmas",
       icon: BookOpen,
     },
     {
       id: "atividades",
       label: "Atividades",
-      href: "/professor/dashboard?section=atividades",
+      href: "/atividades?section=atividades",
       icon: FileText,
     },
     {
       id: "alunos",
       label: "Alunos",
-      href: "/professor/dashboard?section=alunos",
+      href: "/alunos?section=alunos",
       icon: GraduationCap,
     },
     {
       id: "diarios",
       label: "Diários",
-      href: "/diario",
+      href: "/diario?section=diarios",
       icon: ClipboardList,
+      
     },
     {
       id: "calendario",
       label: "Calendário",
-      href: "/professor/dashboard?section=calendario",
+      href: "/calendario?section=calendario",
       icon: CalendarDays,
       divider: true,
     },
     {
       id: "cronograma",
       label: "Cronograma",
-      href: "/cronograma",
+      href: "/cronograma?section=cronograma",
       icon: Clock,
     },
     {
       id: "relatorios",
       label: "Relatórios",
-      href: "/professor/dashboard?section=relatorios",
+      href: "/relatorios?section=relatorios",
       icon: BarChart3,
     },
   ];
@@ -195,6 +149,6 @@ export function getSidebarItems(role: string): SidebarItem[] {
     case "PROFESSOR":
       return getProfessorSidebarItems();
     default:
-      return sidebarItems;
+      return [];
   }
 }

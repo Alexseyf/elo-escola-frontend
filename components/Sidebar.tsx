@@ -18,7 +18,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
-import { sidebarItems, getSidebarItems, type SidebarItem } from "@/utils/sidebarItems"
+import { getSidebarItems, type SidebarItem } from "@/utils/sidebarItems"
 
 interface SidebarNavProps {
   items: SidebarItem[]
@@ -113,7 +113,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ role }: SidebarProps) {
-  const items = role ? getSidebarItems(role) : sidebarItems
+  const items = role ? getSidebarItems(role) : []
 
   return (
     <SidebarProvider>
