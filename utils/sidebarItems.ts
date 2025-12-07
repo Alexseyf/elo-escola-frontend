@@ -1,10 +1,6 @@
 import {
-  Home,
-  Settings,
   Users,
   BarChart3,
-  HelpCircle,
-  LogOut,
   LucideIcon,
   LayoutDashboard,
   BookOpen,
@@ -24,7 +20,7 @@ export interface SidebarItem {
   divider?: boolean;
 }
 
-// Itens da sidebar para ADMIN
+// ADMIN
 export function getAdminSidebarItems(): SidebarItem[] {
   return [
     {
@@ -85,7 +81,7 @@ export function getAdminSidebarItems(): SidebarItem[] {
   ];
 }
 
-// Itens da sidebar para PROFESSOR
+// PROFESSOR
 export function getProfessorSidebarItems(): SidebarItem[] {
   return [
     {
@@ -141,13 +137,44 @@ export function getProfessorSidebarItems(): SidebarItem[] {
   ];
 }
 
-// Função para obter itens da sidebar por role
+// RESPONSAVEL
+export function getResponsavelSidebarItems(): SidebarItem[] {
+  return [
+    {
+      id: "visao-geral",
+      label: "Visão Geral",
+      href: "/visao-geral?section=visao-geral",
+      icon: LayoutDashboard,
+    },
+    {
+      id: "meus-filhos",
+      label: "Meus Filhos",
+      href: "/meus-filhos?section=meus-filhos",
+      icon: Users,
+    },
+    {
+      id: "comunicados",
+      label: "Comunicados",
+      href: "/comunicados?section=comunicados",
+      icon: ClipboardList,
+    },
+    {
+      id: "calendario",
+      label: "Calendário",
+      href: "/calendario?section=calendario",
+      icon: CalendarDays,
+    },
+  ];
+}
+
 export function getSidebarItems(role: string): SidebarItem[] {
   switch (role.toUpperCase()) {
     case "ADMIN":
       return getAdminSidebarItems();
     case "PROFESSOR":
       return getProfessorSidebarItems();
+    case "RESPONSAVEL":
+      return getResponsavelSidebarItems();
     default:
       return [];
   }

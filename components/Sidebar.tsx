@@ -2,6 +2,8 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useAuthStore } from "@/stores/useAuthStore"
+import { useEffect, useState } from "react"
 import {
   Sidebar as SidebarUI,
   SidebarContent,
@@ -15,6 +17,7 @@ import {
   SidebarMenuBadge,
   SidebarProvider,
   SidebarTrigger,
+  SidebarInset,
   useSidebar,
 } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
@@ -76,15 +79,20 @@ function SidebarNav({ items }: SidebarNavProps) {
   )
 }
 
+import { LogOut } from "lucide-react"
+import { Button } from "@/components/ui/button"
+
 interface AppSidebarProps {
   items: SidebarItem[]
+  logout: () => void
+  user: any
 }
 
-function AppSidebar({ items }: AppSidebarProps) {
+function AppSidebar({ items, logout, user }: AppSidebarProps) {
   const { state } = useSidebar()
 
   return (
-    <SidebarUI>
+    <SidebarUI className="h-screen sticky top-0">
       <SidebarHeader className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           {state === "expanded" && (
@@ -98,30 +106,63 @@ function AppSidebar({ items }: AppSidebarProps) {
       <SidebarNav items={items} />
 
       <SidebarFooter>
-        {state === "expanded" && (
-          <p className="text-xs text-muted-foreground">
-            © 2025 Elo Escola
-          </p>
-        )}
+        <div className="p-4">
+          {state === "expanded" ? (
+             <div className="flex flex-col gap-2">
+                <div className="text-xs font-medium truncate text-muted-foreground">
+                   {user?.email}
+                </div>
+                <Button 
+                  variant="destructive" 
+                  className="w-full justify-center"
+                  onClick={logout}
+                >
+                  Sair
+                </Button>
+                <div className="text-xs text-center text-muted-foreground mt-2">
+                 © 2025 Elo Escola
+                </div>
+             </div>
+          ) : (
+             <Button variant="ghost" size="icon" onClick={logout} title="Sair">
+                <LogOut className="h-4 w-4" />
+             </Button>
+          )}
+        </div>
       </SidebarFooter>
     </SidebarUI>
   )
 }
 
-interface SidebarProps {
-  role?: string
-}
+export function Sidebar({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  const { user, isAuthenticated } = useAuthStore()
+  const [mounted, setMounted] = useState(false)
 
-export function Sidebar({ role }: SidebarProps) {
-  const items = role ? getSidebarItems(role) : []
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+      return <>{children}</> 
+  }
+
+  if (pathname === '/login' || !isAuthenticated || !user) {
+    return <>{children}</>
+  }
+
+  const role = user.roles[0];
+  const items = getSidebarItems(role);
 
   return (
     <SidebarProvider>
-      <AppSidebar items={items} />
-      {/* Trigger para mobile */}
-      <div className="md:hidden fixed top-4 left-4 z-40">
-        <SidebarTrigger />
-      </div>
+      <AppSidebar items={items} logout={useAuthStore.getState().logout} user={user} />
+      <SidebarInset>
+        <div className="md:hidden fixed top-4 left-4 z-40">
+           <SidebarTrigger />
+        </div>
+        {children}
+      </SidebarInset>
     </SidebarProvider>
   )
 }
