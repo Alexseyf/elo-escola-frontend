@@ -56,7 +56,7 @@ O projeto utiliza autenticação por email e senha, com roteamento dinâmico bas
 
 1. **Clone o repositório:**
 ```bash
-git clone <url-do-repositorio>
+git clone https://github.com/Alexseyf/elo-escola.git
 cd elo
 ```
 
