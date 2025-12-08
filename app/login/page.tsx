@@ -1,54 +1,58 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuthStore } from '@/stores/useAuthStore';
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { toast, Toaster } from "sonner";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-
+  const [error, setError] = useState("");
   const { login } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
       const success = await login({
         email,
-        senha: password
+        senha: password,
       });
 
       if (success) {
-        
-        const user = useAuthStore.getState().user;
-        
-        if (user?.roles?.includes('ADMIN')) {
-          router.push('/admin/dashboard');
-        } else if (user?.roles?.includes('PROFESSOR')) {
-          router.push('/professor/dashboard');
-        } else if (user?.roles?.includes('RESPONSAVEL')) {
-          router.push('/responsavel/dashboard');
-        } else {
-          router.push('/');
-        }
+        toast("Login realizado com sucesso!", {
+          description: "Sucesso!",
+        });
+        setTimeout(() => {
+          const user = useAuthStore.getState().user;
+
+          if (user?.roles?.includes("ADMIN")) {
+            router.push("/admin/dashboard");
+          } else if (user?.roles?.includes("PROFESSOR")) {
+            router.push("/professor/dashboard");
+          } else if (user?.roles?.includes("RESPONSAVEL")) {
+            router.push("/responsavel/dashboard");
+          } else {
+            router.push("/");
+          }
+        }, 2000);
       } else {
         const authError = useAuthStore.getState().error;
-        setError(authError || 'Erro ao fazer login');
+        setError(authError || "Erro ao fazer login");
       }
     } catch (err) {
-      setError('Erro ao conectar com o servidor');
-      console.error('Erro no login:', err);
+      setError("Erro ao conectar com o servidor");
+      console.error("Erro no login:", err);
     } finally {
       setIsLoading(false);
     }
@@ -108,7 +112,7 @@ export default function LoginPage() {
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? 'Entrando...' : 'Entrar'}
+              {isLoading ? "Entrando..." : "Entrar"}
             </Button>
 
             <Link
@@ -120,6 +124,7 @@ export default function LoginPage() {
           </form>
         </CardContent>
       </Card>
+      <Toaster />
     </div>
   );
 }
