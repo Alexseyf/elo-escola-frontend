@@ -24,9 +24,9 @@ export interface SidebarItem {
 export function getAdminSidebarItems(): SidebarItem[] {
   return [
     {
-      id: "visao-geral",
-      label: "Visão Geral",
-      href: "/visao-geral?section=visao-geral",
+      id: "dashboard",
+      label: "Dashboard",
+      href: "/admin/dashboard",
       icon: LayoutDashboard,
     },
     {

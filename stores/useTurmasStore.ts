@@ -1,0 +1,330 @@
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import config from '@/config';
+import { useAuthStore } from './useAuthStore';
+
+export enum TURMA {
+  BERCARIO2 = 'BERCARIO2',
+  MATERNAL1 = 'MATERNAL1',
+  MATERNAL2 = 'MATERNAL2',
+  PRE1 = 'PRE1',
+  PRE2 = 'PRE2',
+  TURNOINVERSO = 'TURNOINVERSO'
+}
+
+interface Usuario {
+  id: number;
+  nome: string;
+  email: string;
+}
+
+interface Professor {
+  id: number;
+  usuarioId: number;
+  usuario: Usuario;
+}
+
+interface Aluno {
+  id: number;
+  nome: string;
+}
+
+export interface TurmaData {
+  id: number;
+  nome: string;
+  ano: number;
+  professores: Professor[];
+  alunos: Aluno[];
+}
+
+export interface TurmaComTotalAlunos {
+  id: number;
+  nome: string;
+  totalAlunosAtivos: number;
+}
+
+export interface Grupo {
+  id: number;
+  nome: string;
+}
+
+interface TurmasState {
+  turmas: TurmaData[];
+  grupos: Grupo[];
+  turmasComTotal: TurmaComTotalAlunos[];
+  isLoading: boolean;
+  error: string | null;
+
+  // Actions
+  fetchTurmas: () => Promise<void>;
+  fetchTurmaById: (id: number) => Promise<TurmaData | null>;
+  fetchGrupos: () => Promise<void>;
+  fetchTotalAlunosPorTurma: () => Promise<void>;
+  getTurmaById: (id: number) => TurmaData | undefined;
+  getGrupoById: (id: number) => Grupo | undefined;
+  mapearTurmaParaGrupo: (nomeTurma: string) => string;
+  mapearGrupoParaId: (nomeGrupo: string) => number;
+  cadastrarTurma: (nome: TURMA) => Promise<boolean>;
+  limparCache: () => void;
+}
+
+const mapeamentoTurmaGrupo: Record<string, string> = {
+  'BERCARIO2': 'BEBES',
+  'MATERNAL1': 'CRIANCAS_BEM_PEQUENAS',
+  'MATERNAL2': 'CRIANCAS_BEM_PEQUENAS',
+  'PRE1': 'CRIANCAS_PEQUENAS',
+  'PRE2': 'CRIANCAS_PEQUENAS',
+  'TURNOINVERSO': 'CRIANCAS_MAIORES'
+};
+
+const mapeamentoNomeTurma: Record<string, string> = {
+  'BERCARIO2': 'Berçário 2',
+  'MATERNAL1': 'Maternal 1',
+  'MATERNAL2': 'Maternal 2',
+  'PRE1': 'Pré 1',
+  'PRE2': 'Pré 2',
+  'TURNOINVERSO': 'Turno Inverso'
+};
+
+export const useTurmasStore = create<TurmasState>()(
+  persist(
+    (set, get) => ({
+      turmas: [],
+      grupos: [],
+      turmasComTotal: [],
+      isLoading: false,
+      error: null,
+
+      fetchTurmas: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          const authState = useAuthStore.getState();
+          const token = authState.token;
+          if (!token) {
+            throw new Error('Usuário não autenticado');
+          }
+
+          const response = await fetch(`${config.API_URL}/turmas`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || `Erro ao buscar turmas: ${response.status}`);
+          }
+
+          const data = await response.json();
+          const turmasFormatadas = data.map((turma: TurmaData) => ({
+            ...turma,
+            nome: formatarNomeTurma(turma.nome)
+          }));
+
+          set({ turmas: turmasFormatadas, isLoading: false, error: null });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Erro ao buscar turmas';
+          set({ isLoading: false, error: message });
+          console.error('Error fetching turmas:', error);
+        }
+      },
+
+      fetchTurmaById: async (id: number) => {
+        set({ isLoading: true, error: null });
+        try {
+          const authState = useAuthStore.getState();
+          const token = authState.token;
+          if (!token) {
+            throw new Error('Usuário não autenticado');
+          }
+
+          const response = await fetch(`${config.API_URL}/turmas/${id}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || `Erro ao buscar turma: ${response.status}`);
+          }
+
+          const turma = await response.json();
+          turma.nome = formatarNomeTurma(turma.nome);
+
+          set({ isLoading: false, error: null });
+          return turma;
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Erro ao buscar turma';
+          set({ isLoading: false, error: message });
+          console.error('Error fetching turma:', error);
+          return null;
+        }
+      },
+
+      fetchGrupos: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          const authState = useAuthStore.getState();
+          const token = authState.token;
+          if (!token) {
+            throw new Error('Usuário não autenticado');
+          }
+
+          const response = await fetch(`${config.API_URL}/grupos`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || `Erro ao buscar grupos: ${response.status}`);
+          }
+
+          const grupos = await response.json();
+          set({ grupos, isLoading: false, error: null });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Erro ao buscar grupos';
+          set({ isLoading: false, error: message });
+          console.error('Error fetching grupos:', error);
+        }
+      },
+
+      fetchTotalAlunosPorTurma: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          const authState = useAuthStore.getState();
+          const token = authState.token;
+          if (!token) {
+            throw new Error('Usuário não autenticado');
+          }
+
+          const response = await fetch(`${config.API_URL}/turmas/totalAlunosTurma`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || `Erro ao buscar total de alunos: ${response.status}`);
+          }
+
+          const turmasComTotal = await response.json();
+          const turmasFormatadas = turmasComTotal.map((turma: TurmaComTotalAlunos) => ({
+            ...turma,
+            nome: formatarNomeTurma(turma.nome)
+          }));
+
+          set({ turmasComTotal: turmasFormatadas, isLoading: false, error: null });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Erro ao buscar total de alunos por turma';
+          set({ isLoading: false, error: message });
+          console.error('Error fetching total alunos:', error);
+        }
+      },
+
+      getTurmaById: (id: number) => {
+        const state = get();
+        return state.turmas.find(t => t.id === id);
+      },
+
+      getGrupoById: (id: number) => {
+        const state = get();
+        return state.grupos.find(g => g.id === id);
+      },
+
+      mapearTurmaParaGrupo: (nomeTurma: string) => {
+        const turmaUpperCase = nomeTurma.toUpperCase();
+        return mapeamentoTurmaGrupo[turmaUpperCase] || '';
+      },
+
+      mapearGrupoParaId: (nomeGrupo: string) => {
+        const state = get();
+        const grupo = state.grupos.find(g => g.nome.toUpperCase() === nomeGrupo.toUpperCase());
+        return grupo?.id || 0;
+      },
+
+      cadastrarTurma: async (nome: TURMA) => {
+        set({ isLoading: true, error: null });
+        try {
+          const authState = useAuthStore.getState();
+          const token = authState.token;
+          if (!token) {
+            throw new Error('Usuário não autenticado');
+          }
+
+          if (!Object.values(TURMA).includes(nome)) {
+            throw new Error(`Nome de turma inválido: ${nome}`);
+          }
+
+          const response = await fetch(`${config.API_URL}/turmas`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ nome })
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.message || `Erro ao cadastrar turma: ${response.status}`);
+          }
+
+          await get().fetchTurmas();
+          set({ isLoading: false, error: null });
+          return true;
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Erro ao cadastrar turma';
+          set({ isLoading: false, error: message });
+          console.error('Error cadastrando turma:', error);
+          return false;
+        }
+      },
+
+      limparCache: () => {
+        set({ turmas: [], grupos: [], turmasComTotal: [], error: null });
+      }
+    }),
+    {
+      name: 'turmas-storage',
+      partialize: (state) => ({
+        turmas: state.turmas,
+        grupos: state.grupos,
+        turmasComTotal: state.turmasComTotal
+      })
+    }
+  )
+);
+
+export function formatarNomeTurma(nomeTurma: string): string {
+  if (!nomeTurma) return '';
+  
+  const turmaUpperCase = nomeTurma.toUpperCase();
+  return mapeamentoNomeTurma[turmaUpperCase] || nomeTurma;
+}
+
+export function converterNomeParaEnum(nomeFormatado: string): TURMA | null {
+  const mapeamentoInverso: Record<string, TURMA> = {
+    'Berçário 2': TURMA.BERCARIO2,
+    'Maternal 1': TURMA.MATERNAL1,
+    'Maternal 2': TURMA.MATERNAL2,
+    'Pré 1': TURMA.PRE1,
+    'Pré 2': TURMA.PRE2,
+    'Turno Inverso': TURMA.TURNOINVERSO
+  };
+
+  return mapeamentoInverso[nomeFormatado] || 
+         (Object.values(TURMA).includes(nomeFormatado.toUpperCase() as TURMA) ? 
+          nomeFormatado.toUpperCase() as TURMA : null);
+}

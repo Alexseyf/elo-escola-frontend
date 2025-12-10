@@ -29,12 +29,19 @@ interface SidebarNavProps {
 
 function SidebarNav({ items }: SidebarNavProps) {
   const pathname = usePathname()
+  const { isMobile, setOpenMobile } = useSidebar()
 
   const isActive = (href: string) => {
     if (href === "/") {
       return pathname === href
     }
     return pathname.startsWith(href.split("?")[0])
+  }
+
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setOpenMobile(false)
+    }
   }
 
   let lastDivider = false
@@ -59,7 +66,7 @@ function SidebarNav({ items }: SidebarNavProps) {
                       isActive={active}
                       tooltip={item.label}
                     >
-                      <Link href={item.href}>
+                      <Link href={item.href} onClick={handleLinkClick}>
                         <Icon />
                         <span>{item.label}</span>
                       </Link>
@@ -85,6 +92,7 @@ import { Button } from "@/components/ui/button"
 interface AppSidebarProps {
   items: SidebarItem[]
   logout: () => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user: any
 }
 
@@ -93,10 +101,10 @@ function AppSidebar({ items, logout, user }: AppSidebarProps) {
 
   return (
     <SidebarUI className="h-screen sticky top-0">
-      <SidebarHeader className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <SidebarHeader className="flex items-start justify-between">
+        <div className="flex gap-3">
           {state === "expanded" && (
-            <h1 className="text-lg font-bold">Elo Escola</h1>
+            <img src="/logo_line.png" alt="logo" className="h-10 w-auto" />
           )}
         </div>
       </SidebarHeader>
@@ -110,7 +118,12 @@ function AppSidebar({ items, logout, user }: AppSidebarProps) {
           {state === "expanded" ? (
              <div className="flex flex-col gap-2">
                 <div className="text-xs font-medium truncate text-muted-foreground">
-                   {user?.email}
+                   <div className="font-bold">
+                      {user?.nome?.split(' ').slice(0, 2).join(' ')}
+                   </div>
+                   <div className="text-muted-foreground">
+                      {user?.email}
+                   </div>
                 </div>
                 <Button 
                   variant="destructive" 
@@ -161,7 +174,9 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
         <div className="md:hidden fixed top-4 left-4 z-40">
            <SidebarTrigger />
         </div>
-        {children}
+        <div className="pt-12 md:pt-0">
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   )

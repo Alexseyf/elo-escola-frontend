@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import config from '@/config';
 
 interface User {
+  nome: string;
   id: number;
   email: string;
   roles: string[];
@@ -62,6 +63,7 @@ export const useAuthStore = create<AuthState>()(
             set({
               token: data.token,
               user: {
+                nome: data.nome,
                 id: data.id,
                 email: credentials.email,
                 roles: data.roles,
