@@ -15,6 +15,8 @@ export interface TurmaComTotalAlunos {
   totalAlunosAtivos: number;
 }
 
+
+
 export async function getTurmas(): Promise<{id: number; nome: string}[]> {
   try {
     const store = useTurmasStore.getState();
@@ -217,3 +219,5 @@ export async function cadastrarTurmaComNomeFormatado(nomeFormatado: string): Pro
     error: result.success ? undefined : result.message
   };
 }
+
+

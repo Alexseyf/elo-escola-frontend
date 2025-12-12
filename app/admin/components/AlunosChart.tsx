@@ -82,7 +82,7 @@ export default function AlunosChart({ minimal = false }: AlunosChartProps) {
 
       <div className="rounded-lg bg-white p-3 sm:p-6 shadow">
         <h3 className="text-lg font-semibold mb-3 sm:mb-4 text-gray-900">Quantidade de Alunos por Turma</h3>
-        <div className="w-full min-h-56 sm:min-h-80 -mx-3 sm:-mx-6 px-3 sm:px-6 overflow-x-auto">
+        <div className="w-full min-h-56 sm:min-h-80 -mx-3 sm:-mx-6 px-3 sm:px-6 overflow-x-auto min-w-0">
           <ChartContainer config={chartConfig} className="h-56 sm:h-80 w-full">
             <ChartBarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
               <ChartCartesianGrid vertical={false} />

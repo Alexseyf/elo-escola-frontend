@@ -43,6 +43,34 @@ export interface TurmaComTotalAlunos {
   totalAlunosAtivos: number;
 }
 
+/**
+ * Represents a single student's monthly payment details.
+ */
+export interface MensalidadeAluno {
+  id: number;
+  nome: string;
+  mensalidade: number;
+}
+
+/**
+ * Represents the monthly payment summary for a specific class.
+ */
+export interface MensalidadeTurma {
+  turmaId: number;
+  turmaNome: string;
+  quantidadeAlunos: number;
+  totalMensalidade: number;
+  alunos: MensalidadeAluno[];
+}
+
+/**
+ * Response structure for the monthly payments report.
+ */
+export interface MensalidadesResponse {
+  turmas: MensalidadeTurma[];
+  totalGeral: number;
+}
+
 export interface Grupo {
   id: number;
   nome: string;
@@ -52,6 +80,7 @@ interface TurmasState {
   turmas: TurmaData[];
   grupos: Grupo[];
   turmasComTotal: TurmaComTotalAlunos[];
+  mensalidadesPorTurma: MensalidadesResponse | null;
   isLoading: boolean;
   error: string | null;
 
@@ -60,6 +89,7 @@ interface TurmasState {
   fetchTurmaById: (id: number) => Promise<TurmaData | null>;
   fetchGrupos: () => Promise<void>;
   fetchTotalAlunosPorTurma: () => Promise<void>;
+  fetchMensalidadesPorTurma: () => Promise<void>;
   getTurmaById: (id: number) => TurmaData | undefined;
   getGrupoById: (id: number) => Grupo | undefined;
   mapearTurmaParaGrupo: (nomeTurma: string) => string;
@@ -92,6 +122,7 @@ export const useTurmasStore = create<TurmasState>()(
       turmas: [],
       grupos: [],
       turmasComTotal: [],
+      mensalidadesPorTurma: null,
       isLoading: false,
       error: null,
 
@@ -101,7 +132,7 @@ export const useTurmasStore = create<TurmasState>()(
           const authState = useAuthStore.getState();
           const token = authState.token;
           if (!token) {
-            throw new Error('Usuário não autenticado');
+            throw new Error('Usuário não autenticado ou sessão expirada.');
           }
 
           const response = await fetch(`${config.API_URL}/turmas`, {
@@ -137,7 +168,7 @@ export const useTurmasStore = create<TurmasState>()(
           const authState = useAuthStore.getState();
           const token = authState.token;
           if (!token) {
-            throw new Error('Usuário não autenticado');
+            throw new Error('Usuário não autenticado ou sessão expirada.');
           }
 
           const response = await fetch(`${config.API_URL}/turmas/${id}`, {
@@ -172,7 +203,7 @@ export const useTurmasStore = create<TurmasState>()(
           const authState = useAuthStore.getState();
           const token = authState.token;
           if (!token) {
-            throw new Error('Usuário não autenticado');
+            throw new Error('Usuário não autenticado ou sessão expirada.');
           }
 
           const response = await fetch(`${config.API_URL}/grupos`, {
@@ -203,7 +234,7 @@ export const useTurmasStore = create<TurmasState>()(
           const authState = useAuthStore.getState();
           const token = authState.token;
           if (!token) {
-            throw new Error('Usuário não autenticado');
+            throw new Error('Usuário não autenticado ou sessão expirada.');
           }
 
           const response = await fetch(`${config.API_URL}/turmas/totalAlunosTurma`, {
@@ -230,6 +261,51 @@ export const useTurmasStore = create<TurmasState>()(
           const message = error instanceof Error ? error.message : 'Erro ao buscar total de alunos por turma';
           set({ isLoading: false, error: message });
           console.error('Error fetching total alunos:', error);
+        }
+      },
+
+      fetchMensalidadesPorTurma: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          const authState = useAuthStore.getState();
+          const token = authState.token;
+          if (!token) {
+            throw new Error('Usuário não autenticado ou sessão expirada.');
+          }
+
+          const response = await fetch(`${config.API_URL}/alunos/relatorios/mensalidades-por-turma`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || `Erro ao buscar mensalidades: ${response.status}`);
+          }
+
+          const data: MensalidadesResponse = await response.json();
+          
+          // Format turma names in the response
+          const turmasFormatadas = data.turmas.map(turma => ({
+            ...turma,
+            turmaNome: formatarNomeTurma(turma.turmaNome)
+          }));
+
+          set({ 
+            mensalidadesPorTurma: {
+              ...data,
+              turmas: turmasFormatadas
+            }, 
+            isLoading: false, 
+            error: null 
+          });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Ocorreu um erro desconhecido ao buscar mensalidades por turma.';
+          set({ isLoading: false, error: message });
+          console.error('Error fetching mensalidades:', error);
         }
       },
 
@@ -260,7 +336,7 @@ export const useTurmasStore = create<TurmasState>()(
           const authState = useAuthStore.getState();
           const token = authState.token;
           if (!token) {
-            throw new Error('Usuário não autenticado');
+            throw new Error('Usuário não autenticado ou sessão expirada.');
           }
 
           if (!Object.values(TURMA).includes(nome)) {
@@ -293,15 +369,14 @@ export const useTurmasStore = create<TurmasState>()(
       },
 
       limparCache: () => {
-        set({ turmas: [], grupos: [], turmasComTotal: [], error: null });
+        set({ turmas: [], grupos: [], turmasComTotal: [], mensalidadesPorTurma: null, error: null });
       }
     }),
     {
       name: 'turmas-storage',
       partialize: (state) => ({
         turmas: state.turmas,
-        grupos: state.grupos,
-        turmasComTotal: state.turmasComTotal
+        grupos: state.grupos
       })
     }
   )

@@ -8,6 +8,7 @@ import { RouteGuard } from "@/components/auth/RouteGuard"
 import { BarChart3, Users, ArrowRight } from "lucide-react"
 import AtividadesChart from "@/app/admin/components/AtividadesChart"
 import AlunosChart from "@/app/admin/components/AlunosChart"
+import MensalidadesChart from "@/app/admin/components/MensalidadesChart"
 
 export default function AdminDashboard() {
   const router = useRouter()
@@ -62,6 +63,30 @@ export default function AdminDashboard() {
                 variant="primary"
               >
                 Detalhar
+              </Button>
+            </CardFooter>
+          </Card>
+
+          <Card className="flex flex-col">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5" />
+                Mensalidades por Turma
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1">
+              <div className="mb-4">
+                 <MensalidadesChart minimal={true} />
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button
+                onClick={() => {}} // Placeholder as no detail page exists yet
+                className="w-full opacity-50 cursor-not-allowed"
+                variant="primary"
+                disabled
+              >
+                Detalhar (em desenvolvimento)
               </Button>
             </CardFooter>
           </Card>

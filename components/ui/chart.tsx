@@ -57,14 +57,14 @@ const ChartContainer = React.forwardRef<
       <div
         ref={ref}
         className={cn(
-          "flex justify-center text-xs w-full overflow-x-auto",
+          "flex justify-center text-xs w-full overflow-x-auto min-w-0",
           "[&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-axis_line]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-default-tooltip]:border-border [&_.recharts-default-tooltip]:bg-background [&_.recharts-default-tooltip]:shadow-md [&_.recharts-dot[name=active]_.recharts-dot]:stroke-current [&_.recharts-layer]:outline-none [&_.recharts-pie-sector[data-active=true]]:opacity-80 [&_.recharts-reference-line]:stroke-border [&_.recharts-surface]:overflow-visible",
           className
         )}
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
-        <RechartsPrimitive.ResponsiveContainer>
+        <RechartsPrimitive.ResponsiveContainer minWidth={0} minHeight={0}>
           {children}
         </RechartsPrimitive.ResponsiveContainer>
       </div>
