@@ -43,18 +43,12 @@ export interface TurmaComTotalAlunos {
   totalAlunosAtivos: number;
 }
 
-/**
- * Represents a single student's monthly payment details.
- */
 export interface MensalidadeAluno {
   id: number;
   nome: string;
   mensalidade: number;
 }
 
-/**
- * Represents the monthly payment summary for a specific class.
- */
 export interface MensalidadeTurma {
   turmaId: number;
   turmaNome: string;
@@ -63,9 +57,6 @@ export interface MensalidadeTurma {
   alunos: MensalidadeAluno[];
 }
 
-/**
- * Response structure for the monthly payments report.
- */
 export interface MensalidadesResponse {
   turmas: MensalidadeTurma[];
   totalGeral: number;
@@ -287,8 +278,7 @@ export const useTurmasStore = create<TurmasState>()(
           }
 
           const data: MensalidadesResponse = await response.json();
-          
-          // Format turma names in the response
+
           const turmasFormatadas = data.turmas.map(turma => ({
             ...turma,
             turmaNome: formatarNomeTurma(turma.turmaNome)

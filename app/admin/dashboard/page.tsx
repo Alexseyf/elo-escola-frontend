@@ -81,7 +81,7 @@ export default function AdminDashboard() {
             </CardContent>
             <CardFooter>
               <Button
-                onClick={() => {}} // Placeholder as no detail page exists yet
+                onClick={() => {}}
                 className="w-full opacity-50 cursor-not-allowed"
                 variant="primary"
                 disabled

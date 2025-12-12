@@ -32,7 +32,7 @@ export function getAdminSidebarItems(): SidebarItem[] {
     {
       id: "usuarios",
       label: "Usuários",
-      href: "/usuarios?section=usuarios",
+      href: "/admin/usuarios",
       icon: Users,
     },
     {
