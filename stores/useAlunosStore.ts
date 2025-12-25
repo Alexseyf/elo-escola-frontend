@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-import config from '@/config';
-import { useAuthStore } from './useAuthStore';
+import { api } from '@/lib/api';
 
 export interface Aluno {
   id: number;
@@ -42,7 +41,7 @@ export interface AlunoDetalhes {
       email: string;
     };
   }>;
-  diario: any[]; // uso any[] temporáriamente até aplicar a tipagem correta
+  diario: any[];
 }
 
 export interface VerificaDiarioResult {
@@ -52,14 +51,44 @@ export interface VerificaDiarioResult {
   diario: { id: number } | null;
 }
 
+// Pagination types
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+}
+
+export interface AlunoFilters extends PaginationParams {
+  turmaId?: number;
+  isAtivo?: boolean;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
 interface AlunosState {
   alunos: Aluno[];
   alunosPorTurma: Record<number, Aluno[]>;
   currentAluno: AlunoDetalhes | null;
+  
+  // Pagination metadata
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  } | null;
+  
   isLoading: boolean;
   error: string | null;
 
-  fetchAlunos: () => Promise<void>;
+  fetchAlunos: (filters?: AlunoFilters) => Promise<void>;
   fetchAlunosByTurma: (turmaId: number) => Promise<Aluno[]>;
   createAluno: (data: CreateAlunoData) => Promise<{ success: boolean; message: string; data?: Aluno }>;
   getAlunoDetalhes: (id: number) => Promise<AlunoDetalhes | null>;
@@ -72,20 +101,23 @@ export const useAlunosStore = create<AlunosState>((set, get) => ({
   alunos: [],
   alunosPorTurma: {},
   currentAluno: null,
+  pagination: null,
   isLoading: false,
   error: null,
 
-  fetchAlunos: async () => {
+  fetchAlunos: async (filters?: AlunoFilters) => {
     set({ isLoading: true, error: null });
     try {
-      const authState = useAuthStore.getState();
-      const token = authState.token;
-      
-      const response = await fetch(`${config.API_URL}/alunos`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const params = new URLSearchParams();
+      if (filters?.page) params.append('page', String(filters.page));
+      if (filters?.limit) params.append('limit', String(filters.limit));
+      if (filters?.turmaId) params.append('turmaId', String(filters.turmaId));
+      if (filters?.isAtivo !== undefined) params.append('isAtivo', String(filters.isAtivo));
+
+      const queryString = params.toString();
+      const url = `/alunos${queryString ? `?${queryString}` : ''}`;
+
+      const response = await api(url);
 
       if (!response.ok) {
         if (response.status === 401 || response.status === 403) {
@@ -95,8 +127,30 @@ export const useAlunosStore = create<AlunosState>((set, get) => ({
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      set({ alunos: data, isLoading: false, error: null });
+      const result = await response.json();
+      
+      if (result.data && result.pagination) {
+        const paginated = result as PaginatedResponse<Aluno>;
+        set({ 
+          alunos: paginated.data, 
+          pagination: paginated.pagination,
+          isLoading: false, 
+          error: null 
+        });
+      } else {
+        const data = Array.isArray(result) ? result : [];
+        set({ 
+          alunos: data, 
+          pagination: {
+            total: data.length,
+            page: 1,
+            limit: data.length,
+            totalPages: 1
+          },
+          isLoading: false, 
+          error: null 
+        });
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Error fetching alunos';
       set({ isLoading: false, error: message });
@@ -107,15 +161,8 @@ export const useAlunosStore = create<AlunosState>((set, get) => ({
   fetchAlunosByTurma: async (turmaId: number) => {
     set({ isLoading: true, error: null });
     try {
-      const authState = useAuthStore.getState();
-      const token = authState.token;
-
-      const response = await fetch(`${config.API_URL}/turmas/${turmaId}/alunos`, {
+      const response = await api(`/turmas/${turmaId}/alunos`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
       });
 
       if (!response.ok) {
@@ -145,15 +192,8 @@ export const useAlunosStore = create<AlunosState>((set, get) => ({
   createAluno: async (data: CreateAlunoData) => {
     set({ isLoading: true, error: null });
     try {
-      const authState = useAuthStore.getState();
-      const token = authState.token;
-
-      const response = await fetch(`${config.API_URL}/alunos`, {
+      const response = await api('/alunos', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(data),
       });
 
@@ -183,15 +223,8 @@ export const useAlunosStore = create<AlunosState>((set, get) => ({
   getAlunoDetalhes: async (id: number) => {
     set({ isLoading: true, error: null });
     try {
-      const authState = useAuthStore.getState();
-      const token = authState.token;
-
-      const response = await fetch(`${config.API_URL}/alunos/${id}`, {
+      const response = await api(`/alunos/${id}`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
       });
 
       if (!response.ok) {
@@ -213,20 +246,11 @@ export const useAlunosStore = create<AlunosState>((set, get) => ({
 
   verificarRegistroDiarioAluno: async (alunoId: number, data?: string) => {
     try {
-      const authState = useAuthStore.getState();
-      const token = authState.token;
+      const params = new URLSearchParams();
+      if (data) params.append('data', data);
       
-      const url = new URL(`${config.API_URL}/alunos/${alunoId}/possui-registro-diario`);
-      if (data) {
-        url.searchParams.append('data', data);
-      }
-
-      const response = await fetch(url.toString(), {
+      const response = await api(`/alunos/${alunoId}/possui-registro-diario?${params.toString()}`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
       });
 
       if (!response.ok) return null;
@@ -242,15 +266,8 @@ export const useAlunosStore = create<AlunosState>((set, get) => ({
   adicionarResponsavelAluno: async (alunoId: number, usuarioId: number) => {
     set({ isLoading: true, error: null });
     try {
-        const authState = useAuthStore.getState();
-        const token = authState.token;
-
-        const response = await fetch(`${config.API_URL}/usuarios/${usuarioId}/responsavel`, {
+        const response = await api(`/usuarios/${usuarioId}/responsavel`, {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify({ alunoId }),
         });
 
@@ -273,6 +290,6 @@ export const useAlunosStore = create<AlunosState>((set, get) => ({
   },
 
   limparCache: () => {
-    set({ alunos: [], alunosPorTurma: {}, currentAluno: null, error: null });
+    set({ alunos: [], alunosPorTurma: {}, currentAluno: null, pagination: null, error: null });
   }
 }));

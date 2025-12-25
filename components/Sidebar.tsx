@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useAuthStore } from "@/stores/useAuthStore"
+import { useTenant } from "@/hooks/useTenant"
 import { useEffect, useState } from "react"
 import {
   Sidebar as SidebarUI,
@@ -151,6 +152,8 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { user, isAuthenticated } = useAuthStore()
   const [mounted, setMounted] = useState(false)
+  
+  useTenant();
 
   useEffect(() => {
     setMounted(true)

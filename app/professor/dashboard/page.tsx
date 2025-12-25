@@ -1,7 +1,6 @@
 "use client"
 
 import { useAuthStore } from "@/stores/useAuthStore"
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { RouteGuard } from "@/components/auth/RouteGuard"
 
 export default function ProfessorDashboard() {

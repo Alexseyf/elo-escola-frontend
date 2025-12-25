@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import config from '@/config';
 import { useAuthStore } from './useAuthStore';
+import { api } from '@/lib/api';
 
 export enum TURMA {
   BERCARIO2 = 'BERCARIO2',
@@ -67,19 +68,35 @@ export interface Grupo {
   nome: string;
 }
 
+export interface TurmaFilters {
+  page?: number;
+  limit?: number;
+  ano?: number;
+}
+
+export interface TotalAlunosFilters {
+  turmaId?: number;
+}
+
 interface TurmasState {
   turmas: TurmaData[];
   grupos: Grupo[];
   turmasComTotal: TurmaComTotalAlunos[];
   mensalidadesPorTurma: MensalidadesResponse | null;
+  
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+  } | null;
+  
   isLoading: boolean;
   error: string | null;
 
-  // Actions
-  fetchTurmas: () => Promise<void>;
+  fetchTurmas: (filters?: TurmaFilters) => Promise<void>;
   fetchTurmaById: (id: number) => Promise<TurmaData | null>;
   fetchGrupos: () => Promise<void>;
-  fetchTotalAlunosPorTurma: () => Promise<void>;
+  fetchTotalAlunosPorTurma: (filters?: TotalAlunosFilters) => Promise<void>;
   fetchMensalidadesPorTurma: () => Promise<void>;
   getTurmaById: (id: number) => TurmaData | undefined;
   getGrupoById: (id: number) => Grupo | undefined;
@@ -114,24 +131,23 @@ export const useTurmasStore = create<TurmasState>()(
       grupos: [],
       turmasComTotal: [],
       mensalidadesPorTurma: null,
+      pagination: null,
       isLoading: false,
       error: null,
 
-      fetchTurmas: async () => {
+      fetchTurmas: async (filters?: TurmaFilters) => {
         set({ isLoading: true, error: null });
         try {
-          const authState = useAuthStore.getState();
-          const token = authState.token;
-          if (!token) {
-            throw new Error('Usuário não autenticado ou sessão expirada.');
-          }
-
-          const response = await fetch(`${config.API_URL}/turmas`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
+          const params = new URLSearchParams();
+          if (filters?.page) params.append('page', String(filters.page));
+          if (filters?.limit) params.append('limit', String(filters.limit));
+          if (filters?.ano) params.append('ano', String(filters.ano));
+          
+          const queryString = params.toString();
+          const url = `/api/v1/turmas${queryString ? `?${queryString}` : ''}`;
+          
+          const response = await api(url, {
+            method: 'GET'
           });
 
           if (!response.ok) {
@@ -156,18 +172,8 @@ export const useTurmasStore = create<TurmasState>()(
       fetchTurmaById: async (id: number) => {
         set({ isLoading: true, error: null });
         try {
-          const authState = useAuthStore.getState();
-          const token = authState.token;
-          if (!token) {
-            throw new Error('Usuário não autenticado ou sessão expirada.');
-          }
-
-          const response = await fetch(`${config.API_URL}/turmas/${id}`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
+          const response = await api(`/api/v1/turmas/${id}`, {
+            method: 'GET'
           });
 
           if (!response.ok) {
@@ -191,18 +197,8 @@ export const useTurmasStore = create<TurmasState>()(
       fetchGrupos: async () => {
         set({ isLoading: true, error: null });
         try {
-          const authState = useAuthStore.getState();
-          const token = authState.token;
-          if (!token) {
-            throw new Error('Usuário não autenticado ou sessão expirada.');
-          }
-
-          const response = await fetch(`${config.API_URL}/grupos`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
+          const response = await api('/grupos', {
+            method: 'GET'
           });
 
           if (!response.ok) {
@@ -219,21 +215,17 @@ export const useTurmasStore = create<TurmasState>()(
         }
       },
 
-      fetchTotalAlunosPorTurma: async () => {
+      fetchTotalAlunosPorTurma: async (filters?: TotalAlunosFilters) => {
         set({ isLoading: true, error: null });
         try {
-          const authState = useAuthStore.getState();
-          const token = authState.token;
-          if (!token) {
-            throw new Error('Usuário não autenticado ou sessão expirada.');
-          }
-
-          const response = await fetch(`${config.API_URL}/turmas/totalAlunosTurma`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
+          const params = new URLSearchParams();
+          if (filters?.turmaId) params.append('turmaId', String(filters.turmaId));
+          
+          const queryString = params.toString();
+          const url = `/api/v1/turmas/totalAlunosTurma${queryString ? `?${queryString}` : ''}`;
+          
+          const response = await api(url, {
+            method: 'GET'
           });
 
           if (!response.ok) {
@@ -258,18 +250,8 @@ export const useTurmasStore = create<TurmasState>()(
       fetchMensalidadesPorTurma: async () => {
         set({ isLoading: true, error: null });
         try {
-          const authState = useAuthStore.getState();
-          const token = authState.token;
-          if (!token) {
-            throw new Error('Usuário não autenticado ou sessão expirada.');
-          }
-
-          const response = await fetch(`${config.API_URL}/alunos/relatorios/mensalidades-por-turma`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
+          const response = await api('/alunos/relatorios/mensalidades-por-turma', {
+            method: 'GET'
           });
 
           if (!response.ok) {
@@ -333,12 +315,8 @@ export const useTurmasStore = create<TurmasState>()(
             throw new Error(`Nome de turma inválido: ${nome}`);
           }
 
-          const response = await fetch(`${config.API_URL}/turmas`, {
+          const response = await api('/api/v1/turmas', {
             method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            },
             body: JSON.stringify({ nome })
           });
 
@@ -359,7 +337,7 @@ export const useTurmasStore = create<TurmasState>()(
       },
 
       limparCache: () => {
-        set({ turmas: [], grupos: [], turmasComTotal: [], mensalidadesPorTurma: null, error: null });
+        set({ turmas: [], grupos: [], turmasComTotal: [], mensalidadesPorTurma: null, pagination: null, error: null });
       }
     }),
     {

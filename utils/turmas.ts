@@ -1,4 +1,3 @@
-import config from '@/config';
 import { useTurmasStore, TURMA, formatarNomeTurma, converterNomeParaEnum } from '@/stores/useTurmasStore';
 import type { TurmaData } from '@/stores/useTurmasStore';
 

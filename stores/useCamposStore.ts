@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-// import { persist } from 'zustand/middleware';
-import { useAuthStore } from './useAuthStore';
+import { api } from '@/lib/api';
 
 export enum CAMPO_EXPERIENCIA {
   EU_OUTRO_NOS = "EU_OUTRO_NOS",
@@ -43,7 +42,6 @@ interface CamposState {
   isLoading: boolean;
   error: string | null;
 
-  // Actions
   fetchCampos: () => Promise<void>;
   fetchRelatorioAtividades: () => Promise<void>;
   getCampoById: (id: number) => CampoExperienciaResponse | undefined;
@@ -69,14 +67,8 @@ export const useCamposStore = create<CamposState>()(
       fetchCampos: async () => {
         set({ isLoading: true, error: null });
         try {
-          const authState = useAuthStore.getState();
-          const token = authState.token;
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/campos`, {
+          const response = await api('/campos', {
             method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
           });
 
           if (!response.ok) {
@@ -99,23 +91,15 @@ export const useCamposStore = create<CamposState>()(
 
       fetchRelatorioAtividades: async () => {
         const state = get();
-        // Se já tem dados, não mostra loading (stale-while-revalidate)
         if (!state.relatorio) {
           set({ isLoading: true, error: null });
         } else {
-            // Se quiser limpar erro anterior mas manter dados
             set({ error: null });
         }
 
         try {
-          const authState = useAuthStore.getState();
-          const token = authState.token;
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/atividades/relatorio/campo-experiencia`, {
+          const response = await api('/atividades/relatorio/campo-experiencia', {
             method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
           });
 
           if (!response.ok) {
@@ -128,12 +112,9 @@ export const useCamposStore = create<CamposState>()(
           }
 
           const data = await response.json();
-          // Simples comparação profunda poderia evitar re-renders desnecessários, 
-          // mas por enquanto apenas atualizamos
           set({ relatorio: data, isLoading: false, error: null });
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Erro ao buscar relatório de atividades';
-          // Mantém dados antigos em caso de erro, mas avisa o usuário via erro
           set({ isLoading: false, error: message });
           console.error('Error fetching relatorio:', error);
         }

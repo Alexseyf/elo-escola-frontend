@@ -77,7 +77,7 @@ cp .env.example .env.local
 ```bash
 npm run dev
 ```
-A aplicação será acessada em `http://localhost:3000`
+A aplicação será acessada em `http://localhost:3001`
 
 ### Build para Produção
 ```bash

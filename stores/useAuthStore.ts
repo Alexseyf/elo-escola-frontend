@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import config from '@/config';
+import { api } from '@/lib/api';
 
 interface User {
   nome: string;
@@ -8,6 +9,10 @@ interface User {
   email: string;
   roles: string[];
   primeiroAcesso?: boolean;
+  school?: {
+    id?: number;
+    slug: string;
+  };
 }
 
 interface LoginCredentials {
@@ -41,11 +46,8 @@ export const useAuthStore = create<AuthState>()(
         try {
           const emailSemEspacos = credentials.email.trim();
           
-          const response = await fetch(`${config.API_URL}/login`, {
+          const response = await api('/api/v1/login', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
             body: JSON.stringify({
               email: emailSemEspacos,
               senha: credentials.senha
@@ -60,14 +62,22 @@ export const useAuthStore = create<AuthState>()(
           const data = await response.json();
 
           if (response.ok && data.token) {
+            if (data.schoolSlug) {
+              localStorage.setItem('schoolSlug', data.schoolSlug);
+              
+              const { useTenantStore } = await import('./useTenantStore');
+              useTenantStore.getState().setTenantSlug(data.schoolSlug);
+            }
+
             set({
               token: data.token,
               user: {
                 nome: data.nome,
                 id: data.id,
-                email: credentials.email,
+                email: data.email,
                 roles: data.roles,
-                primeiroAcesso: data.primeiroAcesso
+                primeiroAcesso: data.primeiroAcesso,
+                school: data.schoolSlug ? { slug: data.schoolSlug } : undefined
               },
               isAuthenticated: true,
               isLoading: false,
@@ -93,7 +103,14 @@ export const useAuthStore = create<AuthState>()(
 
       logout: () => {
         set({ token: null, user: null, isAuthenticated: false, error: null });
-        localStorage.removeItem('auth-storage');
+        
+        if (typeof window !== 'undefined') {
+          import('./useTenantStore').then(({ useTenantStore }) => {
+            useTenantStore.getState().clearTenant();
+          });
+          
+          localStorage.clear();
+        }
       },
 
       checkAuth: () => {

@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-import config from '@/config';
-import { useAuthStore } from './useAuthStore';
+import { api } from '@/lib/api';
 
 export interface Usuario {
   id: number;
@@ -45,15 +44,7 @@ export const useUsuariosStore = create<UsuariosState>((set, get) => ({
   fetchUsuariosAtivos: async () => {
     set({ isLoading: true, error: null });
     try {
-      const authState = useAuthStore.getState();
-      const token = authState.token;
-      
-      const response = await fetch(`${config.API_URL}/usuarios/ativos`, {
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-      });
+      const response = await api('/usuarios/ativos');
 
       if (!response.ok) {
         if (response.status === 401 || response.status === 403) {
@@ -102,15 +93,8 @@ export const useUsuariosStore = create<UsuariosState>((set, get) => ({
   fetchUsuarioDetalhes: async (id: number) => {
     set({ isLoading: true, error: null });
     try {
-      const authState = useAuthStore.getState();
-      const token = authState.token;
-
-      const response = await fetch(`${config.API_URL}/usuarios/${id}`, {
+      const response = await api(`/usuarios/${id}`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
       });
 
       if (!response.ok) {

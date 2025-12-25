@@ -1,4 +1,3 @@
-import config from '@/config';
 import { useObjetivosStore } from '@/stores/useObjetivosStore';
 import { mapearTurmaParaGrupo, mapearGrupoParaId } from './turmas';
 import { mapearCampoExperienciaParaId, CAMPO_EXPERIENCIA } from './campos';

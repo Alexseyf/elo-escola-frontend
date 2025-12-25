@@ -1,22 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { toast, Toaster } from "sonner";
+import { useTenant } from "@/hooks/useTenant";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const { login } = useAuthStore();
+
+  useTenant();
+
+  useEffect(() => {
+    const errorParam = searchParams.get('error');
+    if (errorParam === 'tenant-mismatch') {
+      toast.error('Acesso negado: você foi desconectado por segurança', {
+        description: 'Tentativa de acesso a dados de outra escola detectada.',
+      });
+    } else if (errorParam === 'unauthorized') {
+      toast.error('Sessão expirada', {
+        description: 'Por favor, faça login novamente.',
+      });
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +53,9 @@ export default function LoginPage() {
         setTimeout(() => {
           const user = useAuthStore.getState().user;
 
-          if (user?.roles?.includes("ADMIN")) {
+          if (user?.roles?.includes("PLATFORM_ADMIN")) {
+            router.push("/platform/escolas");
+          } else if (user?.roles?.includes("ADMIN")) {
             router.push("/admin/dashboard");
           } else if (user?.roles?.includes("PROFESSOR")) {
             router.push("/professor/dashboard");
@@ -124,7 +143,19 @@ export default function LoginPage() {
           </form>
         </CardContent>
       </Card>
-      <Toaster />
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">Carregando...</div>
+      </div>
+    }>
+      <LoginForm />
+      <Toaster />
+    </Suspense>
   );
 }
