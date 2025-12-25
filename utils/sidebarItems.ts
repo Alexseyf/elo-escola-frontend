@@ -9,6 +9,7 @@ import {
   ClipboardList,
   FileText,
   Clock,
+  Building2,
 } from "lucide-react";
 
 export interface SidebarItem {
@@ -167,6 +168,24 @@ export function getResponsavelSidebarItems(): SidebarItem[] {
   ];
 }
 
+// PLATFORM_ADMIN
+export function getPlatformAdminSidebarItems(): SidebarItem[] {
+  return [
+    {
+      id: "platform-home",
+      label: "Dashboard",
+      href: "/platform",
+      icon: LayoutDashboard,
+    },
+    {
+      id: "platform-escolas",
+      label: "Escolas",
+      href: "/platform/escolas",
+      icon: Building2,
+    },
+  ];
+}
+
 export function getSidebarItems(role: string): SidebarItem[] {
   switch (role.toUpperCase()) {
     case "ADMIN":
@@ -175,6 +194,8 @@ export function getSidebarItems(role: string): SidebarItem[] {
       return getProfessorSidebarItems();
     case "RESPONSAVEL":
       return getResponsavelSidebarItems();
+    case "PLATFORM_ADMIN":
+      return getPlatformAdminSidebarItems();
     default:
       return [];
   }
