@@ -1,63 +1,104 @@
 # Elo Escola 🎓
 
-Plataforma de gestão escolar focado em educação infantil para administradores, professores e responsáveis de alunos. Sistema moderno desenvolvido com tecnologias web de ponta.
+Plataforma SaaS multi-tenant de gestão escolar focada em educação infantil. Sistema moderno que permite múltiplas escolas (tenants) operarem de forma isolada na mesma infraestrutura.
 
 ## Sumário
 
 - [Visão Geral](#visão-geral)
+- [Arquitetura Multi-Tenant](#arquitetura-multi-tenant)
 - [Tecnologias Utilizadas](#tecnologias-utilizadas)
 - [Requisitos](#requisitos)
 - [Instalação](#instalação)
 - [Como Executar](#como-executar)
 - [Estrutura do Projeto](#estrutura-do-projeto)
+- [Roles e Permissões](#roles-e-permissões)
 - [Padronização de Commits](#padronização-de-commits)
 - [Contribuindo](#contribuindo)
 
 ## Visão Geral
 
-O **Elo Escola** é uma plataforma de gestão educacional que oferece diferentes interfaces e funcionalidades para três tipos de usuários:
+O **Elo Escola** é uma plataforma SaaS de gestão educacional que oferece diferentes interfaces e funcionalidades para quatro tipos de usuários:
 
-- **Administradores**: Gestão completa do sistema e usuários
-- **Professores**: Gerenciamento de turmas e avaliações
-- **Responsáveis**: Acompanhamento do desempenho escolar
+- **PLATFORM_ADMIN**: Gestão global da plataforma e cadastro de escolas (tenants)
+- **ADMIN**: Gestão completa de uma escola específica (tenant)
+- **PROFESSOR**: Gerenciamento de turmas e avaliações
+- **RESPONSÁVEL**: Acompanhamento do desempenho escolar dos filhos
 
-O projeto utiliza autenticação por email e senha, com roteamento dinâmico baseado em roles de usuário.
+## Arquitetura Multi-Tenant
+
+O sistema implementa multi-tenancy através de **Discriminator Column (Shared Database)**, onde todas as escolas compartilham o mesmo banco de dados, mas cada registro é isolado por `schoolId`.
+
+### Fluxo de Autenticação
+
+```
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│    Login     │────▶│  API /login  │────▶│  JWT + Role  │
+└──────────────┘     └──────────────┘     └──────────────┘
+                              │
+                              ▼
+                     ┌──────────────────┐
+                     │  schoolSlug no   │
+                     │  response (ADMIN)│
+                     └──────────────────┘
+                              │
+                              ▼
+                     ┌──────────────────┐
+                     │  useTenantStore  │
+                     │  x-tenant-id     │
+                     └──────────────────┘
+```
+
+### Stores de Estado
+
+| Store | Responsabilidade |
+|-------|------------------|
+| `useAuthStore` | Autenticação, token JWT, dados do usuário |
+| `useTenantStore` | Slug do tenant atual para requisições API |
+| `useAlunosStore` | Cache de alunos do tenant |
+| `useTurmasStore` | Cache de turmas do tenant |
+| `useUsuariosStore` | Cache de usuários do tenant |
+| `useCamposStore` | Campos de avaliação pedagógica |
+| `useObjetivosStore` | Objetivos de aprendizagem |
+
+### Headers de API
+
+Todas as requisições autenticadas incluem:
+- `Authorization: Bearer <token>`
+- `x-tenant-id: <schoolSlug>` (para ADMIN/PROFESSOR/RESPONSAVEL)
 
 ## Tecnologias Utilizadas
 
 ### Frontend
-- **Next.js 15.5.7** - Framework React com renderização do lado do servidor
-- **React 19.1.0** - Biblioteca de UI com hooks
-- **TypeScript** - Tipagem estática para JavaScript
-- **Tailwind CSS 4** - Utilitários CSS para estilização
-- **Zustand 5.0.9** - Gerenciamento de estado minimalista
+- **Next.js 15** - Framework React com App Router
+- **React 19** - Biblioteca de UI com hooks
+- **TypeScript** - Tipagem estática
+- **Tailwind CSS 4** - Utilitários CSS
+- **Zustand 5** - Gerenciamento de estado com persist
 
 ### UI & UX
-- **Radix UI** - Componentes acessíveis e sem estilo
-  - Dialog
-  - Label
-  - Separator
-  - Slot
-  - Tooltip
-- **Lucide React** - Ícones SVG modernas
-- **Sonner** - Sistema de notificações tipo toast
+- **Radix UI** - Componentes acessíveis
+- **Shadcn/UI** - Sistema de componentes
+- **Lucide React** - Ícones SVG
+- **Sonner** - Notificações toast
+- **Recharts** - Gráficos e visualizações
 
-### Desenvolvimento
-- **ESLint 9** - Linting de código JavaScript/TypeScript
-- **TailwindCSS PostCSS** - Processamento de CSS
+### Validação
+- **Zod** - Schemas de validação
+- **React Hook Form** - Gerenciamento de formulários
 
 ## Requisitos
 
 - **Node.js**: v18+ (recomendado v20+)
 - **npm** ou **yarn**: Gerenciador de pacotes
 - **Git**: Para versionamento
+- **API Backend**: Rodando em `http://localhost:3000`
 
 ## Instalação
 
 1. **Clone o repositório:**
 ```bash
-git clone https://github.com/Alexseyf/elo-escola.git
-cd elo
+git clone https://github.com/Alexseyf/elo-escola-frontend.git
+cd elo-escola-frontend
 ```
 
 2. **Instale as dependências:**
@@ -68,7 +109,11 @@ npm install
 3. **Configure as variáveis de ambiente:**
 ```bash
 cp .env.example .env.local
-# Edite o arquivo .env.local com as configurações necessárias
+```
+
+Edite `.env.local`:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000
 ```
 
 ## Como Executar
@@ -93,128 +138,117 @@ npm run lint
 ## Estrutura do Projeto
 
 ```
-elo/
-├── app/                          # Diretório principal do Next.js 13+
-│   ├── admin/dashboard/          # Dashboard administrativo
-│   ├── professor/dashboard/      # Dashboard do professor
-│   ├── responsavel/dashboard/    # Dashboard do responsável
-│   ├── login/                    # Página de login
-│   ├── layout.tsx                # Layout raiz
-│   ├── page.tsx                  # Página inicial
-│   └── globals.css               # Estilos globais
+elo-web/
+├── app/                          # Next.js App Router
+│   ├── admin/                    # Rotas do ADMIN (tenant)
+│   │   ├── dashboard/            # Dashboard com gráficos
+│   │   ├── usuarios/             # Gestão de usuários
+│   │   └── graficos/             # Relatórios visuais
+│   ├── platform/                 # Rotas do PLATFORM_ADMIN
+│   │   └── escolas/              # Gestão de escolas/tenants
+│   ├── professor/                # Rotas do PROFESSOR
+│   ├── responsavel/              # Rotas do RESPONSÁVEL
+│   ├── login/                    # Autenticação
+│   ├── layout.tsx                # Layout raiz com Sidebar
+│   └── page.tsx                  # Roteamento por role
 │
-├── components/                   # Componentes React reutilizáveis
-│   ├── Sidebar.tsx               # Componente de sidebar
+├── components/
 │   ├── auth/
-│   │   └── RouteGuard.tsx        # Guard para rotas protegidas
-│   └── ui/                       # Componentes de UI base
-│       ├── button.tsx
-│       ├── card.tsx
-│       ├── input.tsx
-│       ├── label.tsx
-│       ├── separator.tsx
-│       ├── sheet.tsx
-│       ├── sidebar.tsx
-│       ├── skeleton.tsx
-│       ├── sonner.tsx
-│       ├── tooltip.tsx
-│       └── alert.tsx
+│   │   └── RouteGuard.tsx        # Proteção de rotas por role
+│   ├── platform/
+│   │   └── escolas/              # Componentes de gestão de escolas
+│   │       ├── school-form-sheet.tsx
+│   │       └── schools-table.tsx
+│   ├── ui/                       # Componentes Shadcn/UI
+│   └── Sidebar.tsx               # Navegação lateral
 │
-├── hooks/                        # React hooks customizados
-│   └── use-mobile.ts             # Hook para detecção de dispositivo mobile
+├── stores/                       # Zustand stores
+│   ├── useAuthStore.ts           # Autenticação + logout
+│   ├── useTenantStore.ts         # Slug do tenant atual
+│   ├── useAlunosStore.ts
+│   ├── useTurmasStore.ts
+│   ├── useUsuariosStore.ts
+│   ├── useCamposStore.ts
+│   └── useObjetivosStore.ts
 │
-├── stores/                       # Stores Zustand
-│   └── useAuthStore.ts           # Store de autenticação
+├── schemas/                      # Zod validation schemas
+│   └── escola.ts                 # Schema de criação de escola
+│
+├── types/                        # TypeScript types
+│   └── escola.ts                 # Interface CreateSchoolInput
 │
 ├── utils/                        # Funções utilitárias
-│   ├── sidebarItems.ts           # Configuração de itens da sidebar
-│   └── (utilitários gerais)
+│   ├── sidebarItems.ts           # Itens de menu por role
+│   ├── escolas.ts                # API de escolas
+│   ├── usuarios.ts               # API de usuários
+│   ├── alunos.ts                 # API de alunos
+│   ├── turmas.ts                 # API de turmas
+│   └── auth.ts                   # Helpers de autenticação
 │
-├── lib/                          # Código de biblioteca
-│   └── utils.ts                  # Funções utilitárias compartilhadas
+├── hooks/                        # React hooks
+│   ├── useTenant.ts              # Hook de tenant
+│   ├── useMobile.ts              # Detecção mobile
+│   └── useApiErrorHandler.ts     # Tratamento de erros 401
 │
-├── public/                       # Arquivos estáticos
-│   ├── logo.png
-│   └── (ícones e imagens)
+├── lib/
+│   ├── api.ts                    # Cliente HTTP com headers
+│   └── utils.ts                  # Utilitários gerais (cn)
 │
+├── middleware.ts                 # Next.js middleware
 ├── config.ts                     # Configuração da aplicação
-├── tsconfig.json                 # Configuração TypeScript
-├── tailwind.config.ts            # Configuração Tailwind CSS
-├── next.config.ts                # Configuração Next.js
-├── package.json                  # Dependências do projeto
-└── README.md                     # Este arquivo
+└── package.json
 ```
+
+## Roles e Permissões
+
+| Role | Escopo | Rotas | Funcionalidades |
+|------|--------|-------|-----------------|
+| `PLATFORM_ADMIN` | Global | `/platform/*` | Criar/listar escolas, ver todos os tenants |
+| `ADMIN` | Tenant | `/admin/*` | Gestão completa da escola |
+| `PROFESSOR` | Tenant | `/professor/*` | Turmas, atividades, diários |
+| `RESPONSAVEL` | Tenant | `/responsavel/*` | Acompanhamento dos filhos |
+
+### Criação de Escola (PLATFORM_ADMIN)
+
+O cadastro de uma nova escola cria automaticamente:
+1. O registro da escola com configurações (nome, slug, CNPJ, etc.)
+2. O usuário administrador inicial com role `ADMIN`
+
+Campos obrigatórios:
+- **Escola**: `name`, `slug`
+- **Admin**: `nome`, `email`, `telefone`
 
 ## Padronização de Commits
 
-Utilizamos a convenção **Conventional Commits** combinada com **Git Emoji** para manter um histórico claro, semântico e visualmente organizado.
-
-### Formato
+Utilizamos **Conventional Commits** com **Git Emoji**:
 
 ```
 <emoji> <tipo>(<escopo>): <assunto>
-
-<corpo opcional>
-
-<rodapé opcional>
 ```
 
-### Tipos de Commit e Emojis
+### Tipos Principais
 
-Utilizamos o padrão de [Commitojis](https://commitojis.vercel.app/):
+| Emoji | Tipo | Descrição |
+|-------|------|-----------|
+| ✨ | feat | Nova funcionalidade |
+| 🐛 | fix | Correção de bug |
+| 📚 | docs | Documentação |
+| ♻️ | refactor | Refatoração |
+| 🔧 | chore | Configuração |
 
-| Emoji | Código | Tipo | Descrição | Exemplo |
-|-------|--------|------|-----------|---------|
-| ✨ | `:sparkles:` | **feat** | Nova funcionalidade | `✨ feat(auth): implementar autenticação por email` |
-| 🐛 | `:bug:` | **fix** | Correção de bug | `🐛 fix(dashboard): corrigir cálculo de média` |
-| 📚 | `:books:` | **docs** | Mudanças em documentação | `� docs: atualizar README com instruções` |
-| 💄 | `:lipstick:` | **style** | Estilização de interface | `💄 feat(ui/button): atualizar cores do tema` |
-| ♻️ | `:recycle:` | **refactor** | Refatoração de código | `♻️ refactor(sidebar): simplificar estrutura` |
-| ⚡ | `:zap:` | **perf** | Melhorias de performance | `⚡ perf(dashboard): otimizar renderização` |
-| ✅ | `:white_check_mark:` | **test** | Testes | `✅ test(auth): adicionar testes de login` |
-| 🔧 | `:wrench:` | **chore** | Configuração e dependências | `🔧 chore: atualizar dependências` |
-| 🚀 | `:rocket:` | **deploy** | Deploy e CI/CD | `🚀 deploy: configurar GitHub Actions` |
-| 🧹 | `:broom:` | **cleanup** | Limpeza de código | `🧹 cleanup: remover imports não utilizados` |
-| 💥 | `:boom:` | **fix** | Revertendo mudanças importantes | `💥 fix: reverter alterações quebradas` |
-| 🔒️ | `:lock:` | **security** | Melhorias de segurança | `🔒️ security(auth): implementar validação adicional` |
-| 🏷️ | `:label:` | **types** | Tipagem TypeScript | `🏷️ types: adicionar tipos para novo componente` |
-| 🥅 | `:goal_net:` | **error-handling** | Tratamento de erros | `🥅 error-handling: melhorar mensagens de erro` |
+### Escopos
 
-### Escopos Comuns
+- `auth` - Autenticação
+- `dashboard` - Dashboards
+- `platform` - Gestão de escolas
+- `tenant` - Multi-tenancy
+- `ui` - Componentes
 
-- `auth` - Autenticação e autorização
-- `login` - Página e funcionalidades de login
-- `dashboard` - Dashboards (admin, professor, responsável)
-- `ui` - Componentes de interface do usuário
-- `ui/button`, `ui/card`, `ui/input` - Componentes específicos
-- `sidebar` - Barra lateral de navegação
-- `store` - Estado global (Zustand)
-- `api` - Comunicação com API
-- `hooks` - React hooks customizados
-- `docs` - Documentação
-- `deps` - Dependências do projeto
+### Referências
 
-
-### Regras Importantes
-
-✅ **Faça:**
-- Sempre comece com o emoji correspondente ao tipo
-- Use presente do indicativo ("adiciona" não "adicionou")
-- Seja específico e descritivo no escopo
-- Limite o assunto a ~50 caracteres (após emoji e tipo)
-- Separe assunto do corpo com linha em branco
-- Use o corpo para explicar *o quê* e *por quê*, não *como*
-- Referencie issues quando aplicável: `Closes #123` ou `Fixes #456`
-
-❌ **Não faça:**
-- Esqueça o emoji no início da mensagem
-- Combine múltiplas funcionalidades em um commit
-- Use mensagens genéricas como "ajustes", "correções" ou "atualizar"
-- Commits com assunto completamente em maiúsculas
-- Adicione pontuação no final do assunto (sem ponto final)
-
-### Referências Úteis
-
-- 📖 [Commitojis - Convenção de Emojis para Commits](https://commitojis.vercel.app/)
+- 📖 [Commitojis](https://commitojis.vercel.app/)
 - 📘 [Conventional Commits](https://www.conventionalcommits.org/pt-br/)
 
+---
+
+**© 2025 Elo Escola** - Plataforma de Gestão Educacional
