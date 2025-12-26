@@ -107,9 +107,12 @@ export const useAuthStore = create<AuthState>()(
         if (typeof window !== 'undefined') {
           import('./useTenantStore').then(({ useTenantStore }) => {
             useTenantStore.getState().clearTenant();
+            
+            setTimeout(() => {
+              localStorage.clear();
+              window.location.href = '/login';
+            }, 50);
           });
-          
-          localStorage.clear();
         }
       },
 
