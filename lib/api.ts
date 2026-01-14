@@ -43,10 +43,16 @@ export const api = async (endpoint: string, options: ApiRequestOptions = {}) => 
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const isLoginEndpoint = endpoint.includes('/api/v1/login');
+  /* 
+    The backend documentation states that login and password recovery are public routes 
+    and do not require the x-tenant-id header.
+  */
+  const isPublicEndpoint = endpoint.includes('/api/v1/login') || 
+                          endpoint.includes('/api/v1/recupera-senha') || 
+                          endpoint.includes('/api/v1/valida-senha');
   
-  if (!isLoginEndpoint) {
-    if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+  if (!isPublicEndpoint) {
+  if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
       const schoolSlug = localStorage.getItem('schoolSlug');
       if (schoolSlug) {
         headers['x-tenant-id'] = schoolSlug;
@@ -63,7 +69,7 @@ export const api = async (endpoint: string, options: ApiRequestOptions = {}) => 
     console.log('[API] Headers:', {
       'Content-Type': headers['Content-Type'],
       'Authorization': token ? `Bearer ${token.substring(0, 20)}...` : 'NOT SET',
-      'x-tenant-id': headers['x-tenant-id'] || (isLoginEndpoint ? 'OMITTED (login endpoint)' : 'NOT SET'),
+      'x-tenant-id': headers['x-tenant-id'] || (isPublicEndpoint ? 'OMITTED (public endpoint)' : 'NOT SET'),
     });
     console.log('[API] Tenant Slug from Store:', tenantSlug || 'NOT SET');
   }
