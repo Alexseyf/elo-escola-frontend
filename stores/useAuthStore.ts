@@ -26,6 +26,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  tempPassword?: string;
   
   login: (credentials: LoginCredentials) => Promise<boolean>;
   logout: () => void;
@@ -81,7 +82,8 @@ export const useAuthStore = create<AuthState>()(
               },
               isAuthenticated: true,
               isLoading: false,
-              error: null
+              error: null,
+              tempPassword: data.primeiroAcesso ? credentials.senha : undefined
             });
             return true;
           } else {
@@ -123,6 +125,11 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
+      partialize: (state) => ({ 
+        token: state.token, 
+        user: state.user, 
+        isAuthenticated: state.isAuthenticated 
+      }),
     }
   )
 );

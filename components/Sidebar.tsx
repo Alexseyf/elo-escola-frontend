@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useAuthStore } from "@/stores/useAuthStore"
 import { useTenant } from "@/hooks/useTenant"
 import { useEffect, useState } from "react"
@@ -150,6 +150,7 @@ function AppSidebar({ items, logout, user }: AppSidebarProps) {
 
 export function Sidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
   const { user, isAuthenticated } = useAuthStore()
   const [mounted, setMounted] = useState(false)
   
@@ -158,6 +159,12 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  useEffect(() => {
+    if (mounted && user?.primeiroAcesso && pathname !== '/auth/nova-senha' && pathname !== '/login') {
+       router.push('/auth/nova-senha');
+    }
+  }, [mounted, user, pathname, router]);
 
   if (!mounted) {
       return <>{children}</> 

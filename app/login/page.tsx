@@ -53,17 +53,19 @@ function LoginForm() {
         setTimeout(() => {
           const user = useAuthStore.getState().user;
 
-          if (user?.roles?.includes("PLATFORM_ADMIN")) {
-            router.push("/platform/escolas");
-          } else if (user?.roles?.includes("ADMIN")) {
-            router.push("/admin/dashboard");
-          } else if (user?.roles?.includes("PROFESSOR")) {
-            router.push("/professor/dashboard");
-          } else if (user?.roles?.includes("RESPONSAVEL")) {
-            router.push("/responsavel/dashboard");
-          } else {
-            router.push("/");
-          }
+            if (user?.primeiroAcesso) {
+              router.push("/auth/nova-senha");
+            } else if (user?.roles?.includes("PLATFORM_ADMIN")) {
+              router.push("/platform/escolas");
+            } else if (user?.roles?.includes("ADMIN")) {
+              router.push("/admin/dashboard");
+            } else if (user?.roles?.includes("PROFESSOR")) {
+              router.push("/professor/dashboard");
+            } else if (user?.roles?.includes("RESPONSAVEL")) {
+              router.push("/responsavel/dashboard");
+            } else {
+              router.push("/");
+            }
         }, 2000);
       } else {
         const authError = useAuthStore.getState().error;
