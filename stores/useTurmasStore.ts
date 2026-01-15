@@ -250,7 +250,7 @@ export const useTurmasStore = create<TurmasState>()(
       fetchMensalidadesPorTurma: async () => {
         set({ isLoading: true, error: null });
         try {
-          const response = await api('/alunos/relatorios/mensalidades-por-turma', {
+          const response = await api('/api/v1/students/relatorios/mensalidades-por-turma', {
             method: 'GET'
           });
 

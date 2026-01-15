@@ -98,7 +98,7 @@ export const useCamposStore = create<CamposState>()(
         }
 
         try {
-          const response = await api('/atividades/relatorio/campo-experiencia', {
+          const response = await api('/api/v1/atividades/relatorio/campo-experiencia', {
             method: 'GET',
           });
 
