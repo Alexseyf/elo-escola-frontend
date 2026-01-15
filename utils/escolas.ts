@@ -23,3 +23,37 @@ export const createSchool = async (data: CreateSchoolInput) => {
 
   return response.json();
 };
+
+export const updateSchool = async (id: number, data: Partial<CreateSchoolInput>) => {
+  const { adminUser, ...updateData } = data as any;
+  const response = await api(`/api/v1/schools/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(updateData),
+    headers: {
+        'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw errorData;
+  }
+
+  return response.json();
+};
+
+export const deleteSchool = async (id: number) => {
+  const response = await api(`/api/v1/schools/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+     if (response.status === 204) return;
+     try {
+        const errorData = await response.json();
+        throw errorData;
+     } catch (e) {
+        throw new Error('Erro ao deletar escola');
+     }
+  }
+};

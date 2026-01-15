@@ -13,4 +13,5 @@ export interface CreateSchoolInput {
     email: string;
     telefone: string;
   };
+  active?: boolean;
 }

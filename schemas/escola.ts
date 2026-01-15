@@ -24,4 +24,8 @@ export const createSchoolSchema = z.object({
   })
 });
 
+
+export const updateSchoolSchema = createSchoolSchema.omit({ adminUser: true }).partial();
+
 export type CreateSchoolFormValues = z.infer<typeof createSchoolSchema>;
+export type UpdateSchoolFormValues = z.infer<typeof updateSchoolSchema>;
