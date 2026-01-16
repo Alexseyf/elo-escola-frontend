@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat, Inter } from "next/font/google";
 import { Sidebar } from "@/components/Sidebar";
-import { TenantDebugger } from "@/components/TenantDebugger";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -34,7 +33,6 @@ export default function RootLayout({
         <Sidebar>
           {children}
         </Sidebar>
-        <TenantDebugger />
       </body>
     </html>
   );
