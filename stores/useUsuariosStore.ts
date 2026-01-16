@@ -142,11 +142,15 @@ export const useUsuariosStore = create<UsuariosState>((set, get) => ({
       const updatedUsers = [...currentUsers, novoUsuario];
       
       const usuariosPorRole = { ...get().usuariosPorRole };
-      novoUsuario.roles.forEach((role: string) => {
-          if (role in usuariosPorRole && Array.isArray((usuariosPorRole as any)[role])) {
-            (usuariosPorRole as any)[role].push(novoUsuario);
-          }
-      });
+      const roles = novoUsuario.roles || usuario.roles || [];
+      
+      if (Array.isArray(roles)) {
+        roles.forEach((role: string) => {
+            if (role in usuariosPorRole && Array.isArray((usuariosPorRole as any)[role])) {
+              (usuariosPorRole as any)[role].push(novoUsuario);
+            }
+        });
+      }
       usuariosPorRole.todos.push(novoUsuario);
 
       set({ 

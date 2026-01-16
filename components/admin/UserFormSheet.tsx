@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { usuarioSchema, UsuarioFormValues } from '@/schemas/usuario';
@@ -53,9 +53,15 @@ export function UserFormSheet({ onSuccess, trigger }: UserFormSheetProps) {
       telefoneComercial: '',
       enderecoLogradouro: '',
       enderecoNumero: '',
-      roles: ['PROFESSOR'],
+      roles: [],
     }
   });
+
+  useEffect(() => {
+    if (open) {
+      form.reset();
+    }
+  }, [open, form]);
 
   async function onSubmit(data: UsuarioFormValues) {
     try {

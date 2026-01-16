@@ -93,7 +93,7 @@ export default function UsuarioDetalhesPage() {
                         <div>
                             <p className="text-sm font-medium text-gray-500">Perfis</p>
                             <div className="flex flex-wrap gap-1 mt-1">
-                                {usuario.roles.map((role) => (
+                                {(usuario.roles || []).map((role) => (
                                     <span
                                         key={role}
                                         className={`px-2 py-0.5 rounded-full text-xs font-medium ${getRoleBadgeColor(role)}`}

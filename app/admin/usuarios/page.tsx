@@ -180,7 +180,7 @@ export default function UsuariosPage() {
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                     <div className="flex flex-wrap gap-1">
-                                                        {usuario.roles.map((role) => (
+                                                        {(usuario.roles || []).map((role) => (
                                                             <span
                                                                 key={role}
                                                                 className={`px-2 py-0.5 rounded-full text-xs font-medium ${getRoleBadgeColor(role)}`}
