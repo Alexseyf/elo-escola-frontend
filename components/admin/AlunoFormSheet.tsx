@@ -146,7 +146,7 @@ export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProp
                     <FormItem>
                       <FormLabel>Data de Nascimento</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} />
+                        <Input type="date" max={new Date().toISOString().split('T')[0]} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

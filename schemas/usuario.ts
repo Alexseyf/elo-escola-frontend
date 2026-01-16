@@ -5,7 +5,8 @@ export const usuarioSchema = z.object({
   email: z.string().email("Email inválido"),
   cpf: z.string().min(11, "CPF inválido").max(14, "CPF inválido"),
   rg: z.string().min(5, "RG inválido"),
-  dataNascimento: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida (YYYY-MM-DD)"),
+  dataNascimento: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida (YYYY-MM-DD)")
+    .refine((date) => new Date(date) <= new Date(), "Data futura não permitida"),
   telefone: z.string().min(10, "Telefone inválido"),
   telefoneComercial: z.string().optional(),
   enderecoLogradouro: z.string().min(3, "Endereço obrigatório"),
