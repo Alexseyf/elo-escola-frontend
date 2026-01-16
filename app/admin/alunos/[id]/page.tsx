@@ -8,9 +8,21 @@ import { RouteGuard } from "@/components/auth/RouteGuard"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label" // Assuming Label component exists or use standard label
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { User, Calendar, BookOpen, DollarSign, Trash2, Plus } from "lucide-react"
 import { AlunoFormSheet } from "@/components/admin/AlunoFormSheet"
+import { useUsuariosStore } from "@/stores/useUsuariosStore"
 import { toast } from "sonner"
 
 export default function AlunoDetalhesPage() {
@@ -27,14 +39,19 @@ export default function AlunoDetalhesPage() {
     removerResponsavelAluno
   } = useAlunosStore()
 
+  const { usuarios, fetchUsuarios } = useUsuariosStore()
+
   const [newResponsavelId, setNewResponsavelId] = useState('')
   const [isAddingResp, setIsAddingResp] = useState(false)
+  const [responsibleToDelete, setResponsibleToDelete] = useState<number | null>(null)
 
   useEffect(() => {
     if (!isNaN(id)) {
         getAlunoDetalhes(id);
     }
-  }, [id, getAlunoDetalhes])
+    fetchUsuarios('RESPONSAVEL');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id])
 
   const handleAddResponsavel = async () => {
     if (!newResponsavelId) return;
@@ -44,26 +61,46 @@ export default function AlunoDetalhesPage() {
     if (result.success) {
         toast.success(result.message);
         setNewResponsavelId('');
-        getAlunoDetalhes(id); // Refresh
+        // Refresh to get updated responsibles list
+        getAlunoDetalhes(id);
     } else {
         toast.error(result.message);
     }
   }
 
-  const handleRemoveResponsavel = async (usuarioId: number) => {
-    if (!confirm('Remover este responsável?')) return;
-    const result = await removerResponsavelAluno(id, usuarioId);
+  const confirmRemoveResponsavel = async () => {
+    if (!responsibleToDelete) return;
+    
+    const result = await removerResponsavelAluno(id, responsibleToDelete);
     if (result.success) {
         toast.success(result.message);
-        getAlunoDetalhes(id); // Refresh
+        // Refresh to get updated responsibles list
+        getAlunoDetalhes(id);
     } else {
         toast.error(result.message);
     }
+    setResponsibleToDelete(null);
   }
 
   return (
     <RouteGuard allowedRoles={['ADMIN']}>
       <div className="min-h-screen bg-background p-3 sm:p-6">
+        <AlertDialog open={!!responsibleToDelete} onOpenChange={() => setResponsibleToDelete(null)}>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Remover responsável?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Esta ação irá remover o vínculo deste responsável com o aluno. O usuário não será excluído do sistema.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={confirmRemoveResponsavel} className="bg-red-600 hover:bg-red-700">
+                        Remover
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-6">
             <Button 
                 variant="outline" 
@@ -141,22 +178,6 @@ export default function AlunoDetalhesPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {/* Add Responsible Simple Form */}
-                            <div className="flex gap-2 items-end max-w-sm mb-6 bg-gray-50 p-3 rounded-lg">
-                                <div className="grid w-full gap-1.5">
-                                    <span className="text-sm font-medium">Adicionar Responsável (ID Usuário)</span>
-                                    <Input 
-                                        type="number" 
-                                        placeholder="ID do Usuário" 
-                                        value={newResponsavelId}
-                                        onChange={(e) => setNewResponsavelId(e.target.value)}
-                                    />
-                                </div>
-                                <Button size="sm" onClick={handleAddResponsavel} disabled={isAddingResp}>
-                                    <Plus className="w-4 h-4" />
-                                </Button>
-                            </div>
-
                             {/* List Responsibles */}
                             {currentAluno.responsaveis?.length > 0 ? (
                                 <div className="divide-y">
@@ -170,7 +191,7 @@ export default function AlunoDetalhesPage() {
                                                 variant="ghost" 
                                                 size="sm" 
                                                 className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                                                onClick={() => handleRemoveResponsavel(resp.usuarioId)}
+                                                onClick={() => setResponsibleToDelete(resp.usuarioId)}
                                             >
                                                 <Trash2 className="w-4 h-4" />
                                             </Button>
@@ -180,6 +201,34 @@ export default function AlunoDetalhesPage() {
                             ) : (
                                 <p className="text-gray-500 text-sm">Nenhum responsável vinculado.</p>
                             )}
+
+                            {/* Add Responsible Form */}
+                            <div className="flex gap-2 items-end max-w-sm bg-gray-50 p-3 rounded-lg">
+                                <div className="grid w-full gap-1.5">
+                                    <span className="text-sm font-medium">Adicionar Responsável</span>
+                                    <Select 
+                                        value={newResponsavelId} 
+                                        onValueChange={setNewResponsavelId}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Selecione um responsável" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {usuarios.map((user) => (
+                                                <SelectItem key={user.id} value={String(user.id)}>
+                                                    {user.nome}
+                                                </SelectItem>
+                                            ))}
+                                            {usuarios.length === 0 && (
+                                                <div className="p-2 text-sm text-gray-500 text-center">Nenhum responsável encontrado</div>
+                                            )}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <Button size="sm" onClick={handleAddResponsavel} disabled={isAddingResp}>
+                                    <Plus className="w-4 h-4" />
+                                </Button>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>

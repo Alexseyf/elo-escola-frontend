@@ -30,7 +30,7 @@ interface UsuariosState {
   isLoading: boolean;
   error: string | null;
 
-  fetchUsuarios: () => Promise<void>;
+  fetchUsuarios: (role?: string) => Promise<void>;
   fetchUsuarioDetalhes: (id: number) => Promise<Usuario | null>;
   criarUsuario: (usuario: Omit<Usuario, 'id' | 'isAtivo' | 'primeiroAcesso'> & { schoolId?: string }) => Promise<Usuario | null>;
   fetchUsuarioLogado: () => Promise<Usuario | null>;
@@ -50,10 +50,14 @@ export const useUsuariosStore = create<UsuariosState>((set, get) => ({
   isLoading: false,
   error: null,
 
-  fetchUsuarios: async () => {
+  fetchUsuarios: async (role?: string) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await api('/api/v1/usuarios');
+      const url = role 
+        ? `/api/v1/usuarios?role=${role}`
+        : '/api/v1/usuarios';
+        
+      const response = await api(url);
 
       if (!response.ok) {
         if (response.status === 401 || response.status === 403) {
