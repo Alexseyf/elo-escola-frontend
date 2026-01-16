@@ -10,6 +10,7 @@ interface School {
   id: number;
   name: string;
   slug: string;
+  email?: string;
   subscriptionPlan: string;
   legalName?: string;
   cnpj?: string;
@@ -98,7 +99,10 @@ export function SchoolsTable() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">{school.slug}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                       <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        ${school.subscriptionPlan === 'BASIC' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : 
+                          school.subscriptionPlan === 'PRO' ? 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200' :
+                          'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'}`}>
                         {school.subscriptionPlan}
                       </span>
                     </td>

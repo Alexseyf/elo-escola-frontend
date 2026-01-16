@@ -47,6 +47,7 @@ interface SchoolData {
   id: number;
   name: string;
   slug: string;
+  email?: string;
   legalName?: string;
   cnpj?: string;
   logoUrl?: string;
@@ -75,6 +76,7 @@ export function SchoolFormSheet({ school, onSuccess, trigger }: SchoolFormSheetP
     defaultValues: {
       name: '',
       slug: '',
+      email: '',
       legalName: '',
       cnpj: '',
       logoUrl: '',
@@ -95,6 +97,7 @@ export function SchoolFormSheet({ school, onSuccess, trigger }: SchoolFormSheetP
         form.reset({
           name: school.name,
           slug: school.slug,
+          email: school.email || '',
           legalName: school.legalName || '',
           cnpj: school.cnpj || '',
           logoUrl: school.logoUrl || '',
@@ -106,6 +109,7 @@ export function SchoolFormSheet({ school, onSuccess, trigger }: SchoolFormSheetP
         form.reset({
           name: '',
           slug: '',
+          email: '',
           legalName: '',
           cnpj: '',
           logoUrl: '',
@@ -221,36 +225,50 @@ export function SchoolFormSheet({ school, onSuccess, trigger }: SchoolFormSheetP
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="slug"
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  render={({ field }: { field: any }) => (
-                    <FormItem>
-                      <FormLabel>Slug (URL)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="escola-futuro" {...field} value={field.value as string} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <FormField
-                  control={form.control}
-                  name="cnpj"
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  render={({ field }: { field: any }) => (
-                    <FormItem>
-                      <FormLabel>CNPJ (Opcional)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Apenas números" {...field} value={field.value as string} maxLength={14} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="email"
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                render={({ field }: { field: any }) => (
+                  <FormItem>
+                    <FormLabel>Email da Escola</FormLabel>
+                    <FormControl>
+                      <Input placeholder="contato@escola.com.br" {...field} value={field.value as string} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="slug"
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                render={({ field }: { field: any }) => (
+                  <FormItem>
+                    <FormLabel>Slug (URL)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="escola-futuro" {...field} value={field.value as string} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="cnpj"
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                render={({ field }: { field: any }) => (
+                  <FormItem>
+                    <FormLabel>CNPJ (Opcional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Apenas números" {...field} value={field.value as string} maxLength={14} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
                <div className="grid grid-cols-2 gap-4">
                  <FormField

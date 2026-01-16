@@ -6,6 +6,7 @@ export const createSchoolSchema = z.object({
     .min(3, 'Slug muito curto')
     .max(50, 'Slug muito longo')
     .regex(/^[a-z0-9-]+$/, 'Slug deve conter apenas letras minúsculas, números e hífens'),
+  email: z.string().email('Email inválido').optional().or(z.literal('')),
   legalName: z.string().max(255).optional(),
   cnpj: z.string()
     .transform(v => v?.replace(/\D/g, '') || undefined)

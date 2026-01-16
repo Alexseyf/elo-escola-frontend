@@ -1,6 +1,7 @@
 export interface CreateSchoolInput {
   name: string;
   slug: string;
+  email?: string;
   legalName?: string;
   cnpj?: string;
   logoUrl?: string;
