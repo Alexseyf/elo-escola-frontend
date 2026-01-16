@@ -10,7 +10,7 @@ export const usuarioSchema = z.object({
   telefoneComercial: z.string().optional(),
   enderecoLogradouro: z.string().min(3, "Endereço obrigatório"),
   enderecoNumero: z.string().min(1, "Número obrigatório"),
-  roles: z.array(z.enum(["ADMIN", "PROFESSOR", "ALUNO", "RESPONSAVEL", "PLATFORM_ADMIN"]))
+  roles: z.array(z.enum(["ADMIN", "PROFESSOR", "RESPONSAVEL", "PLATFORM_ADMIN"]))
     .min(1, "Selecione pelo menos um perfil"),
 });
 

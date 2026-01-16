@@ -244,18 +244,22 @@ export function UserFormSheet({ onSuccess, trigger }: UserFormSheetProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Perfis de Acesso</FormLabel>
-                  <div className="flex flex-wrap gap-4 border p-4 rounded-md">
-                    {(['PROFESSOR', 'ADMIN', 'ALUNO', 'RESPONSAVEL'] as const).map((role) => (
-                        <div key={role} className="flex items-center space-x-2">
+                  <div className="flex flex-col gap-3 border p-4 rounded-md">
+                    {[
+                        { value: 'ADMIN', label: 'Administrador' },
+                        { value: 'PROFESSOR', label: 'Professor' },
+                        { value: 'RESPONSAVEL', label: 'Responsável' }
+                    ].map((role) => (
+                        <div key={role.value} className="flex items-center space-x-2">
                             <input 
                                 type="checkbox"
-                                id={`role-${role}`}
+                                id={`role-${role.value}`}
                                 className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                checked={field.value.includes(role)}
-                                onChange={(e) => handleRoleChange(role, e.target.checked, field.value, field.onChange)}
+                                checked={field.value.includes(role.value as any)}
+                                onChange={(e) => handleRoleChange(role.value, e.target.checked, field.value, field.onChange)}
                             />
-                            <label htmlFor={`role-${role}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                {role.charAt(0) + role.slice(1).toLowerCase()}
+                            <label htmlFor={`role-${role.value}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                {role.label}
                             </label>
                         </div>
                     ))}

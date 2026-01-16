@@ -103,10 +103,7 @@ export default function UsuarioDetalhesPage() {
                                 ))}
                             </div>
                         </div>
-                        <div>
-                            <p className="text-sm font-medium text-gray-500">ID</p>
-                            <p className="text-base text-gray-600">#{usuario.id}</p>
-                        </div>
+
                         <div>
                             <p className="text-sm font-medium text-gray-500">CPF</p>
                             <p className="text-base text-gray-600">{usuario.cpf || '-'}</p>
@@ -133,10 +130,7 @@ export default function UsuarioDetalhesPage() {
                                 {usuario.enderecoLogradouro ? `${usuario.enderecoLogradouro}, ${usuario.enderecoNumero}` : '-'}
                             </p>
                         </div>
-                        <div>
-                            <p className="text-sm font-medium text-gray-500">Primeiro Acesso</p>
-                            <p className="text-base text-gray-600">{usuario.primeiroAcesso ? 'Sim' : 'Não'}</p>
-                        </div>
+
                     </div>
                 </CardContent>
                 <CardFooter className="bg-gray-50 border-t p-4 flex justify-end">
