@@ -8,6 +8,13 @@ export interface Usuario {
   roles: string[];
   primeiroAcesso: boolean;
   isAtivo: boolean;
+  cpf: string;
+  rg: string;
+  dataNascimento: string;
+  telefone: string;
+  telefoneComercial?: string;
+  enderecoLogradouro: string;
+  enderecoNumero: string;
 }
 
 export interface UsuariosPorRole {
@@ -25,7 +32,7 @@ interface UsuariosState {
 
   fetchUsuarios: () => Promise<void>;
   fetchUsuarioDetalhes: (id: number) => Promise<Usuario | null>;
-  criarUsuario: (usuario: Omit<Usuario, 'id' | 'isAtivo' | 'primeiroAcesso'> & { senha?: string, telefone: string, schoolId?: string }) => Promise<Usuario | null>;
+  criarUsuario: (usuario: Omit<Usuario, 'id' | 'isAtivo' | 'primeiroAcesso'> & { schoolId?: string }) => Promise<Usuario | null>;
   fetchUsuarioLogado: () => Promise<Usuario | null>;
   limparCache: () => void;
 }

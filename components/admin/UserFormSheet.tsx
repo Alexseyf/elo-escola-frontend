@@ -46,17 +46,19 @@ export function UserFormSheet({ onSuccess, trigger }: UserFormSheetProps) {
     defaultValues: {
       nome: '',
       email: '',
+      cpf: '',
+      rg: '',
+      dataNascimento: '',
       telefone: '',
-      senha: '',
-      roles: ['PROFESSOR'], // Default role
+      telefoneComercial: '',
+      enderecoLogradouro: '',
+      enderecoNumero: '',
+      roles: ['PROFESSOR'],
     }
   });
 
   async function onSubmit(data: UsuarioFormValues) {
     try {
-      // Remove empty password if not provided (backend handles strictness or generation)
-      if (!data.senha) delete data.senha;
-      
       const result = await criarUsuario(data);
       
       if (result) {
@@ -64,8 +66,6 @@ export function UserFormSheet({ onSuccess, trigger }: UserFormSheetProps) {
         setOpen(false);
         form.reset();
         if (onSuccess) onSuccess();
-      } else {
-        // Error handling is done in store but we can add extra feedback here if needed
       }
     } catch (error) {
       console.error(error);
@@ -73,10 +73,14 @@ export function UserFormSheet({ onSuccess, trigger }: UserFormSheetProps) {
     }
   }
 
-  // Helper to handle role selection (single role for UI simplicity, mapped to array)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleRoleChange = (role: string, field: any) => {
-    field.onChange([role]);
+  const handleRoleChange = (role: string, checked: boolean, currentRoles: string[], onChange: (val: string[]) => void) => {
+    if (checked) {
+      if (!currentRoles.includes(role)) {
+        onChange([...currentRoles, role]);
+      }
+    } else {
+      onChange(currentRoles.filter(r => r !== role));
+    }
   };
 
   return (
@@ -89,16 +93,16 @@ export function UserFormSheet({ onSuccess, trigger }: UserFormSheetProps) {
           </Button>
         )}
       </SheetTrigger>
-      <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
+      <SheetContent className="w-[400px] sm:w-[600px] overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Novo Usuário</SheetTitle>
           <SheetDescription>
-            Cadastre um novo usuário no sistema.
+            Cadastre um novo usuário no sistema. Preencha todos os campos obrigatórios.
           </SheetDescription>
         </SheetHeader>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-4 px-2">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-4 px-1">
             
             <FormField
               control={form.control}
@@ -114,27 +118,71 @@ export function UserFormSheet({ onSuccess, trigger }: UserFormSheetProps) {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input type="email" placeholder="joao@escola.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                            <Input type="email" placeholder="joao@escola.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                 <FormField
+                    control={form.control}
+                    name="dataNascimento"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Data de Nascimento</FormLabel>
+                        <FormControl>
+                            <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                    control={form.control}
+                    name="cpf"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>CPF</FormLabel>
+                        <FormControl>
+                            <Input placeholder="000.000.000-00" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="rg"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>RG</FormLabel>
+                        <FormControl>
+                            <Input placeholder="00.000.000-0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="telefone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Telefone</FormLabel>
+                      <FormLabel>Telefone (Celular)</FormLabel>
                       <FormControl>
                         <Input placeholder="(11) 99999-9999" {...field} />
                       </FormControl>
@@ -142,44 +190,76 @@ export function UserFormSheet({ onSuccess, trigger }: UserFormSheetProps) {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
-                  name="roles"
+                  name="telefoneComercial"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Perfil</FormLabel>
-                      <Select 
-                        onValueChange={(val) => handleRoleChange(val, field)} 
-                        defaultValue={field.value?.[0]}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione..." />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="PROFESSOR">Professor</SelectItem>
-                          <SelectItem value="ADMIN">Administrador</SelectItem>
-                          <SelectItem value="ALUNO">Aluno</SelectItem>
-                          <SelectItem value="RESPONSAVEL">Responsável</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <FormLabel>Telefone Comercial</FormLabel>
+                      <FormControl>
+                        <Input placeholder="(11) 3333-3333" {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
             </div>
 
+            <div className="grid grid-cols-3 gap-4">
+                <div className="col-span-2">
+                    <FormField
+                        control={form.control}
+                        name="enderecoLogradouro"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Endereço (Rua/Av)</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Rua das Flores" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+                <div>
+                    <FormField
+                        control={form.control}
+                        name="enderecoNumero"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Número</FormLabel>
+                            <FormControl>
+                                <Input placeholder="123" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+            </div>
+
             <FormField
               control={form.control}
-              name="senha"
+              name="roles"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Senha (Opcional)</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="Gerada automaticamente se vazio" {...field} />
-                  </FormControl>
+                  <FormLabel>Perfis de Acesso</FormLabel>
+                  <div className="flex flex-wrap gap-4 border p-4 rounded-md">
+                    {(['PROFESSOR', 'ADMIN', 'ALUNO', 'RESPONSAVEL'] as const).map((role) => (
+                        <div key={role} className="flex items-center space-x-2">
+                            <input 
+                                type="checkbox"
+                                id={`role-${role}`}
+                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                checked={field.value.includes(role)}
+                                onChange={(e) => handleRoleChange(role, e.target.checked, field.value, field.onChange)}
+                            />
+                            <label htmlFor={`role-${role}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                {role.charAt(0) + role.slice(1).toLowerCase()}
+                            </label>
+                        </div>
+                    ))}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

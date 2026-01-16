@@ -108,6 +108,32 @@ export default function UsuarioDetalhesPage() {
                             <p className="text-base text-gray-600">#{usuario.id}</p>
                         </div>
                         <div>
+                            <p className="text-sm font-medium text-gray-500">CPF</p>
+                            <p className="text-base text-gray-600">{usuario.cpf || '-'}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-gray-500">RG</p>
+                            <p className="text-base text-gray-600">{usuario.rg || '-'}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-gray-500">Data de Nascimento</p>
+                            <p className="text-base text-gray-600">{usuario.dataNascimento ? new Date(usuario.dataNascimento).toLocaleDateString('pt-BR') : '-'}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-gray-500">Telefones</p>
+                            <p className="text-base text-gray-600">
+                                {usuario.telefone && <span>Cel: {usuario.telefone}</span>}
+                                {usuario.telefoneComercial && <span> / Com: {usuario.telefoneComercial}</span>}
+                                {!usuario.telefone && !usuario.telefoneComercial && '-'}
+                            </p>
+                        </div>
+                         <div>
+                            <p className="text-sm font-medium text-gray-500">Endereço</p>
+                            <p className="text-base text-gray-600">
+                                {usuario.enderecoLogradouro ? `${usuario.enderecoLogradouro}, ${usuario.enderecoNumero}` : '-'}
+                            </p>
+                        </div>
+                        <div>
                             <p className="text-sm font-medium text-gray-500">Primeiro Acesso</p>
                             <p className="text-base text-gray-600">{usuario.primeiroAcesso ? 'Sim' : 'Não'}</p>
                         </div>
