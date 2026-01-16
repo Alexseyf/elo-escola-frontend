@@ -103,6 +103,7 @@ interface TurmasState {
   mapearTurmaParaGrupo: (nomeTurma: string) => string;
   mapearGrupoParaId: (nomeGrupo: string) => number;
   cadastrarTurma: (nome: TURMA) => Promise<boolean>;
+  vincularProfessor: (turmaId: number, usuarioId: number) => Promise<{ success: boolean; message: string }>;
   limparCache: () => void;
 }
 
@@ -250,7 +251,7 @@ export const useTurmasStore = create<TurmasState>()(
       fetchMensalidadesPorTurma: async () => {
         set({ isLoading: true, error: null });
         try {
-          const response = await api('/api/v1/students/relatorios/mensalidades-por-turma', {
+          const response = await api('/api/v1/alunos/relatorios/mensalidades-por-turma', {
             method: 'GET'
           });
 
@@ -333,6 +334,30 @@ export const useTurmasStore = create<TurmasState>()(
           set({ isLoading: false, error: message });
           console.error('Error cadastrando turma:', error);
           return false;
+        }
+      },
+
+      vincularProfessor: async (turmaId: number, usuarioId: number) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await api(`/api/v1/turmas/${turmaId}/professor`, {
+            method: 'POST',
+            body: JSON.stringify({ usuarioId })
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            const message = errorData?.erro || errorData?.message || 'Erro ao vincular professor';
+            set({ isLoading: false });
+            return { success: false, message };
+          }
+
+          set({ isLoading: false });
+          return { success: true, message: 'Professor vinculado com sucesso' };
+        } catch (error) {
+          set({ isLoading: false, error: 'Erro ao vincular professor' });
+          console.error('Error linking professor:', error);
+          return { success: false, message: 'Erro ao vincular professor' };
         }
       },
 

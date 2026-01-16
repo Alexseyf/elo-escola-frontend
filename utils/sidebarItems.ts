@@ -45,7 +45,7 @@ export function getAdminSidebarItems(): SidebarItem[] {
     {
       id: "turmas",
       label: "Turmas",
-      href: "/turmas?section=turmas",
+      href: "/admin/turmas",
       icon: BookOpen,
     },
     {
