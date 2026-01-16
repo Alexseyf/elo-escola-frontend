@@ -39,7 +39,7 @@ export function getAdminSidebarItems(): SidebarItem[] {
     {
       id: "alunos",
       label: "Alunos",
-      href: "/alunos?section=alunos",
+      href: "/admin/alunos",
       icon: GraduationCap,
     },
     {

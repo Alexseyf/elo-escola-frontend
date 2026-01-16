@@ -94,6 +94,8 @@ interface AlunosState {
   getAlunoDetalhes: (id: number) => Promise<AlunoDetalhes | null>;
   verificarRegistroDiarioAluno: (alunoId: number, data?: string) => Promise<VerificaDiarioResult | null>;
   adicionarResponsavelAluno: (alunoId: number, usuarioId: number) => Promise<{ success: boolean; message: string }>;
+  removerResponsavelAluno: (alunoId: number, usuarioId: number) => Promise<{ success: boolean; message: string }>;
+  updateAluno: (id: number, data: Partial<CreateAlunoData>) => Promise<{ success: boolean; message: string }>;
   limparCache: () => void;
 }
 
@@ -115,7 +117,7 @@ export const useAlunosStore = create<AlunosState>((set, get) => ({
       if (filters?.isAtivo !== undefined) params.append('isAtivo', String(filters.isAtivo));
 
       const queryString = params.toString();
-      const url = `/alunos${queryString ? `?${queryString}` : ''}`;
+      const url = `/api/v1/alunos${queryString ? `?${queryString}` : ''}`;
 
       const response = await api(url);
 
@@ -161,7 +163,7 @@ export const useAlunosStore = create<AlunosState>((set, get) => ({
   fetchAlunosByTurma: async (turmaId: number) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await api(`/turmas/${turmaId}/alunos`, {
+      const response = await api(`/api/v1/turmas/${turmaId}/alunos`, {
         method: 'GET',
       });
 
@@ -192,7 +194,7 @@ export const useAlunosStore = create<AlunosState>((set, get) => ({
   createAluno: async (data: CreateAlunoData) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await api('/alunos', {
+      const response = await api('/api/v1/alunos', {
         method: 'POST',
         body: JSON.stringify(data),
       });
@@ -223,7 +225,7 @@ export const useAlunosStore = create<AlunosState>((set, get) => ({
   getAlunoDetalhes: async (id: number) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await api(`/alunos/${id}`, {
+      const response = await api(`/api/v1/alunos/${id}`, {
         method: 'GET',
       });
 
@@ -249,7 +251,7 @@ export const useAlunosStore = create<AlunosState>((set, get) => ({
       const params = new URLSearchParams();
       if (data) params.append('data', data);
       
-      const response = await api(`/alunos/${alunoId}/possui-registro-diario?${params.toString()}`, {
+      const response = await api(`/api/v1/alunos/${alunoId}/possui-registro-diario?${params.toString()}`, {
         method: 'GET',
       });
 
@@ -266,7 +268,7 @@ export const useAlunosStore = create<AlunosState>((set, get) => ({
   adicionarResponsavelAluno: async (alunoId: number, usuarioId: number) => {
     set({ isLoading: true, error: null });
     try {
-        const response = await api(`/usuarios/${usuarioId}/responsavel`, {
+        const response = await api(`/api/v1/alunos/${usuarioId}/responsavel`, {
             method: 'POST',
             body: JSON.stringify({ alunoId }),
         });
@@ -286,6 +288,47 @@ export const useAlunosStore = create<AlunosState>((set, get) => ({
     } catch (error) {
         set({ isLoading: false, error: 'Erro ao adicionar responsável' });
         return { success: false, message: 'Erro ao adicionar responsável' };
+    }
+  },
+
+  removerResponsavelAluno: async (alunoId: number, usuarioId: number) => {
+    set({ isLoading: true, error: null });
+    try {
+        const response = await api(`/api/v1/alunos/${alunoId}/responsavel/${usuarioId}`, {
+            method: 'DELETE',
+        });
+
+        if (!response.ok) {
+            set({ isLoading: false });
+            return { success: false, message: 'Erro ao remover responsável' };
+        }
+
+        set({ isLoading: false });
+        return { success: true, message: 'Responsável removido com sucesso' };
+    } catch (error) {
+        set({ isLoading: false, error: 'Erro ao remover responsável' });
+        return { success: false, message: 'Erro ao remover responsável' };
+    }
+  },
+
+  updateAluno: async (id: number, data: Partial<CreateAlunoData>) => {
+    set({ isLoading: true, error: null });
+    try {
+        const response = await api(`/api/v1/alunos/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            set({ isLoading: false });
+            return { success: false, message: 'Erro ao atualizar aluno' };
+        }
+
+        set({ isLoading: false });
+        return { success: true, message: 'Aluno atualizado com sucesso' };
+    } catch (error) {
+        set({ isLoading: false, error: 'Erro ao atualizar aluno' });
+        return { success: false, message: 'Erro ao atualizar aluno' };
     }
   },
 
