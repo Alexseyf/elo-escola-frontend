@@ -161,11 +161,14 @@ export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProp
                       <FormLabel>Mensalidade (R$)</FormLabel>
                       <FormControl>
                         <Input 
-                          type="number" 
-                          step="0.01" 
-                          placeholder="0.00" 
-                          {...field} 
-                          value={(field.value as number | string) ?? ''} 
+                          placeholder="0,00" 
+                          value={field.value ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(Number(field.value)) : ''}
+                          onChange={(e) => {
+                            const rawValue = e.target.value.replace(/\D/g, '');
+                            const numberValue = rawValue ? Number(rawValue) / 100 : undefined;
+                            field.onChange(numberValue);
+                          }}
+                          maxLength={15}
                         />
                       </FormControl>
                       <FormMessage />
