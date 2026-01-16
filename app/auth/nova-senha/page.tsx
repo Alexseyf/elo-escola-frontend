@@ -108,7 +108,7 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-neutral-200 to-neutral-300">
+    <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-neutral-200 to-neutral-300 px-4">
       <Card className="w-full max-w-md shadow-xl border-t-4 border-t-yellow-500">
         <CardHeader className="space-y-4 text-center">
             <div className="mx-auto bg-yellow-100 p-3 rounded-full w-fit">
