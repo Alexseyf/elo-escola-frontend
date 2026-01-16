@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, ChevronLeft, ChevronRight, User, Shield, GraduationCap, Users, Plus } from "lucide-react"
+import { UserFormSheet } from "@/components/admin/UserFormSheet"
 
 const ITEMS_PER_PAGE = 10;
 
@@ -18,7 +19,7 @@ export default function UsuariosPage() {
     usuariosPorRole, 
     isLoading, 
     error,
-    fetchUsuariosAtivos 
+    fetchUsuarios 
   } = useUsuariosStore();
 
   const [activeTab, setActiveTab] = useState<TabType>('todos');
@@ -26,8 +27,8 @@ export default function UsuariosPage() {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetchUsuariosAtivos();
-  }, [fetchUsuariosAtivos]);
+    fetchUsuarios();
+  }, [fetchUsuarios]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -80,8 +81,10 @@ export default function UsuariosPage() {
   return (
     <RouteGuard allowedRoles={['ADMIN']}>
       <div className="p-6 space-y-6">
+
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h1 className="text-2xl font-bold">Gerenciar Usuários</h1>
+          <UserFormSheet onSuccess={() => fetchUsuarios()} />
         </div>
 
         <Card>

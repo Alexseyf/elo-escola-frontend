@@ -23,8 +23,10 @@ interface UsuariosState {
   isLoading: boolean;
   error: string | null;
 
-  fetchUsuariosAtivos: () => Promise<void>;
+  fetchUsuarios: () => Promise<void>;
   fetchUsuarioDetalhes: (id: number) => Promise<Usuario | null>;
+  criarUsuario: (usuario: Omit<Usuario, 'id' | 'isAtivo' | 'primeiroAcesso'> & { senha?: string, telefone: string, schoolId?: string }) => Promise<Usuario | null>;
+  fetchUsuarioLogado: () => Promise<Usuario | null>;
   limparCache: () => void;
 }
 
@@ -41,10 +43,10 @@ export const useUsuariosStore = create<UsuariosState>((set, get) => ({
   isLoading: false,
   error: null,
 
-  fetchUsuariosAtivos: async () => {
+  fetchUsuarios: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await api('/usuarios/ativos');
+      const response = await api('/api/v1/usuarios');
 
       if (!response.ok) {
         if (response.status === 401 || response.status === 403) {
@@ -93,7 +95,7 @@ export const useUsuariosStore = create<UsuariosState>((set, get) => ({
   fetchUsuarioDetalhes: async (id: number) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await api(`/usuarios/${id}`, {
+      const response = await api(`/api/v1/usuarios/${id}`, {
         method: 'GET',
       });
 
@@ -112,6 +114,65 @@ export const useUsuariosStore = create<UsuariosState>((set, get) => ({
       console.error('Erro ao buscar detalhes do usuário:', error);
       return null;
     }
+  },
+
+  criarUsuario: async (usuario) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api('/api/v1/usuarios', {
+        method: 'POST',
+        body: JSON.stringify(usuario),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao criar usuário: ${response.status}`);
+      }
+
+      const novoUsuario = await response.json();
+      
+      // Update local state
+      const currentUsers = get().usuarios;
+      const updatedUsers = [...currentUsers, novoUsuario];
+      
+      const usuariosPorRole = { ...get().usuariosPorRole };
+      novoUsuario.roles.forEach((role: string) => {
+          if (role in usuariosPorRole && Array.isArray((usuariosPorRole as any)[role])) {
+            (usuariosPorRole as any)[role].push(novoUsuario);
+          }
+      });
+      usuariosPorRole.todos.push(novoUsuario);
+
+      set({ 
+        usuarios: updatedUsers,
+        usuariosPorRole,
+        isLoading: false,
+        error: null 
+      });
+      
+      return novoUsuario;
+    } catch (error) {
+       const message = error instanceof Error ? error.message : 'Erro ao criar usuário';
+       set({ isLoading: false, error: message });
+       console.error('Erro ao criar usuário:', error);
+       return null;
+    }
+  },
+
+  fetchUsuarioLogado: async () => {
+      set({ isLoading: true, error: null });
+      try {
+          const response = await api('/api/v1/usuarios/usuario-logado');
+          if (!response.ok) {
+              throw new Error('Falha ao obter usuário logado');
+          }
+          const data = await response.json();
+          set({ isLoading: false });
+          return data;
+      } catch (error) {
+          const message = error instanceof Error ? error.message : 'Erro ao obter usuário logado';
+          set({ isLoading: false, error: message });
+          return null;
+      }
   },
 
   limparCache: () => {
