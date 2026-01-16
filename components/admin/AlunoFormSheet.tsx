@@ -82,6 +82,7 @@ export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProp
       let result;
       const payload: CreateAlunoData = {
         ...data,
+        dataNasc: `${data.dataNasc}T00:00:00.000Z`,
         mensalidade: data.mensalidade || 0
       };
 

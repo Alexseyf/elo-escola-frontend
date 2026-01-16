@@ -65,7 +65,10 @@ export function UserFormSheet({ onSuccess, trigger }: UserFormSheetProps) {
 
   async function onSubmit(data: UsuarioFormValues) {
     try {
-      const result = await criarUsuario(data);
+      const result = await criarUsuario({
+        ...data,
+        dataNascimento: `${data.dataNascimento}T00:00:00.000Z`
+      });
       
       if (result) {
         toast.success('Usuário criado com sucesso!');
