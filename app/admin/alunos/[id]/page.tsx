@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useAlunosStore } from "@/stores/useAlunosStore"
+import { formatarNomeTurma } from "@/stores/useTurmasStore"
 import { RouteGuard } from "@/components/auth/RouteGuard"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -112,7 +113,7 @@ export default function AlunoDetalhesPage() {
                                 <BookOpen className="w-4 h-4" /> Turma
                             </p>
                             <p className="text-lg">
-                                {currentAluno.turma ? `${currentAluno.turma.nome} (${currentAluno.turma.turno})` : 'Sem turma'}
+                                {currentAluno.turma ? `${formatarNomeTurma(currentAluno.turma.nome)}${currentAluno.turma.turno ? ` (${currentAluno.turma.turno})` : ''}` : 'Sem turma'}
                             </p>
                         </div>
                         <div>

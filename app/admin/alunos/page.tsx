@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useAlunosStore, Aluno } from "@/stores/useAlunosStore"
-import { useTurmasStore } from "@/stores/useTurmasStore"
+import { useTurmasStore, formatarNomeTurma } from "@/stores/useTurmasStore"
 import { RouteGuard } from "@/components/auth/RouteGuard"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -107,7 +107,7 @@ export default function AlunosPage() {
                                         <div className="flex flex-col gap-1 pr-8">
                                             <span className="font-medium text-gray-900">{aluno.nome}</span>
                                             <span className="text-sm text-gray-500">{aluno.email}</span>
-                                            {aluno.turma && <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full w-fit">{aluno.turma.nome}</span>}
+                                            {aluno.turma && <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full w-fit">{formatarNomeTurma(aluno.turma.nome)}</span>}
                                         </div>
                                         <Button 
                                             variant="ghost" 
@@ -148,7 +148,7 @@ export default function AlunosPage() {
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                     {aluno.turma ? (
                                                         <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                            {aluno.turma.nome}
+                                                            {formatarNomeTurma(aluno.turma.nome)}
                                                         </span>
                                                     ) : (
                                                         <span className="text-gray-400">-</span>
