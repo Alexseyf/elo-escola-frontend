@@ -7,7 +7,6 @@ import { RouteGuard } from "@/components/auth/RouteGuard"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import { Search, ChevronLeft, ChevronRight, Edit } from "lucide-react"
 import { AlunoFormSheet } from "@/components/admin/AlunoFormSheet"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -108,9 +107,9 @@ export default function AlunosPage() {
                                         <div className="flex flex-col gap-1 pr-8">
                                             <div className="flex justify-between items-center">
                                                 <span className="font-medium text-gray-900">{aluno.nome}</span>
-                                                <Badge variant="outline" className={aluno.isAtivo ? "bg-green-100 text-green-700 border-green-200" : "bg-red-100 text-red-700 border-red-200"}>
+                                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${aluno.isAtivo ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                                                     {aluno.isAtivo ? 'Ativo' : 'Inativo'}
-                                                </Badge>
+                                                </span>
                                             </div>
                                             <span className="text-sm text-gray-500">{aluno.email}</span>
                                             {aluno.turma && <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full w-fit">{formatarNomeTurma(aluno.turma.nome)}</span>}
@@ -162,9 +161,9 @@ export default function AlunosPage() {
                                                     {aluno.nome}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                                    <Badge variant="outline" className={aluno.isAtivo ? "bg-green-100 text-green-700 border-green-200" : "bg-red-100 text-red-700 border-red-200"}>
+                                                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${aluno.isAtivo ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                                                         {aluno.isAtivo ? 'Ativo' : 'Inativo'}
-                                                    </Badge>
+                                                    </span>
                                                 </td>
 
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
