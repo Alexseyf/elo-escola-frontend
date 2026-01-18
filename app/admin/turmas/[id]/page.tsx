@@ -7,7 +7,17 @@ import { useUsuariosStore } from "@/stores/useUsuariosStore"
 import { RouteGuard } from "@/components/auth/RouteGuard"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, GraduationCap, Users, UserPlus } from "lucide-react"
+import { ChevronLeft, GraduationCap, Users, UserPlus, Trash2 } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import {
   Sheet,
   SheetContent,
@@ -31,13 +41,15 @@ export default function TurmaDetailsPage() {
   const router = useRouter();
   const id = Number(params.id);
 
-  const { fetchTurmaById, vincularProfessor, isLoading: isTurmaLoading, fetchTurmas } = useTurmasStore();
+  const { fetchTurmaById, vincularProfessor, desvincularProfessor, isLoading: isTurmaLoading, fetchTurmas } = useTurmasStore();
   const { fetchUsuarios, usuarios } = useUsuariosStore();
 
   const [turma, setTurma] = useState<TurmaData | null>(null);
   const [selectedProfessor, setSelectedProfessor] = useState<string>('');
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isLinking, setIsLinking] = useState(false);
+  const [professorToUnbind, setProfessorToUnbind] = useState<number | null>(null);
+  const [isUnlinking, setIsUnlinking] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -68,6 +80,22 @@ export default function TurmaDetailsPage() {
     setIsLinking(false);
   }
 
+  async function handleDesvincularProfessor() {
+    if (!professorToUnbind) return;
+    
+    setIsUnlinking(true);
+    const result = await desvincularProfessor(id, professorToUnbind);
+    
+    if (result.success) {
+      toast.success(result.message);
+      setProfessorToUnbind(null);
+      loadTurma();
+    } else {
+      toast.error(result.message);
+    }
+    setIsUnlinking(false);
+  }
+
   const professoresDisponiveis = usuarios.filter(u => u.roles.includes('PROFESSOR'));
 
   if (isTurmaLoading && !turma) {
@@ -90,6 +118,29 @@ export default function TurmaDetailsPage() {
   return (
     <RouteGuard allowedRoles={['ADMIN']}>
       <div className="p-6 space-y-6">
+        <AlertDialog open={professorToUnbind !== null} onOpenChange={(open) => !open && !isUnlinking && setProfessorToUnbind(null)}>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Remover vínculo do professor?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Esta ação irá remover o professor desta turma. O usuário continuará ativo no sistema.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isUnlinking}>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction 
+                        onClick={(e) => {
+                            e.preventDefault();
+                            handleDesvincularProfessor();
+                        }} 
+                        className="bg-red-600 hover:bg-red-700"
+                        disabled={isUnlinking}
+                    >
+                        {isUnlinking ? 'Removendo...' : 'Remover'}
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
         <div className="flex items-center gap-4">
           <Button variant="outline" size="icon" onClick={() => router.back()}>
             <ChevronLeft className="h-4 w-4" />
@@ -113,7 +164,11 @@ export default function TurmaDetailsPage() {
               </div>
               <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                 <SheetTrigger asChild>
-                    <Button size="sm">
+                    <Button 
+                      size="sm" 
+                      disabled={turma.professores && turma.professores.length > 0}
+                      title={turma.professores && turma.professores.length > 0 ? "Limite de 1 professor por turma atingido" : ""}
+                    >
                         <UserPlus className="h-4 w-4 mr-2" />
                         Vincular
                     </Button>
@@ -159,6 +214,14 @@ export default function TurmaDetailsPage() {
                                         <p className="text-xs text-gray-500">{prof.usuario.email}</p>
                                     </div>
                                 </div>
+                                <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                    onClick={() => setProfessorToUnbind(prof.usuarioId)}
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
                             </div>
                         ))
                     ) : (
