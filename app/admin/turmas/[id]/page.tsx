@@ -180,7 +180,7 @@ export default function TurmaDetailsPage() {
                             Selecione um professor para vincular a esta turma.
                         </SheetDescription>
                     </SheetHeader>
-                    <div className="py-6">
+                    <div className="py-6 px-4">
                         <Select value={selectedProfessor} onValueChange={setSelectedProfessor}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Selecione um professor..." />
