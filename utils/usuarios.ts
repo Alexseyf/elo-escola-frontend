@@ -10,7 +10,7 @@ export async function fetchUsuariosAtivos(): Promise<{
 }> {
   try {
     const store = useUsuariosStore.getState();
-    await store.fetchUsuariosAtivos();
+    await store.fetchUsuarios();
     
     if (store.error) {
       return {
@@ -74,7 +74,7 @@ export async function fetchResponsaveis(): Promise<Usuario[]> {
   try {
     const store = useUsuariosStore.getState();
     
-    await store.fetchUsuariosAtivos();
+    await store.fetchUsuarios();
     
     return store.usuariosPorRole.RESPONSAVEL || [];
   } catch (error) {

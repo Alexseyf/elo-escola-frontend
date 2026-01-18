@@ -5,6 +5,7 @@ import { useAuthStore } from './useAuthStore';
 import { api } from '@/lib/api';
 
 export enum TURMA {
+  BERCARIO1 = 'BERCARIO1',
   BERCARIO2 = 'BERCARIO2',
   MATERNAL1 = 'MATERNAL1',
   MATERNAL2 = 'MATERNAL2',
@@ -108,6 +109,7 @@ interface TurmasState {
 }
 
 const mapeamentoTurmaGrupo: Record<string, string> = {
+  'BERCARIO1': 'BEBES',
   'BERCARIO2': 'BEBES',
   'MATERNAL1': 'CRIANCAS_BEM_PEQUENAS',
   'MATERNAL2': 'CRIANCAS_BEM_PEQUENAS',
@@ -117,6 +119,7 @@ const mapeamentoTurmaGrupo: Record<string, string> = {
 };
 
 const mapeamentoNomeTurma: Record<string, string> = {
+  'BERCARIO1': 'Berçário 1',
   'BERCARIO2': 'Berçário 2',
   'MATERNAL1': 'Maternal 1',
   'MATERNAL2': 'Maternal 2',
@@ -384,6 +387,7 @@ export function formatarNomeTurma(nomeTurma: string): string {
 
 export function converterNomeParaEnum(nomeFormatado: string): TURMA | null {
   const mapeamentoInverso: Record<string, TURMA> = {
+    'Berçário 1': TURMA.BERCARIO1,
     'Berçário 2': TURMA.BERCARIO2,
     'Maternal 1': TURMA.MATERNAL1,
     'Maternal 2': TURMA.MATERNAL2,

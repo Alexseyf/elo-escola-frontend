@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { useAlunosStore } from "@/stores/useAlunosStore"
+import { useAlunosStore, type AlunoDetalhes } from "@/stores/useAlunosStore"
 import { formatarNomeTurma } from "@/stores/useTurmasStore"
 import { RouteGuard } from "@/components/auth/RouteGuard"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
@@ -112,8 +112,7 @@ export default function AlunoDetalhesPage() {
             </Button>
             <h1 className="text-xl sm:text-2xl font-bold">Detalhes do Aluno</h1>
             <div className="ml-auto">
-               <AlunoFormSheet 
-                  aluno={currentAluno as any} // Type assertion if needed due to detailed vs list type diffs
+               <AlunoFormSheet                   aluno={currentAluno} 
                   onSuccess={() => getAlunoDetalhes(id)} 
                   trigger={<Button variant="primary" size="sm">Editar Aluno</Button>}
                 />

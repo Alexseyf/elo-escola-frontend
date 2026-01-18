@@ -59,7 +59,7 @@ export default function MensalidadesChart({ minimal = false }: MensalidadesChart
 
   const { turmas, totalGeral } = mensalidadesPorTurma;
 
-  const chartData = turmas.map((turma) => ({
+  const chartData = turmas.map((turma: { turmaNome: string; totalMensalidade: number }) => ({
     turma: turma.turmaNome,
     total: turma.totalMensalidade,
   }));

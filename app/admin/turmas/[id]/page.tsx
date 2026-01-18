@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { useTurmasStore } from "@/stores/useTurmasStore"
+import { useTurmasStore, type TurmaData } from "@/stores/useTurmasStore"
 import { useUsuariosStore } from "@/stores/useUsuariosStore"
 import { RouteGuard } from "@/components/auth/RouteGuard"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -34,7 +34,7 @@ export default function TurmaDetailsPage() {
   const { fetchTurmaById, vincularProfessor, isLoading: isTurmaLoading, fetchTurmas } = useTurmasStore();
   const { fetchUsuarios, usuarios } = useUsuariosStore();
 
-  const [turma, setTurma] = useState<any>(null);
+  const [turma, setTurma] = useState<TurmaData | null>(null);
   const [selectedProfessor, setSelectedProfessor] = useState<string>('');
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isLinking, setIsLinking] = useState(false);
@@ -148,7 +148,7 @@ export default function TurmaDetailsPage() {
             <CardContent>
                 <div className="space-y-4">
                     {turma.professores && turma.professores.length > 0 ? (
-                        turma.professores.map((prof: any) => (
+                        turma.professores.map((prof) => (
                             <div key={prof.id} className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
                                 <div className="flex items-center gap-3">
                                     <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold">
@@ -180,7 +180,7 @@ export default function TurmaDetailsPage() {
             <CardContent>
                 <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
                     {turma.alunos && turma.alunos.length > 0 ? (
-                        turma.alunos.map((aluno: any) => (
+                        turma.alunos.map((aluno) => (
                             <div key={aluno.id} className="flex items-center justify-between p-3 border rounded-lg bg-white">
                                 <span className="font-medium text-sm">{aluno.nome}</span>
                                 <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => router.push(`/admin/alunos/${aluno.id}`)}>
