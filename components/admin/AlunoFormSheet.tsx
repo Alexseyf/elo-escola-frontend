@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { alunoSchema, AlunoFormValues } from '@/schemas/aluno';
+import { alunoSchema, updateAlunoSchema, AlunoFormValues } from '@/schemas/aluno';
 import { useAlunosStore, AlunoDetalhes, CreateAlunoData } from '@/stores/useAlunosStore';
 import { useTurmasStore } from '@/stores/useTurmasStore';
 import { Button } from '@/components/ui/button';
@@ -30,8 +30,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { toast } from 'sonner';
-import { Loader2, Plus, Pencil } from 'lucide-react';
+import { Loader2, Plus, Pencil, Power, CheckCircle2 } from 'lucide-react';
 
 interface AlunoFormSheetProps {
   aluno?: AlunoDetalhes | null;
@@ -41,13 +52,15 @@ interface AlunoFormSheetProps {
 
 export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProps) {
   const [open, setOpen] = useState(false);
-  const { createAluno, updateAluno, isLoading } = useAlunosStore();
+  const [isToggling, setIsToggling] = useState(false);
+  const { createAluno, updateAluno, deleteAluno, isLoading } = useAlunosStore();
   const { turmas, fetchTurmas } = useTurmasStore();
 
   const isEditing = !!aluno;
 
   const form = useForm({
-    resolver: zodResolver(alunoSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(isEditing ? updateAlunoSchema : alunoSchema) as any,
     defaultValues: {
       nome: '',
       dataNasc: '',
@@ -102,6 +115,29 @@ export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProp
     } catch (error) {
       console.error(error);
       toast.error('Erro ao salvar aluno.');
+    }
+  }
+
+  async function handleToggleStatus() {
+    if (!aluno) return;
+    try {
+      setIsToggling(true);
+      if (aluno.isAtivo) {
+         const result = await deleteAluno(aluno.id);
+         if (result.success) toast.success(result.message);
+         else toast.error(result.message);
+      } else {
+         const result = await updateAluno(aluno.id, { isAtivo: true });
+         if (result.success) toast.success('Aluno ativado com sucesso!');
+         else toast.error(result.message);
+      }
+      setOpen(false);
+      if (onSuccess) onSuccess();
+    } catch (error) {
+      console.error(error);
+      toast.error(aluno.isAtivo ? 'Erro ao desativar aluno.' : 'Erro ao ativar aluno.');
+    } finally {
+      setIsToggling(false);
     }
   }
 
@@ -206,7 +242,48 @@ export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProp
               )}
             />
 
-            <SheetFooter>
+            <SheetFooter className="flex-col sm:flex-row gap-2">
+               {isEditing && aluno && (
+                 <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                        variant="outline"
+                        type="button" 
+                        disabled={isToggling}
+                        className={aluno.isAtivo
+                            ? "border-red-600 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950" 
+                            : "border-green-600 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950"}
+                    >
+                       {isToggling ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            aluno.isAtivo ? <Power className="h-4 w-4 mr-2" /> : <CheckCircle2 className="h-4 w-4 mr-2" />
+                        )}
+                       {aluno.isAtivo ? "Desativar Aluno" : "Ativar Aluno"}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>{aluno.isAtivo ? "Desativar Aluno?" : "Ativar Aluno?"}</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {aluno.isAtivo 
+                            ? <span>Esta ação irá inativar o aluno <strong>{aluno.nome}</strong>.</span>
+                            : <span>Esta ação irá ativar o aluno <strong>{aluno.nome}</strong> novamente.</span>
+                        }
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction 
+                        onClick={handleToggleStatus} 
+                         className={aluno.isAtivo ? "bg-destructive text-white hover:bg-destructive/90" : "bg-green-600 hover:bg-green-700"}
+                      >
+                        Confirmar {aluno.isAtivo ? "Inativação" : "Ativação"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
               <Button type="submit" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isEditing ? 'Salvar Alterações' : 'Criar Aluno'}

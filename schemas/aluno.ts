@@ -9,3 +9,9 @@ export const alunoSchema = z.object({
 });
 
 export type AlunoFormValues = z.infer<typeof alunoSchema>;
+
+export const updateAlunoSchema = alunoSchema.partial().extend({
+  isAtivo: z.boolean().optional(),
+});
+
+export type UpdateAlunoFormValues = z.infer<typeof updateAlunoSchema>;
