@@ -45,6 +45,7 @@ export default function TurmaDetailsPage() {
   const { fetchUsuarios, usuarios } = useUsuariosStore();
 
   const [turma, setTurma] = useState<TurmaData | null>(null);
+  const [loading, setLoading] = useState(true);
   const [selectedProfessor, setSelectedProfessor] = useState<string>('');
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isLinking, setIsLinking] = useState(false);
@@ -59,8 +60,10 @@ export default function TurmaDetailsPage() {
   }, [id, fetchTurmas, fetchUsuarios]);
 
   async function loadTurma() {
+    setLoading(true);
     const data = await fetchTurmaById(id);
     setTurma(data);
+    setLoading(false);
   }
 
   async function handleVincularProfessor() {
@@ -98,7 +101,7 @@ export default function TurmaDetailsPage() {
 
   const professoresDisponiveis = usuarios.filter(u => u.roles.includes('PROFESSOR'));
 
-  if (isTurmaLoading && !turma) {
+  if (loading && !turma) {
     return (
       <div className="p-8 flex justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
