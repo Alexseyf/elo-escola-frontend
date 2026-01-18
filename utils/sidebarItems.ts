@@ -112,7 +112,7 @@ export function getProfessorSidebarItems(): SidebarItem[] {
     {
       id: "diarios",
       label: "Diários",
-      href: "/diario?section=diarios",
+      href: "/professor/diarios",
       icon: ClipboardList,
       
     },

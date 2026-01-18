@@ -181,7 +181,7 @@ export function UserFormSheet({ usuario, onSuccess, trigger }: UserFormSheetProp
         </SheetHeader>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-4 px-1">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-4 px-4">
             
             <FormField
               control={form.control}
