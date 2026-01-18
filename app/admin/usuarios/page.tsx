@@ -196,13 +196,18 @@ export default function UsuariosPage() {
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                                                     <Button 
-                                                        variant="primary" 
-                                                        size="sm"
-                                                        onClick={() => window.location.href = `/admin/usuarios/${usuario.id}`}
-                                                    >
-                                                        Detalhar
-                                                    </Button>
+                                                    <UserFormSheet 
+                                                        usuario={usuario} 
+                                                        onSuccess={() => fetchUsuarios()}
+                                                        trigger={
+                                                            <Button 
+                                                                variant="outline" 
+                                                                size="sm"
+                                                            >
+                                                                Editar
+                                                            </Button>
+                                                        }
+                                                    />
                                                 </td>
                                             </tr>
                                         ))

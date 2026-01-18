@@ -15,4 +15,9 @@ export const usuarioSchema = z.object({
     .min(1, "Selecione pelo menos um perfil"),
 });
 
+export const updateUsuarioSchema = usuarioSchema.partial().extend({
+  isAtivo: z.boolean().optional(),
+});
+
 export type UsuarioFormValues = z.infer<typeof usuarioSchema>;
+export type UpdateUsuarioFormValues = z.infer<typeof updateUsuarioSchema>;

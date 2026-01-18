@@ -25,6 +25,7 @@ export const createSchool = async (data: CreateSchoolInput) => {
 };
 
 export const updateSchool = async (id: number, data: Partial<CreateSchoolInput>) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
   const { adminUser, ...updateData } = data as any;
   const response = await api(`/api/v1/schools/${id}`, {
     method: 'PATCH',
@@ -52,7 +53,7 @@ export const deleteSchool = async (id: number) => {
      try {
         const errorData = await response.json();
         throw errorData;
-     } catch (e) {
+     } catch (e) { // eslint-disable-line @typescript-eslint/no-unused-vars
         throw new Error('Erro ao deletar escola');
      }
   }

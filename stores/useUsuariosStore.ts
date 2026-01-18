@@ -33,6 +33,8 @@ interface UsuariosState {
   fetchUsuarios: (role?: string) => Promise<void>;
   fetchUsuarioDetalhes: (id: number) => Promise<Usuario | null>;
   criarUsuario: (usuario: Omit<Usuario, 'id' | 'isAtivo' | 'primeiroAcesso'> & { schoolId?: string }) => Promise<Usuario | null>;
+  atualizarUsuario: (id: number, usuario: Partial<Usuario>) => Promise<Usuario | null>;
+  deletarUsuario: (id: number) => Promise<boolean>;
   fetchUsuarioLogado: () => Promise<Usuario | null>;
   limparCache: () => void;
 }
@@ -150,7 +152,9 @@ export const useUsuariosStore = create<UsuariosState>((set, get) => ({
       
       if (Array.isArray(roles)) {
         roles.forEach((role: string) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             if (role in usuariosPorRole && Array.isArray((usuariosPorRole as any)[role])) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               (usuariosPorRole as any)[role].push(novoUsuario);
             }
         });
@@ -170,6 +174,93 @@ export const useUsuariosStore = create<UsuariosState>((set, get) => ({
        set({ isLoading: false, error: message });
        console.error('Erro ao criar usuário:', error);
        return null;
+    }
+  },
+
+  atualizarUsuario: async (id, usuario) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api(`/api/v1/usuarios/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(usuario),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao atualizar usuário: ${response.status}`);
+      }
+
+      const usuarioAtualizado = await response.json();
+      
+      const currentUsers = get().usuarios.map(u => u.id === id ? usuarioAtualizado : u);
+      
+      const usuariosPorRole: UsuariosPorRole = {
+        ADMIN: [],
+        PROFESSOR: [],
+        RESPONSAVEL: [],
+        todos: currentUsers
+      };
+
+      currentUsers.forEach(u => {
+        if (u.roles.includes('ADMIN')) usuariosPorRole.ADMIN.push(u);
+        if (u.roles.includes('PROFESSOR')) usuariosPorRole.PROFESSOR.push(u);
+        if (u.roles.includes('RESPONSAVEL')) usuariosPorRole.RESPONSAVEL.push(u);
+      });
+
+      set({ 
+        usuarios: currentUsers,
+        usuariosPorRole,
+        isLoading: false, 
+        error: null 
+      });
+
+      return usuarioAtualizado;
+    } catch (error) {
+       const message = error instanceof Error ? error.message : 'Erro ao atualizar usuário';
+       set({ isLoading: false, error: message });
+       console.error('Erro ao atualizar usuário:', error);
+       return null;
+    }
+  },
+
+  deletarUsuario: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api(`/api/v1/usuarios/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok && response.status !== 204) {
+        throw new Error(`Erro ao inativar usuário: ${response.status}`);
+      }
+
+      const currentUsers = get().usuarios.map(u => u.id === id ? { ...u, isAtivo: false } : u);
+      
+      const usuariosPorRole: UsuariosPorRole = {
+        ADMIN: [],
+        PROFESSOR: [],
+        RESPONSAVEL: [],
+        todos: currentUsers
+      };
+      
+       currentUsers.forEach(u => {
+        if (u.roles.includes('ADMIN')) usuariosPorRole.ADMIN.push(u);
+        if (u.roles.includes('PROFESSOR')) usuariosPorRole.PROFESSOR.push(u);
+        if (u.roles.includes('RESPONSAVEL')) usuariosPorRole.RESPONSAVEL.push(u);
+      });
+
+      set({ 
+        usuarios: currentUsers,
+        usuariosPorRole,
+        isLoading: false,
+        error: null 
+      });
+      
+      return true;
+    } catch (error) {
+       const message = error instanceof Error ? error.message : 'Erro ao inativar usuário';
+       set({ isLoading: false, error: message });
+       console.error('Erro ao inativar usuário:', error);
+       return false;
     }
   },
 

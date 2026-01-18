@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { usuarioSchema, UsuarioFormValues } from '@/schemas/usuario';
-import { useUsuariosStore } from '@/stores/useUsuariosStore';
+import { usuarioSchema, updateUsuarioSchema, UsuarioFormValues } from '@/schemas/usuario';
+import { useUsuariosStore, Usuario } from '@/stores/useUsuariosStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -23,26 +23,35 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { toast } from 'sonner';
-import { Loader2, Plus } from 'lucide-react';
+import { Loader2, Plus, Power, CheckCircle2 } from 'lucide-react';
 
 interface UserFormSheetProps {
+  usuario?: Usuario;
   onSuccess?: () => void;
   trigger?: React.ReactNode;
 }
 
-export function UserFormSheet({ onSuccess, trigger }: UserFormSheetProps) {
+export function UserFormSheet({ usuario, onSuccess, trigger }: UserFormSheetProps) {
   const [open, setOpen] = useState(false);
-  const { criarUsuario, isLoading } = useUsuariosStore();
+  const [isToggling, setIsToggling] = useState(false);
+  const { criarUsuario, atualizarUsuario, deletarUsuario, isLoading } = useUsuariosStore();
+  
+  const isEditing = !!usuario;
 
   const form = useForm<UsuarioFormValues>({
-    resolver: zodResolver(usuarioSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(isEditing ? updateUsuarioSchema : usuarioSchema) as any,
     defaultValues: {
       nome: '',
       email: '',
@@ -59,26 +68,87 @@ export function UserFormSheet({ onSuccess, trigger }: UserFormSheetProps) {
 
   useEffect(() => {
     if (open) {
-      form.reset();
+      if (usuario) {
+        form.reset({
+          nome: usuario.nome,
+          email: usuario.email,
+          cpf: usuario.cpf,
+          rg: usuario.rg,
+          dataNascimento: usuario.dataNascimento ? usuario.dataNascimento.split('T')[0] : '',
+          telefone: usuario.telefone,
+          telefoneComercial: usuario.telefoneComercial || '',
+          enderecoLogradouro: usuario.enderecoLogradouro,
+          enderecoNumero: usuario.enderecoNumero,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          roles: usuario.roles as any,
+        });
+      } else {
+        form.reset({
+          nome: '',
+          email: '',
+          cpf: '',
+          rg: '',
+          dataNascimento: '',
+          telefone: '',
+          telefoneComercial: '',
+          enderecoLogradouro: '',
+          enderecoNumero: '',
+          roles: [],
+        });
+      }
     }
-  }, [open, form]);
+  }, [open, usuario, form]);
 
   async function onSubmit(data: UsuarioFormValues) {
     try {
-      const result = await criarUsuario({
-        ...data,
-        dataNascimento: `${data.dataNascimento}T00:00:00.000Z`
-      });
-      
-      if (result) {
-        toast.success('Usuário criado com sucesso!');
-        setOpen(false);
-        form.reset();
-        if (onSuccess) onSuccess();
+      if (isEditing && usuario) {
+        const result = await atualizarUsuario(usuario.id, {
+            ...data,
+            dataNascimento: data.dataNascimento ? `${data.dataNascimento}T00:00:00.000Z` : undefined
+        });
+        if (result) {
+            toast.success('Usuário atualizado com sucesso!');
+            setOpen(false);
+            if (onSuccess) onSuccess();
+        }
+      } else {
+        const result = await criarUsuario({
+            ...data,
+            dataNascimento: `${data.dataNascimento}T00:00:00.000Z`
+        });
+        
+        if (result) {
+            toast.success('Usuário criado com sucesso!');
+            setOpen(false);
+            if (onSuccess) onSuccess();
+        }
       }
     } catch (error) {
       console.error(error);
-      toast.error('Erro ao criar usuário.');
+      toast.error(isEditing ? 'Erro ao atualizar usuário.' : 'Erro ao criar usuário.');
+    }
+  }
+
+  async function handleToggleStatus() {
+    if (!usuario) return;
+    try {
+      setIsToggling(true);
+      if (usuario.isAtivo) {
+         // Deactivate (Soft Delete)
+         const success = await deletarUsuario(usuario.id);
+         if (success) toast.success('Usuário desativado com sucesso!');
+      } else {
+         // Activate
+         const result = await atualizarUsuario(usuario.id, { isAtivo: true });
+         if (result) toast.success('Usuário ativado com sucesso!');
+      }
+      setOpen(false);
+      if (onSuccess) onSuccess();
+    } catch (error) {
+      console.error(error);
+      toast.error(usuario.isAtivo ? 'Erro ao desativar usuário.' : 'Erro ao ativar usuário.');
+    } finally {
+      setIsToggling(false);
     }
   }
 
@@ -104,9 +174,9 @@ export function UserFormSheet({ onSuccess, trigger }: UserFormSheetProps) {
       </SheetTrigger>
       <SheetContent className="w-[400px] sm:w-[600px] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Novo Usuário</SheetTitle>
+          <SheetTitle>{isEditing ? 'Editar Usuário' : 'Novo Usuário'}</SheetTitle>
           <SheetDescription>
-            Cadastre um novo usuário no sistema. Preencha todos os campos obrigatórios.
+            {isEditing ? 'Atualize os dados do usuário.' : 'Cadastre um novo usuário no sistema.'}
           </SheetDescription>
         </SheetHeader>
         
@@ -264,6 +334,7 @@ export function UserFormSheet({ onSuccess, trigger }: UserFormSheetProps) {
                                 type="checkbox"
                                 id={`role-${role.value}`}
                                 className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 checked={field.value.includes(role.value as any)}
                                 onChange={(e) => handleRoleChange(role.value, e.target.checked, field.value, field.onChange)}
                             />
@@ -278,10 +349,51 @@ export function UserFormSheet({ onSuccess, trigger }: UserFormSheetProps) {
               )}
             />
 
-            <SheetFooter>
+            <SheetFooter className="flex-col sm:flex-row gap-2">
+               {isEditing && (
+                 <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                        variant="outline"
+                        type="button" 
+                        disabled={isToggling}
+                        className={usuario.isAtivo
+                            ? "border-red-600 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950" 
+                            : "border-green-600 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950"}
+                    >
+                       {isToggling ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            usuario.isAtivo ? <Power className="h-4 w-4 mr-2" /> : <CheckCircle2 className="h-4 w-4 mr-2" />
+                        )}
+                       {usuario.isAtivo ? "Desativar Usuário" : "Ativar Usuário"}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>{usuario.isAtivo ? "Desativar Usuário?" : "Ativar Usuário?"}</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {usuario.isAtivo 
+                            ? <span>Esta ação irá inativar o usuário <strong>{usuario.nome}</strong>. O acesso será bloqueado temporariamente.</span>
+                            : <span>Esta ação irá ativar o usuário <strong>{usuario.nome}</strong> novamente. O acesso será restaurado.</span>
+                        }
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction 
+                        onClick={handleToggleStatus} 
+                         className={usuario.isAtivo ? "bg-destructive text-white hover:bg-destructive/90" : "bg-green-600 hover:bg-green-700"}
+                      >
+                        Confirmar {usuario.isAtivo ? "Inativação" : "Ativação"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
               <Button type="submit" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Criar Usuário
+                {isEditing ? 'Salvar Alterações' : 'Criar Usuário'}
               </Button>
             </SheetFooter>
           </form>
