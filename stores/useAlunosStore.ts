@@ -155,7 +155,7 @@ export const useAlunosStore = create<AlunosState>((set) => ({
           error: null 
         });
       }
-    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       const message = 'Error fetching alunos';
       set({ isLoading: false, error: message });
       console.error('Error fetching alunos:', _error);
@@ -185,7 +185,7 @@ export const useAlunosStore = create<AlunosState>((set) => ({
         error: null
       }));
       return data;
-    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       const message = 'Error fetching alunos by turma';
       set({ isLoading: false, error: message });
       console.error('Error fetching alunos by turma:', _error);
@@ -216,7 +216,7 @@ export const useAlunosStore = create<AlunosState>((set) => ({
       const responseData = await response.json();
       set({ isLoading: false, error: null });
       return { success: true, message: 'Aluno cadastrado com sucesso', data: responseData };
-    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       const message = 'Erro ao cadastrar aluno';
       set({ isLoading: false, error: message });
       console.error('Error creating aluno:', _error);
@@ -240,7 +240,7 @@ export const useAlunosStore = create<AlunosState>((set) => ({
       const data = await response.json();
       set({ currentAluno: data, isLoading: false, error: null });
       return data;
-    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       const message = 'Erro ao buscar detalhes do aluno';
       set({ isLoading: false, error: message });
       console.error('Erro ao buscar detalhes do aluno:', _error);
@@ -261,7 +261,7 @@ export const useAlunosStore = create<AlunosState>((set) => ({
 
       const responseData = await response.json();
       return responseData as VerificaDiarioResult;
-    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       console.error('Error verificando registro de diário:', _error);
       return null;
     }
@@ -287,7 +287,7 @@ export const useAlunosStore = create<AlunosState>((set) => ({
         const data = await response.json();
         set({ isLoading: false });
         return { success: true, message: 'Responsável adicionado com sucesso', data };
-    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    } catch {
         set({ isLoading: false, error: 'Erro ao adicionar responsável' });
         return { success: false, message: 'Erro ao adicionar responsável' };
     }
@@ -307,7 +307,7 @@ export const useAlunosStore = create<AlunosState>((set) => ({
 
         set({ isLoading: false });
         return { success: true, message: 'Responsável removido com sucesso' };
-    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    } catch {
         set({ isLoading: false, error: 'Erro ao remover responsável' });
         return { success: false, message: 'Erro ao remover responsável' };
     }
@@ -342,7 +342,7 @@ export const useAlunosStore = create<AlunosState>((set) => ({
         });
 
         return { success: true, message: 'Aluno atualizado com sucesso' };
-    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    } catch {
         set({ isLoading: false, error: 'Erro ao atualizar aluno' });
         return { success: false, message: 'Erro ao atualizar aluno' };
     }
@@ -372,7 +372,7 @@ export const useAlunosStore = create<AlunosState>((set) => ({
         });
         
         return { success: true, message: 'Aluno inativado com sucesso' };
-    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    } catch {
         set({ isLoading: false, error: 'Erro ao inativar aluno' });
         return { success: false, message: 'Erro ao inativar aluno' };
     }
