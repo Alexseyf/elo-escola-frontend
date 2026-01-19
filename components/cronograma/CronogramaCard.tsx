@@ -18,6 +18,16 @@ const formatarData = (dataString: string) => {
   })
 }
 
+const formatarIntervalo = (inicio: string, fim?: string | null) => {
+  if (!fim || inicio.split('T')[0] === fim.split('T')[0]) {
+    return formatarData(inicio)
+  }
+  
+  // Se for o mesmo ano e mês, simplifica: 16 - 20 de Fevereiro de 2026
+  // No momento, vamos manter o simples: DD/MM/AAAA - DD/MM/AAAA
+  return `${formatarData(inicio)} - ${formatarData(fim)}`
+}
+
 const formatarTipoEvento = (tipo: TipoEvento) => {
   const tipos: Record<TipoEvento, string> = {
     [TipoEvento.REUNIAO]: "Reunião",
@@ -43,16 +53,25 @@ const getCorTipo = (tipo: TipoEvento) => {
 }
 
 export function CronogramaCard({ cronograma }: CronogramaCardProps) {
+  const isPeriodo = cronograma.dataFim && cronograma.data.split('T')[0] !== cronograma.dataFim.split('T')[0];
+
   return (
-    <Card className="hover:shadow-md transition-shadow border-l-4 border-l-blue-500 overflow-hidden">
+    <Card className={`hover:shadow-md transition-shadow border-l-4 ${isPeriodo ? 'border-l-indigo-500' : 'border-l-blue-500'} overflow-hidden`}>
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="text-lg font-bold leading-tight line-clamp-2">
             {cronograma.titulo}
           </CardTitle>
-          <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border uppercase tracking-wider whitespace-nowrap ${getCorTipo(cronograma.tipoEvento)}`}>
-            {formatarTipoEvento(cronograma.tipoEvento)}
-          </span>
+          <div className="flex flex-col items-end gap-1">
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border uppercase tracking-wider whitespace-nowrap ${getCorTipo(cronograma.tipoEvento)}`}>
+              {formatarTipoEvento(cronograma.tipoEvento)}
+            </span>
+            {isPeriodo && (
+              <span className="text-[9px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100 uppercase">
+                Período
+              </span>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="pb-4">
@@ -61,9 +80,9 @@ export function CronogramaCard({ cronograma }: CronogramaCardProps) {
         </p>
         
         <div className="flex flex-col gap-2">
-          <div className="flex items-center text-xs text-muted-foreground">
-            <CalendarDays className="w-3.5 h-3.5 mr-1.5 text-blue-500" />
-            {formatarData(cronograma.data)}
+          <div className="flex items-center text-xs text-muted-foreground font-medium">
+            <CalendarDays className={`w-3.5 h-3.5 mr-1.5 ${isPeriodo ? 'text-indigo-500' : 'text-blue-500'}`} />
+            {formatarIntervalo(cronograma.data, cronograma.dataFim)}
           </div>
           
           {cronograma.criador && (

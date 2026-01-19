@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useAlunosStore } from '@/stores/useAlunosStore';
 import { getDiariosByAlunoId } from '@/utils/diarios';
 import { Diario } from '@/types/diario';
 import { RouteGuard } from '@/components/auth/RouteGuard';
-import { ArrowLeft, Calendar, FileText, ChevronRight, Utensils, Activity, Moon, Package, Clipboard } from 'lucide-react';
+import { ArrowLeft, Calendar, FileText, ChevronRight, Moon, Clipboard } from 'lucide-react';
 
 export default function VisualizarDiariosPage() {
   const router = useRouter();
@@ -18,14 +18,7 @@ export default function VisualizarDiariosPage() {
   const [selectedDiario, setSelectedDiario] = useState<Diario | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (alunoId) {
-      getAlunoDetalhes(alunoId);
-      loadDiarios();
-    }
-  }, [alunoId, getAlunoDetalhes]);
-
-  const loadDiarios = async () => {
+  const loadDiarios = useCallback(async () => {
     setLoading(true);
     const data = await getDiariosByAlunoId(alunoId);
     setDiarios(data);
@@ -33,7 +26,14 @@ export default function VisualizarDiariosPage() {
       setSelectedDiario(data[0]);
     }
     setLoading(false);
-  };
+  }, [alunoId]);
+
+  useEffect(() => {
+    if (alunoId) {
+      getAlunoDetalhes(alunoId);
+      loadDiarios();
+    }
+  }, [alunoId, getAlunoDetalhes, loadDiarios]);
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return '';
@@ -71,10 +71,10 @@ export default function VisualizarDiariosPage() {
               <div className="bg-white rounded-3xl p-6 shadow-xl shadow-blue-900/5 border border-gray-50">
                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">Últimos Registros</h3>
                 {loading ? (
-                   <div className="py-10 flex flex-col items-center gap-2">
-                     <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                     <p className="text-xs text-gray-400 font-bold italic">Buscando...</p>
-                   </div>
+                  <div className="py-10 flex flex-col items-center gap-2">
+                    <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                    <p className="text-xs text-gray-400 font-bold italic">Buscando...</p>
+                  </div>
                 ) : diarios.length === 0 ? (
                   <div className="py-10 text-center">
                     <Clipboard className="w-12 h-12 text-gray-200 mx-auto mb-4" />
@@ -242,7 +242,7 @@ export default function VisualizarDiariosPage() {
                       <div className="bg-gray-50/50 p-6 rounded-3xl border border-gray-100">
                         <h3 className="font-black text-gray-500 uppercase text-[10px] tracking-widest mb-3 px-1">Observações</h3>
                         <p className="text-gray-700 text-sm font-bold leading-relaxed whitespace-pre-wrap px-1 italic">
-                          "{selectedDiario.observacoes}"
+                          &quot;{selectedDiario.observacoes}&quot;
                         </p>
                       </div>
                     )}

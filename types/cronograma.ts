@@ -11,7 +11,9 @@ export interface Cronograma {
   id: number;
   titulo: string;
   descricao: string;
-  data: string; // ISO Date
+  data: string; // ISO Date (Início)
+  dataFim?: string | null; // ISO Date (Fim)
+  pularFinaisDeSemana: boolean;
   tipoEvento: TipoEvento;
   isAtivo: boolean;
   criadorId: number;
@@ -29,6 +31,8 @@ export interface CreateCronogramaDTO {
   titulo: string;
   descricao: string;
   data: string;
+  dataFim?: string | null;
+  pularFinaisDeSemana: boolean;
   tipoEvento: TipoEvento;
   isAtivo?: boolean;
 }

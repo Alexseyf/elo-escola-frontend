@@ -27,6 +27,8 @@ const formSchema = z.object({
   titulo: z.string().min(3, "O título deve ter pelo menos 3 caracteres").max(100, "O título deve ter no máximo 100 caracteres"),
   descricao: z.string().min(5, "A descrição deve ter pelo menos 5 caracteres").max(500, "A descrição deve ter no máximo 500 caracteres"),
   data: z.string().min(1, "A data é obrigatória"),
+  dataFim: z.string().nullable().optional(),
+  pularFinaisDeSemana: z.boolean(),
   tipoEvento: z.nativeEnum(TipoEvento, {
     message: "Selecione um tipo de evento válido",
   }),
@@ -40,6 +42,7 @@ interface CronogramaFormProps {
 export function CronogramaForm({ initialData, isEditing }: CronogramaFormProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [isPeriodo, setIsPeriodo] = useState(!!initialData?.dataFim && initialData.dataFim !== initialData.data)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,6 +50,8 @@ export function CronogramaForm({ initialData, isEditing }: CronogramaFormProps) 
       titulo: initialData?.titulo || "",
       descricao: initialData?.descricao || "",
       data: initialData?.data ? new Date(initialData.data).toISOString().split('T')[0] : "",
+      dataFim: initialData?.dataFim ? new Date(initialData.dataFim).toISOString().split('T')[0] : "",
+      pularFinaisDeSemana: initialData?.pularFinaisDeSemana ?? true,
       tipoEvento: initialData?.tipoEvento || TipoEvento.EVENTO_ESCOLAR,
     },
   })
@@ -55,10 +60,15 @@ export function CronogramaForm({ initialData, isEditing }: CronogramaFormProps) 
     setIsLoading(true)
     try {
       const dataFormatada = `${values.data}T09:00:00Z`
+      const dataFimFormatada = isPeriodo && values.dataFim ? `${values.dataFim}T09:00:00Z` : null
       
       const payload: CreateCronogramaDTO = {
-        ...values,
+        titulo: values.titulo,
+        descricao: values.descricao,
         data: dataFormatada,
+        dataFim: dataFimFormatada,
+        pularFinaisDeSemana: isPeriodo ? values.pularFinaisDeSemana : true,
+        tipoEvento: values.tipoEvento,
         isAtivo: true
       }
 
@@ -130,48 +140,110 @@ export function CronogramaForm({ initialData, isEditing }: CronogramaFormProps) 
               )}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="data"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-gray-700">Data</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} className="focus:ring-2 focus:ring-blue-500" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <div className="bg-gray-50 border rounded-lg p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <label className="text-sm font-semibold text-gray-800">Evento de vários dias?</label>
+                  <p className="text-xs text-muted-foreground">Ative para definir um período de data inicial e final</p>
+                </div>
+                <div 
+                  onClick={() => setIsPeriodo(!isPeriodo)}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 ${isPeriodo ? 'bg-blue-600' : 'bg-gray-200'}`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${isPeriodo ? 'translate-x-5' : 'translate-x-0'}`}
+                  />
+                </div>
+              </div>
 
-              <FormField
-                control={form.control}
-                name="tipoEvento"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-semibold text-gray-700">Tipo de Evento</FormLabel>
-                    <FormControl>
-                      <CustomSelect
-                        id="tipoEvento"
-                        name="tipoEvento"
-                        value={field.value}
-                        onChange={(e) => field.onChange(e.target.value)}
-                        options={[
-                          { value: TipoEvento.REUNIAO, label: "Reunião" },
-                          { value: TipoEvento.FERIADO, label: "Feriado" },
-                          { value: TipoEvento.RECESSO, label: "Recesso" },
-                          { value: TipoEvento.EVENTO_ESCOLAR, label: "Evento Escolar" },
-                          { value: TipoEvento.ATIVIDADE_PEDAGOGICA, label: "Atividade Pedagógica" },
-                          { value: TipoEvento.OUTRO, label: "Outro" }
-                        ]}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="data"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-bold uppercase text-gray-500">{isPeriodo ? 'Data Inicial' : 'Data'}</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} className="focus:ring-2 focus:ring-blue-500" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {isPeriodo && (
+                  <FormField
+                    control={form.control}
+                    name="dataFim"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs font-bold uppercase text-gray-500">Data Final</FormLabel>
+                        <FormControl>
+                          <Input 
+                          type="date" 
+                          {...field} 
+                          value={field.value || ""} 
+                          className="focus:ring-2 focus:ring-blue-500" 
+                        />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 )}
-              />
+              </div>
+
+              {isPeriodo && (
+                <FormField
+                  control={form.control}
+                  name="pularFinaisDeSemana"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-3 space-y-0 p-1">
+                      <FormControl>
+                        <input
+                          type="checkbox"
+                          checked={field.value}
+                          onChange={field.onChange}
+                          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel className="text-sm font-medium text-gray-700">
+                          Pular sábados e domingos
+                        </FormLabel>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              )}
             </div>
+
+            <FormField
+              control={form.control}
+              name="tipoEvento"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-semibold text-gray-700">Tipo de Evento</FormLabel>
+                  <FormControl>
+                    <CustomSelect
+                      id="tipoEvento"
+                      name="tipoEvento"
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      options={[
+                        { value: TipoEvento.REUNIAO, label: "Reunião" },
+                        { value: TipoEvento.FERIADO, label: "Feriado" },
+                        { value: TipoEvento.RECESSO, label: "Recesso" },
+                        { value: TipoEvento.EVENTO_ESCOLAR, label: "Evento Escolar" },
+                        { value: TipoEvento.ATIVIDADE_PEDAGOGICA, label: "Atividade Pedagógica" },
+                        { value: TipoEvento.OUTRO, label: "Outro" }
+                      ]}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="flex items-center justify-end gap-3 pt-4 border-t">
               <Button
