@@ -70,7 +70,7 @@ export function getAdminSidebarItems(): SidebarItem[] {
     {
       id: "cronograma",
       label: "Cronograma Anual",
-      href: "/cronograma?section=cronograma",
+      href: "/admin/cronograma",
       icon: Clock,
     },
         {
@@ -126,7 +126,7 @@ export function getProfessorSidebarItems(): SidebarItem[] {
     {
       id: "cronograma",
       label: "Cronograma",
-      href: "/cronograma?section=cronograma",
+      href: "/professor/cronograma",
       icon: Clock,
     },
     {
@@ -160,10 +160,10 @@ export function getResponsavelSidebarItems(): SidebarItem[] {
       icon: ClipboardList,
     },
     {
-      id: "calendario",
-      label: "Calendário",
-      href: "/calendario?section=calendario",
-      icon: CalendarDays,
+      id: "cronograma",
+      label: "Cronograma",
+      href: "/responsavel/cronograma",
+      icon: Clock,
     },
   ];
 }
