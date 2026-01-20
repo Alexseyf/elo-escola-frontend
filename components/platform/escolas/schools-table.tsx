@@ -3,8 +3,9 @@
 import { useEffect, useState, useCallback } from 'react';
 import { getSchools } from '@/utils/escolas';
 import { SchoolFormSheet } from '@/components/platform/escolas/school-form-sheet';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Edit } from 'lucide-react';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 
 interface School {
   id: number;
@@ -61,7 +62,63 @@ export function SchoolsTable() {
         <SchoolFormSheet onSuccess={fetchSchools} />
       </div>
 
-      <div className="border rounded-lg overflow-hidden">
+      <div className="rounded-lg border md:border-none border-none">
+        {/* Mobile View */}
+        <div className="block md:hidden space-y-4">
+          {loading ? (
+             <div className="flex justify-center items-center py-8 text-gray-500">
+                <Loader2 className="w-6 h-6 animate-spin mr-2" />
+                Carregando escolas...
+            </div>
+          ) : schools.length === 0 ? (
+            <div className="p-8 text-center text-gray-500 bg-gray-50 rounded-lg border">
+                Nenhuma escola encontrada.
+            </div>
+          ) : (
+            schools.map((school) => (
+                <div key={school.id} className="bg-white dark:bg-gray-950 p-4 rounded-lg border shadow-sm space-y-3">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h3 className="font-medium text-gray-900 dark:text-gray-100">{school.name}</h3>
+                            <p className="text-sm text-gray-500">{school.slug}</p>
+                        </div>
+                        <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset ${
+                            school.active 
+                                ? 'bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-900/20 dark:text-green-400 dark:ring-green-400/20' 
+                                : 'bg-red-50 text-red-700 ring-red-600/10 dark:bg-red-900/10 dark:text-red-400 dark:ring-red-400/20 ring-red-600/20'
+                        }`}>
+                            {school.active ? 'Ativa' : 'Inativa'}
+                        </span>
+                    </div>
+                    
+                    <div>
+                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            ${school.subscriptionPlan === 'BASIC' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : 
+                              school.subscriptionPlan === 'PRO' ? 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200' :
+                              'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'}`}>
+                            {school.subscriptionPlan}
+                        </span>
+                    </div>
+
+                    <div className="pt-2 border-t flex justify-end">
+                         <SchoolFormSheet 
+                            school={school} 
+                            onSuccess={fetchSchools} 
+                            trigger={
+                              <Button variant="outline" size="sm" className="w-full">
+                                <Edit className="w-4 h-4 mr-2" />
+                                Editar
+                              </Button>
+                            }
+                          />
+                    </div>
+                </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop View */}
+        <div className="hidden md:block border rounded-lg overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
@@ -111,9 +168,10 @@ export function SchoolsTable() {
                         school={school} 
                         onSuccess={fetchSchools} 
                         trigger={
-                          <button className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
+                          <Button variant="ghost" size="sm" className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
+                            <Edit className="w-4 h-4 mr-2" />
                             Editar
-                          </button>
+                          </Button>
                         }
                       />
                     </td>
@@ -131,7 +189,8 @@ export function SchoolsTable() {
             )}
           </tbody>
         </table>
-      </div>
+        </div>
+    </div>
     </div>
   );
 }
