@@ -37,6 +37,7 @@ interface UsuariosState {
   deletarUsuario: (id: number) => Promise<boolean>;
   fetchUsuarioLogado: () => Promise<Usuario | null>;
   limparCache: () => void;
+  atualizarEmailUsuario: (id: number, email: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const initialUsuariosPorRole: UsuariosPorRole = {
@@ -287,5 +288,48 @@ export const useUsuariosStore = create<UsuariosState>((set, get) => ({
       usuariosPorRole: initialUsuariosPorRole,
       error: null 
     });
+  },
+
+  atualizarEmailUsuario: async (id: number, email: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api(`/api/v1/usuarios/${id}/email`, {
+        method: 'PATCH',
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Erro ao atualizar email: ${response.status}`);
+      }
+
+      const currentUsers = get().usuarios.map(u => u.id === id ? { ...u, email } : u);
+      
+      const usuariosPorRole: UsuariosPorRole = {
+        ADMIN: [],
+        PROFESSOR: [],
+        RESPONSAVEL: [],
+        todos: currentUsers
+      };
+
+      currentUsers.forEach(u => {
+        if (u.roles.includes('ADMIN')) usuariosPorRole.ADMIN.push(u);
+        if (u.roles.includes('PROFESSOR')) usuariosPorRole.PROFESSOR.push(u);
+        if (u.roles.includes('RESPONSAVEL')) usuariosPorRole.RESPONSAVEL.push(u);
+      });
+
+      set({ 
+        usuarios: currentUsers,
+        usuariosPorRole,
+        isLoading: false, 
+        error: null 
+      });
+
+      return { success: true };
+    } catch (error) {
+       const message = error instanceof Error ? error.message : 'Erro ao atualizar email';
+       set({ isLoading: false }); 
+       return { success: false, error: message };
+    }
   }
 }));

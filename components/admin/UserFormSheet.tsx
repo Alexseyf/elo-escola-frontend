@@ -34,7 +34,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from 'sonner';
-import { Loader2, Plus, Power, CheckCircle2 } from 'lucide-react';
+import { Loader2, Plus, Power, CheckCircle2, Pencil, AlertTriangle } from 'lucide-react';
 
 interface UserFormSheetProps {
   usuario?: Usuario;
@@ -45,7 +45,10 @@ interface UserFormSheetProps {
 export function UserFormSheet({ usuario, onSuccess, trigger }: UserFormSheetProps) {
   const [open, setOpen] = useState(false);
   const [isToggling, setIsToggling] = useState(false);
-  const { criarUsuario, atualizarUsuario, deletarUsuario, isLoading } = useUsuariosStore();
+  const { criarUsuario, atualizarUsuario, deletarUsuario, atualizarEmailUsuario, isLoading } = useUsuariosStore();
+  const [newEmail, setNewEmail] = useState('');
+  const [isEmailCorrectionOpen, setIsEmailCorrectionOpen] = useState(false);
+  const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
   
   const isEditing = !!usuario;
 
@@ -161,6 +164,7 @@ export function UserFormSheet({ usuario, onSuccess, trigger }: UserFormSheetProp
   };
 
   return (
+    <>
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         {trigger || (
@@ -195,7 +199,7 @@ export function UserFormSheet({ usuario, onSuccess, trigger }: UserFormSheetProp
               )}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-2">
                 <FormField
                     control={form.control}
                     name="email"
@@ -203,12 +207,33 @@ export function UserFormSheet({ usuario, onSuccess, trigger }: UserFormSheetProp
                         <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                            <Input type="email" placeholder="joao@escola.com" {...field} />
+                            <div className="flex gap-2 items-center">
+                                <Input 
+                                    type="email" 
+                                    placeholder="joao@escola.com" 
+                                    {...field} 
+                                    disabled={isEditing}
+                                />
+                                {isEditing && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={() => setIsEmailCorrectionOpen(true)}
+                                        title="Corrigir E-mail"
+                                    >
+                                        <Pencil className="h-4 w-4" />
+                                    </Button>
+                                )}
+                            </div>
                         </FormControl>
                         <FormMessage />
                         </FormItem>
                     )}
                 />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <FormField
                     control={form.control}
                     name="dataNascimento"
@@ -398,5 +423,65 @@ export function UserFormSheet({ usuario, onSuccess, trigger }: UserFormSheetProp
         </Form>
       </SheetContent>
     </Sheet>
+    <AlertDialog open={isEmailCorrectionOpen} onOpenChange={setIsEmailCorrectionOpen}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Corrigir E-mail</AlertDialogTitle>
+                <div className="space-y-4 text-sm text-muted-foreground">
+                    <div className="flex flex-col gap-2">
+                        <span>Informe o novo e-mail para o usuário:</span>
+                        <Input 
+                            value={newEmail} 
+                            onChange={(e) => setNewEmail(e.target.value)}
+                            placeholder="novo.email@exemplo.com"
+                            disabled={isUpdatingEmail}
+                        />
+                    </div>
+                    <div className="flex items-start gap-2 p-3 bg-yellow-50 dark:bg-yellow-950 rounded-md border border-yellow-200 dark:border-yellow-900">
+                        <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500 shrink-0 mt-0.5" />
+                        <span className="text-sm text-yellow-800 dark:text-yellow-200">
+                            <strong>Atenção:</strong> A alteração do e-mail gerará uma nova senha temporária que será enviada para o novo endereço. O usuário deverá realizar o primeiro acesso novamente.
+                        </span>
+                    </div>
+                </div>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setNewEmail('')} disabled={isUpdatingEmail}>Cancelar</AlertDialogCancel>
+                <Button 
+                    type="button"
+                    onClick={async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        if (!newEmail || !usuario) return;
+                        
+                        setIsUpdatingEmail(true);
+                        
+                        try {
+                            const result = await atualizarEmailUsuario(usuario.id, newEmail);
+                            if (result.success) {
+                                toast.success('E-mail atualizado com sucesso!');
+                                form.setValue('email', newEmail);
+                                setIsEmailCorrectionOpen(false);
+                                setNewEmail('');
+                            } else {
+                                toast.error(result.error || 'Falha ao atualizar e-mail. Tente novamente.');
+                            }
+                        } catch (error) {
+                             console.error("Error in UI handler:", error);
+                             toast.error('Ocorreu um erro inesperado.');
+                        } finally {
+                            setIsUpdatingEmail(false);
+                        }
+                    }}
+                    disabled={isUpdatingEmail || !newEmail}
+                >
+                    {isUpdatingEmail && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    Confirmar Correção
+                </Button>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

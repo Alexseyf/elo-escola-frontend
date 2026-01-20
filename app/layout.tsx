@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat, Inter } from "next/font/google";
 import { Sidebar } from "@/components/Sidebar";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -33,6 +34,7 @@ export default function RootLayout({
         <Sidebar>
           {children}
         </Sidebar>
+        <Toaster />
       </body>
     </html>
   );
