@@ -7,7 +7,7 @@ import { useUsuariosStore } from "@/stores/useUsuariosStore"
 import { RouteGuard } from "@/components/auth/RouteGuard"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, GraduationCap, Users, UserPlus, Trash2 } from "lucide-react"
+import { ChevronLeft, GraduationCap, Users, UserPlus, Trash2, Plus } from "lucide-react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -249,8 +249,13 @@ export default function TurmaDetailsPage() {
                         turma.alunos.map((aluno) => (
                             <div key={aluno.id} className="flex items-center justify-between p-3 border rounded-lg bg-white">
                                 <span className="font-medium text-sm">{aluno.nome}</span>
-                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => router.push(`/admin/alunos/${aluno.id}`)}>
-                                    <ChevronLeft className="h-4 w-4 rotate-180" />
+                                <Button 
+                                    variant="outline" 
+                                    size="icon" 
+                                    className="h-8 w-8 text-primary border-primary/20 hover:bg-primary/10 hover:border-primary/50 transition-colors" 
+                                    onClick={() => router.push(`/admin/alunos/${aluno.id}`)}
+                                >
+                                    <Plus className="h-4 w-4" />
                                 </Button>
                             </div>
                         ))
