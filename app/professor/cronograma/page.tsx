@@ -11,14 +11,14 @@ export default function ProfessorCronogramaPage() {
   const [cronogramas, setCronogramas] = useState<Cronograma[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    async function loadData() {
-      setIsLoading(true)
-      const data = await getCronogramas()
-      setCronogramas(data)
-      setIsLoading(false)
-    }
+  const loadData = async () => {
+    setIsLoading(true)
+    const data = await getCronogramas()
+    setCronogramas(data)
+    setIsLoading(false)
+  }
 
+  useEffect(() => {
     loadData()
   }, [])
 
@@ -35,7 +35,7 @@ export default function ProfessorCronogramaPage() {
           </p>
         </div>
 
-        <CronogramaList cronogramas={cronogramas} isLoading={isLoading} />
+        <CronogramaList cronogramas={cronogramas} isLoading={isLoading} onRefresh={loadData} />
       </div>
     </RouteGuard>
   )

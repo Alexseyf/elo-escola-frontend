@@ -14,14 +14,14 @@ export default function AdminCronogramaPage() {
   const [cronogramas, setCronogramas] = useState<Cronograma[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    async function loadData() {
-      setIsLoading(true)
-      const data = await getCronogramas()
-      setCronogramas(data)
-      setIsLoading(false)
-    }
+  const loadData = async () => {
+    setIsLoading(true)
+    const data = await getCronogramas()
+    setCronogramas(data)
+    setIsLoading(false)
+  }
 
+  useEffect(() => {
     loadData()
   }, [])
 
@@ -31,7 +31,6 @@ export default function AdminCronogramaPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
-              <Calendar className="w-8 h-8 text-blue-600" />
               Cronograma Anual
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
@@ -48,7 +47,7 @@ export default function AdminCronogramaPage() {
           </Button>
         </div>
 
-        <CronogramaList cronogramas={cronogramas} isLoading={isLoading} />
+        <CronogramaList cronogramas={cronogramas} isLoading={isLoading} onRefresh={loadData} />
       </div>
     </RouteGuard>
   )

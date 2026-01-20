@@ -11,6 +11,7 @@ import { Search, FilterX } from "lucide-react"
 interface CronogramaListProps {
   cronogramas: Cronograma[]
   isLoading?: boolean
+  onRefresh?: () => void
 }
 
 const getNomeMes = (numeroMes: number): string => {
@@ -21,7 +22,7 @@ const getNomeMes = (numeroMes: number): string => {
   return meses[numeroMes - 1] || ""
 }
 
-export function CronogramaList({ cronogramas, isLoading }: CronogramaListProps) {
+export function CronogramaList({ cronogramas, isLoading, onRefresh }: CronogramaListProps) {
   const [filtro, setFiltro] = useState("")
   const [mesFiltro, setMesFiltro] = useState("")
   const [tipoFiltro, setTipoFiltro] = useState("")
@@ -156,7 +157,11 @@ export function CronogramaList({ cronogramas, isLoading }: CronogramaListProps) 
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {grupo.items.map((cronograma) => (
-                  <CronogramaCard key={cronograma.id} cronograma={cronograma} />
+                  <CronogramaCard 
+                    key={cronograma.id} 
+                    cronograma={cronograma} 
+                    onDelete={onRefresh}
+                  />
                 ))}
               </div>
             </div>

@@ -132,7 +132,7 @@ export function getProfessorSidebarItems(): SidebarItem[] {
     },
     {
       id: "cronograma",
-      label: "Cronograma",
+      label: "Cronograma Anual",
       href: "/professor/cronograma",
       icon: Clock,
     },
@@ -168,7 +168,7 @@ export function getResponsavelSidebarItems(): SidebarItem[] {
     },
     {
       id: "cronograma",
-      label: "Cronograma",
+      label: "Cronograma Anual",
       href: "/responsavel/cronograma",
       icon: Clock,
     },
