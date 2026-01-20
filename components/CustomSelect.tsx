@@ -52,7 +52,31 @@ export function CustomSelect({
     if (isOpen && searchable && searchInputRef.current) {
       searchInputRef.current.focus();
     }
-  }, [isOpen, searchable]);
+    
+    // Adjust dropdown position if it would overflow viewport
+    if (isOpen && dropdownRef.current && buttonRef.current) {
+      const dropdown = dropdownRef.current;
+      const button = buttonRef.current;
+      const rect = button.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const spaceBelow = viewportHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      const dropdownHeight = Math.min(240, options.length * 40); // Estimate dropdown height
+      
+      // If not enough space below and more space above, position above
+      if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
+        dropdown.style.bottom = '100%';
+        dropdown.style.top = 'auto';
+        dropdown.style.marginBottom = '0.25rem';
+        dropdown.style.marginTop = '0';
+      } else {
+        dropdown.style.top = '100%';
+        dropdown.style.bottom = 'auto';
+        dropdown.style.marginTop = '0.25rem';
+        dropdown.style.marginBottom = '0';
+      }
+    }
+  }, [isOpen, searchable, options.length]);
 
   const handleSelectOption = (optionValue: string | number) => {
     const event = {
@@ -65,6 +89,7 @@ export function CustomSelect({
 
     onChange(event);
     setIsOpen(false);
+    setSearchTerm('');
   };
 
   const selectedLabel = options.find(opt => String(opt.value) === String(value))?.label || 'Selecione uma opção';
@@ -99,7 +124,7 @@ export function CustomSelect({
       {isOpen && (
         <div
           ref={dropdownRef}
-          className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
+          className="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-[min(15rem,40vh)] overflow-y-auto"
         >
           {searchable && (
             <div className="sticky top-0 bg-white border-b border-gray-200 p-2">

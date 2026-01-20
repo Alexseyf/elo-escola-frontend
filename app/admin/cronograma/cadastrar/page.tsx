@@ -23,7 +23,6 @@ export default function CadastrarCronogramaPage() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <CalendarPlus className="w-7 h-7 text-blue-600" />
               Cadastrar Evento
             </h1>
             <p className="text-sm text-muted-foreground">
