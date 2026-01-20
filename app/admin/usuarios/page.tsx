@@ -6,7 +6,7 @@ import { RouteGuard } from "@/components/auth/RouteGuard"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, ChevronLeft, ChevronRight, User, Shield, GraduationCap, Users, Plus } from "lucide-react"
+import { Search, ChevronLeft, ChevronRight, User, Shield, GraduationCap, Users, Plus, Edit } from "lucide-react"
 import { UserFormSheet } from "@/components/admin/UserFormSheet"
 
 const ITEMS_PER_PAGE = 10;
@@ -129,24 +129,37 @@ export default function UsuariosPage() {
                         {error}
                     </div>
                 ) : (
-                    <div className="rounded-md border">
+                    <div className="rounded-md md:border">
                         {/* Mobile View */}
-                        <div className="block md:hidden divide-y divide-gray-200">
+                        <div className="block md:hidden space-y-2">
                              {paginatedUsers.length > 0 ? (
                                 paginatedUsers.map((usuario) => (
                                     <div key={usuario.id} className="relative p-4 border rounded-lg bg-white shadow-sm">
-                                        <div className="flex flex-col gap-1 pr-8">
-                                            <span className="font-medium text-gray-900">{usuario.nome}</span>
+                                        <div className="flex flex-col">
+                                            <div className="flex justify-between items-center mb-2">
+                                                <span className="font-medium text-gray-900">{usuario.nome}</span>
+                                                <div className="flex gap-2">
+                                                    <UserFormSheet 
+                                                        usuario={usuario} 
+                                                        onSuccess={() => fetchUsuarios()}
+                                                        trigger={
+                                                            <Button variant="outline" size="icon" className="h-8 w-8">
+                                                                <Edit className="h-4 w-4" />
+                                                            </Button>
+                                                        }
+                                                    />
+                                                    <Button 
+                                                        variant="outline" 
+                                                        size="icon"
+                                                        className="h-8 w-8 text-primary border-primary/20 hover:bg-primary/10 hover:border-primary/50 transition-colors"
+                                                        onClick={() => window.location.href = `/admin/usuarios/${usuario.id}`}
+                                                    >
+                                                        <Plus className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </div>
                                             <span className="text-sm text-gray-500">{usuario.email}</span>
                                         </div>
-                                        <Button 
-                                            variant="ghost" 
-                                            size="icon-sm"
-                                            className="absolute top-4 right-4 text-gray-500 hover:text-primary"
-                                            onClick={() => window.location.href = `/admin/usuarios/${usuario.id}`}
-                                        >
-                                            <Plus className="h-5 w-5" />
-                                        </Button>
                                     </div>
                                 ))
                              ) : (
