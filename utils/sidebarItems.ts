@@ -10,6 +10,7 @@ import {
   FileText,
   Clock,
   Building2,
+  UserPlus,
 } from "lucide-react";
 
 export interface SidebarItem {
@@ -47,6 +48,12 @@ export function getAdminSidebarItems(): SidebarItem[] {
       label: "Turmas",
       href: "/admin/turmas",
       icon: BookOpen,
+    },
+    {
+      id: "cadastro-unificado",
+      label: "Cadastro",
+      href: "/admin/cadastro/aluno-responsavel",
+      icon: UserPlus,
     },
     {
       id: "diarios",

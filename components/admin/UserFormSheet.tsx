@@ -134,11 +134,9 @@ export function UserFormSheet({ usuario, onSuccess, trigger }: UserFormSheetProp
     try {
       setIsToggling(true);
       if (usuario.isAtivo) {
-         // Deactivate (Soft Delete)
          const success = await deletarUsuario(usuario.id);
          if (success) toast.success('Usuário desativado com sucesso!');
       } else {
-         // Activate
          const result = await atualizarUsuario(usuario.id, { isAtivo: true });
          if (result) toast.success('Usuário ativado com sucesso!');
       }
