@@ -12,6 +12,7 @@ interface User {
   school?: {
     id?: number;
     slug: string;
+    name: string;
   };
 }
 
@@ -78,7 +79,7 @@ export const useAuthStore = create<AuthState>()(
                 email: data.email,
                 roles: data.roles,
                 primeiroAcesso: data.primeiroAcesso,
-                school: data.schoolSlug ? { slug: data.schoolSlug } : undefined
+                school: data.schoolSlug ? { slug: data.schoolSlug, name: data.schoolName } : undefined
               },
               isAuthenticated: true,
               isLoading: false,

@@ -103,9 +103,16 @@ function AppSidebar({ items, logout, user }: AppSidebarProps) {
   return (
     <SidebarUI className="h-screen sticky top-0">
       <SidebarHeader className="flex items-start justify-between">
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-3">
           {state === "expanded" && (
-            <img src="/logo_line.png" alt="logo" className="h-10 w-auto" />
+            <>
+                <img src="/logo_line.png" alt="logo" className="h-10 w-auto" />
+                {!user?.roles.includes('PLATFORM_ADMIN') && user?.school?.name && (
+                    <div className="text-xs font-semibold text-muted-foreground px-1">
+                        {user.school.name}
+                    </div>
+                )}
+            </>
           )}
         </div>
       </SidebarHeader>
