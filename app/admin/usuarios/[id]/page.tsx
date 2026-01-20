@@ -6,7 +6,7 @@ import { useUsuariosStore, Usuario } from "@/stores/useUsuariosStore"
 import { RouteGuard } from "@/components/auth/RouteGuard"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { User, Pencil } from "lucide-react"
+import { User, Pencil, ChevronLeft } from "lucide-react"
 
 export default function UsuarioDetalhesPage() {
   const params = useParams()
@@ -14,6 +14,7 @@ export default function UsuarioDetalhesPage() {
   const id = Number(params.id)
   
   const [usuario, setUsuario] = useState<Usuario | null>(null)
+  const [isInitializing, setIsInitializing] = useState(true)
   
   const { 
     isLoading, 
@@ -23,9 +24,13 @@ export default function UsuarioDetalhesPage() {
 
   useEffect(() => {
     async function loadData() {
-        if (!isNaN(id)) {
-            const data = await fetchUsuarioDetalhes(id);
-            setUsuario(data);
+        try {
+            if (!isNaN(id)) {
+                const data = await fetchUsuarioDetalhes(id);
+                setUsuario(data);
+            }
+        } finally {
+            setIsInitializing(false);
         }
     }
     loadData();
@@ -43,19 +48,19 @@ export default function UsuarioDetalhesPage() {
   return (
     <RouteGuard allowedRoles={['ADMIN']}>
       <div className="min-h-screen bg-background p-3 sm:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-6">
+        <div className="flex items-center gap-2 mb-6">
             <Button 
-                variant="primary" 
-                size="sm"
+                variant="ghost" 
+                size="icon"
                 onClick={() => router.back()}
-                className="w-full sm:w-auto"
+                className="h-8 w-8"
             >
-                Voltar
+                <ChevronLeft className="h-5 w-5" />
             </Button>
             <h1 className="text-xl sm:text-2xl font-bold">Gerenciar Usuários</h1>
         </div>
 
-        {isLoading ? (
+        {isLoading || isInitializing ? (
             <Card className="mb-6 w-full">
                 <CardContent className="p-3 sm:p-6">
                      <div className="flex flex-col space-y-4 animate-pulse">

@@ -20,7 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { User, Calendar, BookOpen, DollarSign, Trash2, Plus } from "lucide-react"
+import { User, Calendar, BookOpen, DollarSign, Trash2, Plus, ChevronLeft } from "lucide-react"
 import { AlunoFormSheet } from "@/components/admin/AlunoFormSheet"
 import { useUsuariosStore } from "@/stores/useUsuariosStore"
 import { toast } from "sonner"
@@ -44,12 +44,20 @@ export default function AlunoDetalhesPage() {
   const [newResponsavelId, setNewResponsavelId] = useState('')
   const [isAddingResp, setIsAddingResp] = useState(false)
   const [responsibleToDelete, setResponsibleToDelete] = useState<number | null>(null)
+  const [isInitializing, setIsInitializing] = useState(true)
 
   useEffect(() => {
-    if (!isNaN(id)) {
-        getAlunoDetalhes(id);
+    async function loadData() {
+        try {
+            if (!isNaN(id)) {
+                await getAlunoDetalhes(id);
+            }
+            await fetchUsuarios('RESPONSAVEL');
+        } finally {
+            setIsInitializing(false);
+        }
     }
-    fetchUsuarios('RESPONSAVEL');
+    loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
@@ -101,14 +109,14 @@ export default function AlunoDetalhesPage() {
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-6">
+        <div className="flex items-center gap-2 mb-6">
             <Button 
-                variant="outline" 
-                size="sm"
+                variant="ghost" 
+                size="icon"
                 onClick={() => router.back()}
-                className="w-full sm:w-auto"
+                className="h-8 w-8"
             >
-                Voltar
+                <ChevronLeft className="h-5 w-5" />
             </Button>
             <h1 className="text-xl sm:text-2xl font-bold">Detalhes do Aluno</h1>
             <div className="ml-auto">
@@ -119,7 +127,7 @@ export default function AlunoDetalhesPage() {
             </div>
         </div>
 
-        {isLoading ? (
+        {isLoading || isInitializing ? (
              <div className="space-y-4 animate-pulse">
                 <div className="h-40 bg-gray-100 rounded"></div>
              </div>
