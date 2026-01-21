@@ -151,7 +151,7 @@ export function getResponsavelSidebarItems(): SidebarItem[] {
     {
       id: "visao-geral",
       label: "Visão Geral",
-      href: "/visao-geral?section=visao-geral",
+      href: "/responsavel/dashboard",
       icon: LayoutDashboard,
     },
     {
