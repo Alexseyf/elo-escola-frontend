@@ -106,7 +106,7 @@ export function CronogramaCard({ cronograma, onDelete }: CronogramaCardProps) {
   return (
     <>
       <Card className={`hover:shadow-md transition-shadow border-l-4 ${isPeriodo ? 'border-l-indigo-500' : 'border-l-blue-500'} overflow-hidden cursor-pointer group`}>
-        <CardHeader className="pb-3">
+        <CardHeader className="pb-1">
           <div className="flex items-start justify-between gap-2">
             <CardTitle className="text-base font-bold leading-tight line-clamp-2 flex-1 capitalize">
               {cronograma.titulo}
@@ -158,11 +158,11 @@ export function CronogramaCard({ cronograma, onDelete }: CronogramaCardProps) {
                     </div>
                   </div>
 
-                  {cronograma.pularFinaisDeSemana && isPeriodo && (
+                  {/* {cronograma.pularFinaisDeSemana && isPeriodo && (
                     <div className="text-xs text-muted-foreground bg-gray-50 p-2 rounded">
                       ℹ️ Finais de semana não são considerados neste período
                     </div>
-                  )}
+                  )} */}
 
                   {cronograma.criador && (
                     <div>
@@ -192,7 +192,7 @@ export function CronogramaCard({ cronograma, onDelete }: CronogramaCardProps) {
             </Dialog>
           </div>
         </CardHeader>
-        <CardContent className="pb-3 pt-0">
+        <CardContent className="pb-1 pt-0">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center text-xs text-muted-foreground font-medium">
               <CalendarDays className={`w-3.5 h-3.5 mr-1.5 ${isPeriodo ? 'text-indigo-500' : 'text-blue-500'}`} />
