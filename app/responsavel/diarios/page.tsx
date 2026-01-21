@@ -64,7 +64,7 @@ function DiariosContent() {
   }, [selectedAlunoId, filtroData]);
 
   const selectedAluno = alunos.find(a => a.id === selectedAlunoId);
-  const titulo = alunos.length === 1 ? 'Diário do Meu Filho' : 'Diários dos Meus Filhos';
+  const titulo = alunos.length === 1 ? 'Diários do Meu Filho' : 'Diários dos Meus Filhos';
 
   const handleLimparFiltro = () => {
     setFiltroData('');
