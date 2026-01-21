@@ -43,9 +43,11 @@ export default function AlunosPage() {
     });
   }, [fetchAlunos, currentPage, selectedTurma]);
 
-  const filteredAlunos = alunos.filter(aluno => 
-    aluno.nome.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredAlunos = alunos.filter(aluno => {
+    const matchesSearch = aluno.nome.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesTurma = selectedTurma === 'all' || aluno.turma?.id === Number(selectedTurma);
+    return matchesSearch && matchesTurma;
+  });
 
   const totalPages = pagination?.totalPages || 1;
 
