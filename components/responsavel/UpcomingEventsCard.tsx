@@ -170,7 +170,7 @@ export function UpcomingEventsCard() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Calendar className="w-5 h-5 text-blue-600" />
-          Próximos Eventos - Cronograma Anual
+          Próximos Eventos - Cronograma
         </CardTitle>
         <p className="text-sm text-muted-foreground">
           {upcomingEvents.length} {upcomingEvents.length === 1 ? 'evento' : 'eventos'} este mês

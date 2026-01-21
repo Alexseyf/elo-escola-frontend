@@ -173,3 +173,13 @@ export async function adicionarResponsavelAluno(
     };
   }
 }
+
+export async function getAlunosDoResponsavel(): Promise<Aluno[]> {
+  try {
+    const store = useAlunosStore.getState();
+    return await store.fetchAlunosDoResponsavel();
+  } catch (error) {
+    console.error('Erro ao buscar meus alunos:', error);
+    return [];
+  }
+}

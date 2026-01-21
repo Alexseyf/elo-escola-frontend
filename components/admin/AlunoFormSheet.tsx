@@ -168,7 +168,7 @@ export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProp
                 <FormItem>
                   <FormLabel>Nome Completo</FormLabel>
                   <FormControl>
-                    <Input placeholder="Joãozinho" {...field} />
+                    <Input placeholder="Nome do aluno" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

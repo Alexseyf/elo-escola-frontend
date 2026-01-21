@@ -157,7 +157,7 @@ export function getResponsavelSidebarItems(): SidebarItem[] {
     {
       id: "meus-filhos",
       label: "Meus Filhos",
-      href: "/meus-filhos?section=meus-filhos",
+      href: "/responsavel/meus-filhos",
       icon: Users,
     },
     {

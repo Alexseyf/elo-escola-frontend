@@ -6,6 +6,8 @@ export interface Aluno {
   nome: string;
   email: string;
   matricula: string;
+  dataNasc?: string;
+  mensalidade?: number;
   turma?: {
     id: number;
     nome: string;
@@ -91,6 +93,7 @@ interface AlunosState {
 
   fetchAlunos: (filters?: AlunoFilters) => Promise<void>;
   fetchAlunosByTurma: (turmaId: number) => Promise<Aluno[]>;
+  fetchAlunosDoResponsavel: () => Promise<Aluno[]>;
   createAluno: (data: CreateAlunoData) => Promise<{ success: boolean; message: string; data?: Aluno }>;
   getAlunoDetalhes: (id: number) => Promise<AlunoDetalhes | null>;
   verificarRegistroDiarioAluno: (alunoId: number, data?: string) => Promise<VerificaDiarioResult | null>;
@@ -189,6 +192,33 @@ export const useAlunosStore = create<AlunosState>((set) => ({
       const message = 'Error fetching alunos by turma';
       set({ isLoading: false, error: message });
       console.error('Error fetching alunos by turma:', _error);
+      return [];
+    }
+  },
+
+  fetchAlunosDoResponsavel: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api('/api/v1/responsaveis/meus-alunos', {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          console.error('Unauthorized access');
+          set({ isLoading: false });
+          return [];
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      set({ alunos: data, isLoading: false, error: null });
+      return data;
+    } catch (_error) {
+      const message = 'Erro ao buscar meus alunos';
+      set({ isLoading: false, error: message });
+      console.error('Erro ao buscar meus alunos:', _error);
       return [];
     }
   },
