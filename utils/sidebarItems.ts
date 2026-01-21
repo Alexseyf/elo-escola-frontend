@@ -161,6 +161,12 @@ export function getResponsavelSidebarItems(): SidebarItem[] {
       icon: Users,
     },
     {
+      id: "diarios",
+      label: "Diários",
+      href: "/responsavel/diarios",
+      icon: FileText,
+    },
+    {
       id: "comunicados",
       label: "Comunicados",
       href: "/comunicados?section=comunicados",
