@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { RouteGuard } from '@/components/auth/RouteGuard';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useAtividadesStore } from '@/stores/useAtividadesStore';
 import { useTurmasStore, formatarNomeTurma } from '@/stores/useTurmasStore';
 import { useObjetivosStore } from '@/stores/useObjetivosStore';
-import { formatarCampoExperiencia, CAMPO_EXPERIENCIA } from '@/stores/useCamposStore';
+import { formatarCampoExperiencia, CAMPO_EXPERIENCIA, useCamposStore } from '@/stores/useCamposStore';
 import { CustomSelect } from '@/components/CustomSelect';
 import { SEMESTRE, type CreateAtividadeInput } from '@/types/atividades';
 import { ArrowLeft } from 'lucide-react';
@@ -18,7 +18,11 @@ export default function CadastrarAtividadePage() {
   const { createAtividade, isLoading } = useAtividadesStore();
   const turmas = useTurmasStore(state => state.turmas);
   const fetchTurmas = useTurmasStore(state => state.fetchTurmas);
+  const fetchGrupos = useTurmasStore(state => state.fetchGrupos);
+  const mapearTurmaParaGrupo = useTurmasStore(state => state.mapearTurmaParaGrupo);
+  const mapearGrupoParaId = useTurmasStore(state => state.mapearGrupoParaId);
   const { objetivos, objetivosPorGrupoECampo, fetchObjetivosPorGrupoIdCampoId } = useObjetivosStore();
+  const { fetchCampos, mapearCampoParaId } = useCamposStore();
   
   const [mensagem, setMensagem] = useState<{texto: string, tipo: 'sucesso' | 'erro'} | null>(null);
   const [formData, setFormData] = useState({
@@ -36,22 +40,65 @@ export default function CadastrarAtividadePage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Filter turmas to only show professor's classes
-  const profTurmas = turmas.filter(t => 
-    t.professores?.some(p => p.usuarioId === user?.id)
+  const profTurmas = useMemo(() => 
+    turmas.filter(t => t.professores?.some(p => p.usuarioId === user?.id)),
+    [turmas, user?.id]
   );
 
   useEffect(() => {
     if (turmas.length === 0) {
       fetchTurmas();
     }
-  }, [fetchTurmas, turmas.length]);
+    fetchGrupos();
+    fetchCampos();
+  }, [fetchTurmas, fetchGrupos, fetchCampos, turmas.length]);
 
   // Load objetivos when turma and campo are selected
-  // Note: This would require mapping turma to grupoId and campo to campoId
-  // For now, objetivos will need to be loaded separately or all at once
   useEffect(() => {
-    // TODO: Implement objetivo loading based on turma grupo and campo ID mapping
-  }, [formData.turmaId, formData.campoExperiencia]);
+    async function loadObjetivos() {
+      if (!formData.turmaId || !formData.campoExperiencia) {
+        return;
+      }
+
+      try {
+        // Find selected turma
+        const turma = turmas.find(t => t.id === Number(formData.turmaId));
+        if (!turma) return;
+
+        // Map turma to grupo
+        const grupo = mapearTurmaParaGrupo(turma.nome);
+        if (!grupo) {
+          console.error('Não foi possível mapear turma para grupo:', turma.nome);
+          return;
+        }
+
+        // Get grupo ID
+        const grupoId = await mapearGrupoParaId(grupo);
+        if (!grupoId) {
+          console.error('Não foi possível obter ID do grupo:', grupo);
+          return;
+        }
+
+        // Get campo ID
+        const campoId = mapearCampoParaId(formData.campoExperiencia as CAMPO_EXPERIENCIA);
+        if (!campoId) {
+          console.error('Não foi possível obter ID do campo:', formData.campoExperiencia);
+          return;
+        }
+
+        // Fetch objetivos
+        console.log(`Carregando objetivos para grupoId=${grupoId}, campoId=${campoId}`);
+        await fetchObjetivosPorGrupoIdCampoId(grupoId, campoId);
+        
+        // Reset objetivo selection
+        setFormData(prev => ({ ...prev, objetivoId: '' }));
+      } catch (error) {
+        console.error('Erro ao carregar objetivos:', error);
+      }
+    }
+
+    loadObjetivos();
+  }, [formData.turmaId, formData.campoExperiencia, turmas, fetchObjetivosPorGrupoIdCampoId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -311,7 +358,7 @@ export default function CadastrarAtividadePage() {
                     onChange={handleInputChange}
                     options={[
                       { value: '', label: 'Selecione um objetivo' },
-                      ...objetivos.map(objetivo => ({
+                      ...objetivosPorGrupoECampo.map((objetivo: any) => ({
                         value: objetivo.id,
                         label: `${objetivo.codigo} - ${objetivo.descricao}`
                       }))

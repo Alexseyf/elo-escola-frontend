@@ -52,13 +52,32 @@ export const api = async (endpoint: string, options: ApiRequestOptions = {}) => 
                           endpoint.includes('/api/v1/valida-senha');
   
   if (!isPublicEndpoint) {
-  if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
-      const schoolSlug = localStorage.getItem('schoolSlug');
-      if (schoolSlug) {
-        headers['x-tenant-id'] = schoolSlug;
-      }
-    } else if (tenantSlug) {
-      headers['x-tenant-id'] = tenantSlug;
+    let finalTenantId = tenantSlug;
+
+    // Em desenvolvimento, tenta recuperar do localStorage ou stores se não veio automática
+    if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+       /* 
+          1. Tenta localStorage (definido no login)
+          2. Tenta useTenantStore (estado global)
+          3. Tenta useAuthStore (dados do usuário logado)
+       */
+       const localSlug = localStorage.getItem('schoolSlug');
+       
+       if (localSlug) {
+         finalTenantId = localSlug;
+       } else if (!finalTenantId) {
+         // Fallback para AuthStore se TenantStore também estiver vazio
+         const user = useAuthStore.getState().user;
+         if (user?.school?.slug) {
+           finalTenantId = user.school.slug;
+         }
+       }
+    }
+
+    if (finalTenantId) {
+      headers['x-tenant-id'] = finalTenantId;
+    } else {
+       console.warn('[API] Warning: x-tenant-id missing for authenticated request');
     }
   }
 

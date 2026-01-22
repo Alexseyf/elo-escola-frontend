@@ -6,7 +6,8 @@ export interface Objetivo {
   id: number;
   descricao: string;
   grupoId: number;
-  campoId: number;
+  campoId?: number;
+  campoExperienciaId?: number;
   [key: string]: any;
 }
 
@@ -32,11 +33,15 @@ export const useObjetivosStore = create<ObjetivosState>((set, get) => ({
   fetchObjetivos: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await api('/objetivos', {
+      const response = await api('/api/v1/objetivos', {
         method: 'GET',
       });
 
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+           throw new Error('Não autorizado');
+        }
+        
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.erro || errorData.details || `Erro ao listar objetivos: ${response.status}`);
       }
@@ -52,22 +57,40 @@ export const useObjetivosStore = create<ObjetivosState>((set, get) => ({
 
   fetchObjetivosPorGrupoIdCampoId: async (grupoId: number, campoId: number) => {
     set({ isLoading: true, error: null });
-    try {
-      const response = await api(`/objetivos/grupo-campo?grupoId=${grupoId}&campoId=${campoId}`, {
-        method: 'GET',
-      });
+    
+    if (!grupoId || !campoId) {
+      set({ objetivosPorGrupoECampo: [], isLoading: false });
+      return;
+    }
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.erro || errorData.details || `Erro ao listar objetivos: ${response.status}`);
+    try {
+      console.log(`Filtrando objetivos localmente: grupoId=${grupoId} campoId=${campoId}`);
+
+      let todosObjetivos = get().objetivos;
+      
+      if (!todosObjetivos || todosObjetivos.length === 0) {
+        console.log('Cache de objetivos vazio, buscando do backend...');
+        await get().fetchObjetivos();
+        todosObjetivos = get().objetivos;
+      }
+      
+      if (todosObjetivos.length === 0) {
+        console.warn('Nenhum objetivo encontrado no sistema (fetch retornou vazio).');
+        set({ objetivosPorGrupoECampo: [], isLoading: false });
+        return;
       }
 
-      const objetivos = await response.json();
-      set({ objetivosPorGrupoECampo: objetivos, isLoading: false, error: null });
+
+      const filtrados = todosObjetivos.filter(obj => {
+        return obj.grupoId === grupoId && (obj.campoExperienciaId === campoId || obj.campoId === campoId);
+      });
+
+      console.log(`Objetivos filtrados: ${filtrados.length} de ${todosObjetivos.length}`);
+      set({ objetivosPorGrupoECampo: filtrados, isLoading: false, error: null });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Erro ao buscar objetivos';
+      const message = error instanceof Error ? error.message : 'Erro ao filtrar objetivos';
       set({ isLoading: false, error: message });
-      console.error('Error fetching objetivos por grupo e campo:', error);
+      console.error('Error filtering objetivos:', error);
     }
   },
 

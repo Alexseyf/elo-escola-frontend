@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { RouteGuard } from '@/components/auth/RouteGuard';
 import { useAtividadesStore } from '@/stores/useAtividadesStore';
 import { formatarNomeTurma } from '@/stores/useTurmasStore';
@@ -9,7 +9,8 @@ import { formatarCampoExperiencia } from '@/stores/useCamposStore';
 import { SEMESTRE_LABELS } from '@/types/atividades';
 import { ArrowLeft, Calendar, Clock, BookOpen, Target, User } from 'lucide-react';
 
-export default function AdminAtividadeDetalhesPage({ params }: { params: { id: string } }) {
+export default function AdminAtividadeDetalhesPage() {
+  const params = useParams();
   const router = useRouter();
   const { atividadeAtual, isLoading, error, fetchAtividadeById } = useAtividadesStore();
 

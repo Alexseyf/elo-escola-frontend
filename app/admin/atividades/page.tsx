@@ -9,8 +9,9 @@ import { formatarCampoExperiencia } from '@/stores/useCamposStore';
 import { CustomSelect } from '@/components/CustomSelect';
 import { Search } from 'lucide-react';
 import type { Atividade } from '@/types/atividades';
+import { Suspense } from 'react';
 
-export default function AdminAtividadesPage() {
+function AdminAtividadesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { atividades, isLoading, error, fetchAtividades } = useAtividadesStore();
@@ -28,7 +29,6 @@ export default function AdminAtividadesPage() {
     fetchAtividades();
   }, [fetchTurmas, fetchAtividades, turmas.length]);
 
-  // Pre-select turma from URL if provided
   useEffect(() => {
     const turmaId = searchParams.get('turmaId');
     if (turmaId) {
@@ -38,7 +38,9 @@ export default function AdminAtividadesPage() {
 
   const atividadesFiltradas = useMemo(() => {
     return atividades.filter((atividade: Atividade) => {
-      const turmaMatch = !filtroTurma || String(atividade.turmaId) === String(filtroTurma);
+      const atividadeTurmaId = atividade.turmaId ?? atividade.turma?.id;
+      const turmaMatch = !filtroTurma || String(atividadeTurmaId) === String(filtroTurma);
+      
       const anoMatch = !filtroAno || atividade.ano === filtroAno;
       const periodoMatch = !filtroPeriodo || atividade.periodo === filtroPeriodo;
       
@@ -100,10 +102,7 @@ export default function AdminAtividadesPage() {
                   onChange={(e) => setFiltroAno(Number(e.target.value))}
                   options={[
                     { value: new Date().getFullYear(), label: new Date().getFullYear().toString() },
-                    ...Array.from({ length: 5 }, (_, i) => {
-                      const year = new Date().getFullYear() - i - 1;
-                      return { value: year, label: year.toString() };
-                    })
+                    { value: new Date().getFullYear() - 1, label: (new Date().getFullYear() - 1).toString() }
                   ]}
                   className="rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
                 />
@@ -234,5 +233,17 @@ export default function AdminAtividadesPage() {
         </div>
       </div>
     </RouteGuard>
+  );
+}
+
+export default function AdminAtividadesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50/50 p-4 md:p-8 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    }>
+      <AdminAtividadesContent />
+    </Suspense>
   );
 }

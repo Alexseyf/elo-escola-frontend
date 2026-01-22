@@ -24,7 +24,6 @@ export default function ProfessorAtividadesPage() {
   const [filtroPeriodo, setFiltroPeriodo] = useState<string>('');
   const [turmasData, setTurmasData] = useState<any[]>([]);
 
-  // Filter turmas to only show professor's classes
   const profTurmas = useMemo(() => 
     turmas.filter(t => t.professores?.some(p => p.usuarioId === user?.id)),
     [turmas, user?.id]
@@ -36,6 +35,8 @@ export default function ProfessorAtividadesPage() {
     }
   }, [fetchTurmas, turmas.length]);
 
+  const turmasDisponiveis = turmasData.length > 0 ? turmasData : profTurmas;
+
   useEffect(() => {
     if (user?.id) {
       fetchProfessorAtividades(user.id).then(data => {
@@ -46,9 +47,16 @@ export default function ProfessorAtividadesPage() {
     }
   }, [user?.id, fetchProfessorAtividades]);
 
+  useEffect(() => {
+    if (turmasDisponiveis.length > 0 && !filtroTurma) {
+      setFiltroTurma(turmasDisponiveis[0].id);
+    }
+  }, [turmasDisponiveis, filtroTurma]);
+
   const atividadesFiltradas = useMemo(() => {
     return atividades.filter((atividade: Atividade) => {
-      const turmaMatch = !filtroTurma || String(atividade.turmaId) === String(filtroTurma);
+      const atividadeTurmaId = atividade.turmaId ?? atividade.turma?.id;
+      const turmaMatch = !filtroTurma || String(atividadeTurmaId) === String(filtroTurma);
       const anoMatch = !filtroAno || atividade.ano === filtroAno;
       const periodoMatch = !filtroPeriodo || atividade.periodo === filtroPeriodo;
       
@@ -97,13 +105,10 @@ export default function ProfessorAtividadesPage() {
                   name="filtroTurma"
                   value={filtroTurma}
                   onChange={(e) => setFiltroTurma(e.target.value)}
-                  options={[
-                    { value: '', label: 'Todas as minhas turmas' },
-                    ...profTurmas.map(t => ({
-                      value: t.id,
-                      label: formatarNomeTurma(t.nome)
-                    }))
-                  ]}
+                  options={turmasDisponiveis.map(t => ({
+                    value: t.id,
+                    label: formatarNomeTurma(t.nome)
+                  }))}
                   className="rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
                 />
               </div>
@@ -119,10 +124,7 @@ export default function ProfessorAtividadesPage() {
                   onChange={(e) => setFiltroAno(Number(e.target.value))}
                   options={[
                     { value: new Date().getFullYear(), label: new Date().getFullYear().toString() },
-                    ...Array.from({ length: 5 }, (_, i) => {
-                      const year = new Date().getFullYear() - i - 1;
-                      return { value: year, label: year.toString() };
-                    })
+                    { value: new Date().getFullYear() - 1, label: (new Date().getFullYear() - 1).toString() }
                   ]}
                   className="rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
                 />
