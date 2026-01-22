@@ -54,8 +54,11 @@ export const api = async (endpoint: string, options: ApiRequestOptions = {}) => 
   if (!isPublicEndpoint) {
     let finalTenantId = tenantSlug;
 
-    // Em desenvolvimento, tenta recuperar do localStorage ou stores se não veio automática
-    if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+    // // Em desenvolvimento, tenta recuperar do localStorage ou stores se não veio automática
+    // if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+    
+    // Tenta recuperar do localStorage ou stores se não veio automática
+    if (typeof window !== 'undefined') {
        /* 
           1. Tenta localStorage (definido no login)
           2. Tenta useTenantStore (estado global)
