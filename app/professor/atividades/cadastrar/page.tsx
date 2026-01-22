@@ -365,7 +365,6 @@ export default function CadastrarAtividadePage() {
                     ]}
                     className="rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
                     error={!!errors.objetivoId}
-                    searchable={true}
                   />
                   {errors.objetivoId && <p className="mt-1 text-sm text-red-600">{errors.objetivoId}</p>}
                 </div>
