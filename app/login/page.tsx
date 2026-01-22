@@ -10,23 +10,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { toast, Toaster } from "sonner";
 import { useTenant } from "@/hooks/useTenant";
+import { SplashScreen } from "@/components/ui/splash-screen";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { login, _hasHydrated, isAuthenticated, user } = useAuthStore();
+  const [isChecking, setIsChecking] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const { login } = useAuthStore();
 
   useTenant();
 
   useEffect(() => {
-    const { isAuthenticated, user, _hasHydrated } = useAuthStore.getState();
-    const isStoreHydrated = _hasHydrated || useAuthStore.persist.hasHydrated();
+    if (!_hasHydrated) return;
 
-    if (isStoreHydrated && isAuthenticated && user) {
+    if (isAuthenticated && user) {
         if (user.roles?.includes("PLATFORM_ADMIN")) {
             router.push("/platform/escolas");
         } else if (user.roles?.includes("ADMIN")) {
@@ -38,8 +39,10 @@ function LoginForm() {
         } else {
              router.push("/");
         }
+    } else {
+        setIsChecking(false);
     }
-  }, [router]);
+  }, [router, _hasHydrated, isAuthenticated, user]);
 
   useEffect(() => {
     const errorParam = searchParams.get('error');
@@ -53,6 +56,10 @@ function LoginForm() {
       });
     }
   }, [searchParams]);
+
+  if (isChecking) {
+    return <SplashScreen />;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

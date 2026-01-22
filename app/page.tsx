@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { SplashScreen } from '@/components/ui/splash-screen';
 
 export default function Home() {
   const router = useRouter();
@@ -14,7 +15,6 @@ export default function Home() {
   }, [_hasHydrated]);
 
   useEffect(() => {
-    // Só verifica auth depois que o store terminou de carregar do localStorage
     if (!isHydrated) return;
 
     const isAuth = checkAuth() || (isAuthenticated && !!user);
