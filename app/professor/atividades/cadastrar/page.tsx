@@ -18,7 +18,7 @@ export default function CadastrarAtividadePage() {
   const { createAtividade, isLoading } = useAtividadesStore();
   const turmas = useTurmasStore(state => state.turmas);
   const fetchTurmas = useTurmasStore(state => state.fetchTurmas);
-  const { objetivos, fetchObjetivosByTurmaAndCampo } = useObjetivosStore();
+  const { objetivos, objetivosPorGrupoECampo, fetchObjetivosPorGrupoIdCampoId } = useObjetivosStore();
   
   const [mensagem, setMensagem] = useState<{texto: string, tipo: 'sucesso' | 'erro'} | null>(null);
   const [formData, setFormData] = useState({
@@ -47,14 +47,11 @@ export default function CadastrarAtividadePage() {
   }, [fetchTurmas, turmas.length]);
 
   // Load objetivos when turma and campo are selected
+  // Note: This would require mapping turma to grupoId and campo to campoId
+  // For now, objetivos will need to be loaded separately or all at once
   useEffect(() => {
-    if (formData.turmaId && formData.campoExperiencia) {
-      const turma = turmas.find(t => t.id === Number(formData.turmaId));
-      if (turma) {
-        fetchObjetivosByTurmaAndCampo(turma.nome, formData.campoExperiencia as CAMPO_EXPERIENCIA);
-      }
-    }
-  }, [formData.turmaId, formData.campoExperiencia, turmas, fetchObjetivosByTurmaAndCampo]);
+    // TODO: Implement objetivo loading based on turma grupo and campo ID mapping
+  }, [formData.turmaId, formData.campoExperiencia]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

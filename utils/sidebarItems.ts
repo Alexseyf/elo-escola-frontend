@@ -64,7 +64,7 @@ export function getAdminSidebarItems(): SidebarItem[] {
     {
       id: "atividades",
       label: "Atividades Pedagógicas",
-      href: "/atividades?section=atividades",
+      href: "/admin/atividades",
       icon: FileText,
     },
     {
@@ -107,7 +107,7 @@ export function getProfessorSidebarItems(): SidebarItem[] {
     {
       id: "atividades",
       label: "Atividades",
-      href: "/atividades?section=atividades",
+      href: "/professor/atividades",
       icon: FileText,
     },
     {
