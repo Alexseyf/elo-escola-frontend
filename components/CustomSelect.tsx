@@ -52,8 +52,7 @@ export function CustomSelect({
     if (isOpen && searchable && searchInputRef.current) {
       searchInputRef.current.focus();
     }
-    
-    // Adjust dropdown position if it would overflow viewport
+
     if (isOpen && dropdownRef.current && buttonRef.current) {
       const dropdown = dropdownRef.current;
       const button = buttonRef.current;
@@ -61,9 +60,8 @@ export function CustomSelect({
       const viewportHeight = window.innerHeight;
       const spaceBelow = viewportHeight - rect.bottom;
       const spaceAbove = rect.top;
-      const dropdownHeight = Math.min(240, options.length * 40); // Estimate dropdown height
+      const dropdownHeight = Math.min(240, options.length * 40);
       
-      // If not enough space below and more space above, position above
       if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
         dropdown.style.bottom = '100%';
         dropdown.style.top = 'auto';
@@ -146,7 +144,7 @@ export function CustomSelect({
                 type="button"
                 onClick={() => handleSelectOption(option.value)}
                 className={`w-full px-3 py-2 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none ${
-                  String(value) === String(option.value) ? 'bg-blue-100 font-semibold' : ''
+                  String(value) === String(option.value) ? 'bg-blue-100' : ''
                 }`}
               >
                 <span className="block whitespace-normal break-words">{option.label}</span>

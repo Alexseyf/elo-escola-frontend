@@ -74,14 +74,14 @@ export default function DiarioStepper({
   const progress = ((currentStep + 1) / STEPS.length) * 100;
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-64px)]">
+    <div className="flex flex-col h-[calc(100vh-64px)]">
       {/* Header with Progress */}
       <div className="bg-white border-b sticky top-0 z-20 px-6 py-4">
         <div className="max-w-3xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center justify-between w-full md:w-auto">
             <div className="min-w-0">
-              <h1 className="text-lg md:text-xl font-bold text-gray-800 truncate">{alunoNome}</h1>
-              <p className="text-[10px] md:text-xs text-gray-500 font-medium uppercase tracking-wider">{step.title}</p>
+              <h1 className="text-lg font-semibold text-gray-900 truncate">{alunoNome}</h1>
+              <p className="text-sm text-gray-500">{step.title}</p>
             </div>
             {onCancel && (
               <button onClick={onCancel} className="md:hidden text-gray-400 hover:text-gray-600 p-2">
@@ -90,14 +90,14 @@ export default function DiarioStepper({
             )}
           </div>
 
-          <div className="w-[80%] md:flex-1 md:max-w-[150px] lg:max-w-[200px]">
-            <div className="bg-gray-100 h-1.5 md:h-2 rounded-full overflow-hidden">
+          <div className="w-full md:flex-1 md:max-w-[150px] lg:max-w-[200px]">
+            <div className="bg-gray-200 h-1.5 rounded-full overflow-hidden">
               <div 
-                className="bg-blue-600 h-full transition-all duration-300"
+                className="bg-blue-500 h-full transition-all duration-300"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="text-[10px] mt-1 text-gray-400 font-bold md:text-right">
+            <p className="text-xs mt-1 text-gray-500 md:text-right">
               {currentStep + 1} / {STEPS.length}
             </p>
           </div>
@@ -111,17 +111,19 @@ export default function DiarioStepper({
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-6 overflow-y-auto">
-        <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-xl shadow-blue-900/5 p-8 border border-gray-50">
-          <StepComponent
-            value={step.field ? (formData as any)[step.field] : formData}
-            onChange={(val: any) => {
-              if (step.field) {
-                setFormData({ ...formData, [step.field]: val });
-              }
-            }}
-            data={formData}
-          />
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-3xl mx-auto p-6">
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+            <StepComponent
+              value={step.field ? (formData as any)[step.field] : formData}
+              onChange={(val: any) => {
+                if (step.field) {
+                  setFormData({ ...formData, [step.field]: val });
+                }
+              }}
+              data={formData}
+            />
+          </div>
         </div>
       </div>
 
@@ -131,14 +133,14 @@ export default function DiarioStepper({
           {currentStep === 0 ? (
             <button
               onClick={onCancel}
-              className="flex-1 px-6 py-4 rounded-2xl font-bold text-red-500 bg-red-50 hover:bg-red-100 transition-all border-2 border-transparent"
+              className="flex-1 px-4 py-2.5 rounded-lg font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-all"
             >
               Cancelar
             </button>
           ) : (
             <button
               onClick={handlePrevious}
-              className="flex-1 px-6 py-4 rounded-2xl font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 transition-all border-2 border-transparent"
+              className="flex-1 px-4 py-2.5 rounded-lg font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-all"
             >
               Anterior
             </button>
@@ -147,14 +149,14 @@ export default function DiarioStepper({
             <button
               onClick={() => onSubmit(formData)}
               disabled={isLoading}
-              className="flex-1 px-6 py-4 rounded-2xl font-bold text-white bg-green-600 hover:bg-green-700 shadow-lg shadow-green-200 transition-all disabled:opacity-50"
+              className="flex-1 px-4 py-2.5 rounded-lg font-medium text-white bg-green-600 hover:bg-green-700 shadow-sm transition-all disabled:opacity-50"
             >
               {isLoading ? 'Salvando...' : 'Finalizar Diário'}
             </button>
           ) : (
             <button
               onClick={handleNext}
-              className="flex-1 px-6 py-4 rounded-2xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all"
+              className="flex-1 px-4 py-2.5 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-all"
             >
               Próximo
             </button>

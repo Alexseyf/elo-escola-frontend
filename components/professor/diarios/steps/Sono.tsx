@@ -137,27 +137,25 @@ export default function Sono({ value, onChange }: SonoProps) {
   };
 
   return (
-    <div className="space-y-4 md:space-y-6">
-      <div className="bg-blue-50/50 p-4 md:p-6 rounded-3xl border border-blue-100 space-y-3 md:space-y-6">
-        <h3 className="text-[10px] md:text-sm font-bold text-blue-800 uppercase tracking-widest pl-1">Adicionar Período</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
+    <div className="space-y-4">
+      <div className="bg-blue-50 p-3 rounded-lg border border-blue-100 space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Dormiu */}
-          <div className="space-y-2 md:space-y-4">
-            <label className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider block px-1">Dormiu</label>
-            <div className="bg-white p-3 md:p-4 rounded-3xl border border-gray-100 shadow-sm space-y-3 md:space-y-4">
-              <div className="text-center py-1 md:py-2">
-                <span className="text-2xl md:text-3xl font-black text-blue-600">{formatTimeString(newSleepHour, newSleepMinute)}</span>
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-gray-600 block">Dormiu</label>
+            <div className="bg-white p-3 rounded-lg border border-gray-200 space-y-3">
+              <div className="text-center py-1">
+                <span className="text-xl font-semibold text-blue-600">{formatTimeString(newSleepHour, newSleepMinute)}</span>
               </div>
               
-              <div className="space-y-3">
-                <div className="flex gap-2 overflow-x-auto pb-3 px-1 scrollbar-none -mx-1 p-2">
+              <div className="space-y-2">
+                <div className="flex gap-2 overflow-x-auto pb-2 px-1 scrollbar-none -mx-1">
                   {HOURS.map((h) => (
                     <button
                       key={`sleep-h-${h}`}
                       onClick={() => handleSleepHourChange(h)}
-                      className={`flex-shrink-0 w-10 h-10 rounded-xl font-bold text-sm transition-all ${
-                        newSleepHour === h ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-200' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
+                      className={`flex-shrink-0 w-10 h-10 rounded-lg font-medium text-sm transition-all ${
+                        newSleepHour === h ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                       }`}
                     >
                       {h}
@@ -169,8 +167,8 @@ export default function Sono({ value, onChange }: SonoProps) {
                     <button
                       key={`sleep-m-${m}`}
                       onClick={() => handleSleepMinuteChange(m)}
-                      className={`w-12 h-10 rounded-xl font-bold text-sm transition-all ${
-                        newSleepMinute === m ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-200' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
+                      className={`w-12 h-10 rounded-lg font-medium text-sm transition-all ${
+                        newSleepMinute === m ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                       }`}
                     >
                       {m}
@@ -182,15 +180,15 @@ export default function Sono({ value, onChange }: SonoProps) {
           </div>
 
           {/* Acordou */}
-          <div className="space-y-2 md:space-y-4">
-            <label className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider block px-1">Acordou</label>
-            <div className="bg-white p-3 md:p-4 rounded-3xl border border-gray-100 shadow-sm space-y-3 md:space-y-4">
-              <div className="text-center py-1 md:py-2">
-                <span className="text-2xl md:text-3xl font-black text-amber-500">{formatTimeString(newWakeHour, newWakeMinute)}</span>
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-gray-600 block">Acordou</label>
+            <div className="bg-white p-3 rounded-lg border border-gray-200 space-y-3">
+              <div className="text-center py-1">
+                <span className="text-xl font-semibold text-blue-600">{formatTimeString(newWakeHour, newWakeMinute)}</span>
               </div>
               
-              <div className="space-y-3">
-                <div className="flex gap-2 overflow-x-auto pb-3 px-1 scrollbar-none -mx-1 p-2">
+              <div className="space-y-2">
+                <div className="flex gap-2 overflow-x-auto pb-2 px-1 scrollbar-none -mx-1">
                   {HOURS.map((h) => {
                     const disabled = h < newSleepHour;
                     return (
@@ -198,9 +196,9 @@ export default function Sono({ value, onChange }: SonoProps) {
                         key={`wake-h-${h}`}
                         disabled={disabled}
                         onClick={() => setNewWakeHour(h)}
-                        className={`flex-shrink-0 w-10 h-10 rounded-xl font-bold text-sm transition-all ${
-                          newWakeHour === h ? 'bg-amber-100 text-amber-700 ring-2 ring-amber-200' : 
-                          disabled ? 'opacity-20 cursor-not-allowed' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
+                        className={`flex-shrink-0 w-10 h-10 rounded-lg font-medium text-sm transition-all ${
+                          newWakeHour === h ? 'bg-blue-600 text-white' : 
+                          disabled ? 'opacity-20 cursor-not-allowed' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                         }`}
                       >
                         {h}
@@ -216,9 +214,9 @@ export default function Sono({ value, onChange }: SonoProps) {
                         key={`wake-m-${m}`}
                         disabled={disabled}
                         onClick={() => setNewWakeMinute(m)}
-                        className={`w-12 h-10 rounded-xl font-bold text-sm transition-all ${
-                          newWakeMinute === m ? 'bg-amber-100 text-amber-700 ring-2 ring-amber-200' : 
-                          disabled ? 'opacity-20 cursor-not-allowed' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
+                        className={`w-12 h-10 rounded-lg font-medium text-sm transition-all ${
+                          newWakeMinute === m ? 'bg-blue-600 text-white' : 
+                          disabled ? 'opacity-20 cursor-not-allowed' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                         }`}
                       >
                         {m}
@@ -234,41 +232,55 @@ export default function Sono({ value, onChange }: SonoProps) {
         <button
           onClick={handleAddPeriod}
           disabled={isTimesEqual()}
-          className="w-full py-3 md:py-4 bg-blue-500/80 text-white rounded-2xl font-bold shadow-lg shadow-blue-100 hover:bg-blue-500 transition-all disabled:opacity-50 disabled:shadow-none text-sm md:text-base"
+          className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
         >
           Adicionar Período
         </button>
       </div>
 
       {/* List of periods */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         {value.map((period) => (
-          <div key={period.id} className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-3xl shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center font-black">
-                {formatTimeString(period.sleepHour || 0, period.sleepMinute || 0)}
+          <div key={period.id} className="p-3 bg-white border border-gray-200 rounded-lg">
+            <div className="grid grid-cols-2 gap-3">
+              {/* Top Left: Dormiu */}
+              <div className="flex flex-col gap-1">
+                <span className="text-xs text-gray-500">Dormiu</span>
+                <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-sm font-medium border border-blue-100 text-center">
+                  {formatTimeString(period.sleepHour || 0, period.sleepMinute || 0)}
+                </span>
               </div>
-              <div className="h-px w-4 bg-gray-200" />
-              <div className="w-10 h-10 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center font-black">
-                {formatTimeString(period.wakeHour || 0, period.wakeMinute || 0)}
+              
+              {/* Top Right: Delete Button */}
+              <div className="flex justify-end">
+                <button
+                  onClick={() => handleRemoveSleep(period.id!)}
+                  className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all h-fit"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
               </div>
-              <div className="ml-4">
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Duração</p>
-                <p className="text-sm font-bold text-gray-700">{formatDuration(period.tempoTotal || '00:00')}</p>
+              
+              {/* Bottom Left: Acordou */}
+              <div className="flex flex-col gap-1">
+                <span className="text-xs text-gray-500">Acordou</span>
+                <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-sm font-medium border border-blue-100 text-center">
+                  {formatTimeString(period.wakeHour || 0, period.wakeMinute || 0)}
+                </span>
+              </div>
+              
+              {/* Bottom Right: Duration */}
+              <div className="flex flex-col gap-1 items-end">
+                <span className="text-xs text-gray-500">Duração</span>
+                <span className="text-sm font-semibold text-gray-900">{formatDuration(period.tempoTotal || '00:00')}</span>
               </div>
             </div>
-            <button
-              onClick={() => handleRemoveSleep(period.id!)}
-              className="p-2 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
           </div>
         ))}
         {value.length === 0 && (
-          <p className="text-center py-8 text-gray-300 font-medium italic">Nenhum período registrado.</p>
+          <p className="text-center py-6 text-gray-400 text-sm">Nenhum período registrado.</p>
         )}
       </div>
     </div>

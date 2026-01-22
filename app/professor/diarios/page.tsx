@@ -80,7 +80,7 @@ export default function ProfessorDiariosPage() {
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Diários</h1>
+              <h1 className="text-2xl font-semibold text-gray-900">Diários</h1>
               <p className="text-gray-500 mt-1">Gerencie os registros diários</p>
             </div>
           </div>
@@ -94,7 +94,7 @@ export default function ProfessorDiariosPage() {
                 placeholder="Buscar por nome do aluno..."
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-gray-100 shadow-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all placeholder:text-gray-400 font-medium"
+                className="w-full pl-12 pr-4 py-3 rounded-lg bg-white border border-gray-200 shadow-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all placeholder:text-gray-400"
               />
             </div>
             <CustomSelect
@@ -106,7 +106,7 @@ export default function ProfessorDiariosPage() {
                 value: t.id, 
                 label: t.nome 
               }))}
-              className="h-full rounded-2xl border-gray-100 shadow-sm font-medium text-gray-700 px-5 py-4"
+              className="h-full rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
             />
           </div>
 
@@ -117,11 +117,11 @@ export default function ProfessorDiariosPage() {
               <p className="text-gray-500 font-medium italic">Carregando turmas...</p>
             </div>
           ) : filteredTurmas.length === 0 ? (
-            <div className="bg-white rounded-3xl p-20 text-center border-2 border-dashed border-gray-100">
-              <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                 <User className="text-gray-300 w-10 h-10" />
+            <div className="bg-white rounded-lg p-12 text-center border-2 border-dashed border-gray-200">
+              <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                 <User className="text-gray-300 w-8 h-8" />
               </div>
-              <h3 className="text-xl font-bold text-gray-800">Nenhum aluno encontrado</h3>
+              <h3 className="text-lg font-semibold text-gray-900">Nenhum aluno encontrado</h3>
               <p className="text-gray-500 mt-2">Tente ajustar seus filtros de busca.</p>
             </div>
           ) : (
@@ -129,17 +129,17 @@ export default function ProfessorDiariosPage() {
               {filteredTurmas.map(turma => (
                 <div key={turma.id} className="space-y-4">
                   <div className="flex items-center gap-3 px-2">
-                    <span className="w-2 h-8 bg-blue-600 rounded-full" />
-                    <h2 className="text-xl font-extrabold text-gray-800 uppercase tracking-widest">{formatarNomeTurma(turma.nome)}</h2>
-                    <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold ring-1 ring-blue-100">
-                      {turma.alunos.length} {turma.alunos.length === 1 ? 'ALUNO' : 'ALUNOS'}
+                    <span className="w-1.5 h-6 bg-blue-500 rounded-full" />
+                    <h2 className="text-lg font-semibold text-gray-900">{formatarNomeTurma(turma.nome)}</h2>
+                    <span className="bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full text-xs font-medium border border-blue-100">
+                      {turma.alunos.length} {turma.alunos.length === 1 ? 'aluno' : 'alunos'}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {loadingStatus ? (
                       [1, 2, 3].map((n) => (
-                        <div key={n} className="bg-white p-6 rounded-3xl border border-gray-100 animate-pulse h-[88px]" />
+                        <div key={n} className="bg-white p-4 rounded-lg border border-gray-200 animate-pulse h-[72px]" />
                       ))
                     ) : (
                       turma.alunos.map(aluno => {
@@ -148,22 +148,22 @@ export default function ProfessorDiariosPage() {
                           <Link 
                             href={temDiario ? `/professor/diarios/visualizar/${aluno.id}` : `/professor/diarios/novo/${aluno.id}`}
                             key={aluno.id}
-                            className={`group relative overflow-hidden bg-white p-6 rounded-3xl border transition-all duration-300 hover:shadow-2xl hover:shadow-blue-900/10 hover:-translate-y-1 ${
-                              temDiario ? 'border-green-100 bg-green-50/10' : 'border-gray-100'
+                            className={`group relative bg-white p-4 rounded-lg border transition-all hover:shadow-md hover:border-blue-200 ${
+                              temDiario ? 'border-green-200 bg-green-50/30' : 'border-gray-200'
                             }`}
                           >
                             <div className="flex items-center justify-between gap-4">
-                              <h4 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors uppercase tracking-tight truncate flex-1">
+                              <h4 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors truncate flex-1">
                                 {aluno.nome.split(' ').slice(0, 2).join(' ')}
                               </h4>
                               
                               {temDiario ? (
-                                <span className="flex items-center gap-1.5 bg-green-100 text-green-700 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider shrink-0">
+                                <span className="flex items-center gap-1.5 bg-green-50 text-green-700 px-2.5 py-1 rounded-md text-xs font-medium border border-green-100 shrink-0">
                                   <CheckCircle2 className="w-3.5 h-3.5" />
                                   Preenchido
                                 </span>
                               ) : (
-                                <span className="flex items-center gap-1.5 bg-gray-100 text-gray-500 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider shrink-0">
+                                <span className="flex items-center gap-1.5 bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md text-xs font-medium border border-gray-200 shrink-0">
                                   Pendente
                                 </span>
                               )}
