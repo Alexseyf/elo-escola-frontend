@@ -202,7 +202,7 @@ export const useTurmasStore = create<TurmasState>()(
       fetchGrupos: async () => {
         set({ isLoading: true, error: null });
         try {
-          const response = await api('/grupos', {
+          const response = await api('/api/v1/grupos', {
             method: 'GET'
           });
 
@@ -297,8 +297,9 @@ export const useTurmasStore = create<TurmasState>()(
       },
 
       mapearTurmaParaGrupo: (nomeTurma: string) => {
-        const turmaUpperCase = nomeTurma.toUpperCase();
-        return mapeamentoTurmaGrupo[turmaUpperCase] || '';
+        // Remove spaces and convert to uppercase to handle both "MATERNAL1" and "Maternal 1"
+        const turmaKey = nomeTurma.toUpperCase().replace(/\s+/g, '');
+        return mapeamentoTurmaGrupo[turmaKey] || '';
       },
 
       mapearGrupoParaId: (nomeGrupo: string) => {

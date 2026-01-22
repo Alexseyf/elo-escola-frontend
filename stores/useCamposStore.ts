@@ -67,7 +67,7 @@ export const useCamposStore = create<CamposState>()(
       fetchCampos: async () => {
         set({ isLoading: true, error: null });
         try {
-          const response = await api('/campos', {
+          const response = await api('/api/v1/campos', {
             method: 'GET',
           });
 
