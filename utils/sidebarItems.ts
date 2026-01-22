@@ -113,7 +113,7 @@ export function getProfessorSidebarItems(): SidebarItem[] {
     {
       id: "alunos",
       label: "Alunos",
-      href: "/alunos?section=alunos",
+      href: "/professor/alunos",
       icon: GraduationCap,
     },
     {

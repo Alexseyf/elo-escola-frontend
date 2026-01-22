@@ -81,7 +81,7 @@ export default function ProfessorDiariosPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-semibold text-gray-900">Diários</h1>
-              <p className="text-gray-500 mt-1">Gerencie os registros diários</p>
+              <p className="text-gray-500 mt-1">Gerencie os registros de diários</p>
             </div>
           </div>
 
@@ -97,17 +97,20 @@ export default function ProfessorDiariosPage() {
                 className="w-full pl-12 pr-4 py-3 rounded-lg bg-white border border-gray-200 shadow-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all placeholder:text-gray-400"
               />
             </div>
-            <CustomSelect
-              id="turma-select"
-              name="turmaId"
-              value={turmaFilter || ''}
-              onChange={(e) => setTurmaFilter(Number(e.target.value))}
-              options={profTurmas.map(t => ({ 
-                value: t.id, 
-                label: t.nome 
-              }))}
-              className="h-full rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
-            />
+            
+            {profTurmas.length > 1 && (
+              <CustomSelect
+                id="turma-select"
+                name="turmaId"
+                value={turmaFilter || ''}
+                onChange={(e) => setTurmaFilter(Number(e.target.value))}
+                options={profTurmas.map(t => ({ 
+                  value: t.id, 
+                  label: t.nome 
+                }))}
+                className="h-full rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
+              />
+            )}
           </div>
 
           {/* List */}
@@ -128,9 +131,11 @@ export default function ProfessorDiariosPage() {
             <div className="space-y-10">
               {filteredTurmas.map(turma => (
                 <div key={turma.id} className="space-y-4">
-                  <div className="flex items-center gap-3 px-2">
-                    <span className="w-1.5 h-6 bg-blue-500 rounded-full" />
-                    <h2 className="text-lg font-semibold text-gray-900">{formatarNomeTurma(turma.nome)}</h2>
+                  <div className="flex items-center justify-between px-2">
+                    <div className="flex items-center gap-3">
+                      <span className="w-1.5 h-6 bg-blue-500 rounded-full" />
+                      <h2 className="text-lg font-semibold text-gray-900">{formatarNomeTurma(turma.nome)}</h2>
+                    </div>
                     <span className="bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full text-xs font-medium border border-blue-100">
                       {turma.alunos.length} {turma.alunos.length === 1 ? 'aluno' : 'alunos'}
                     </span>
