@@ -1,0 +1,119 @@
+import { create } from 'zustand';
+import { api } from '@/lib/api';
+import type { Atividade, CreateAtividadeInput, TurmaAtividadesResponse } from '@/types/atividades';
+
+interface AtividadesState {
+  atividades: Atividade[];
+  atividadeAtual: Atividade | null;
+  isLoading: boolean;
+  error: string | null;
+
+  fetchAtividades: () => Promise<void>;
+  fetchAtividadeById: (id: number) => Promise<void>;
+  fetchProfessorAtividades: (professorId: number) => Promise<TurmaAtividadesResponse | null>;
+  createAtividade: (data: CreateAtividadeInput) => Promise<Atividade | null>;
+  limparCache: () => void;
+}
+
+export const useAtividadesStore = create<AtividadesState>()((set, get) => ({
+  atividades: [],
+  atividadeAtual: null,
+  isLoading: false,
+  error: null,
+
+  fetchAtividades: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api('/api/v1/atividades', {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar atividades: ${response.status}`);
+      }
+
+      const data = await response.json();
+      set({ atividades: data.atividades || data, isLoading: false });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao buscar atividades';
+      set({ isLoading: false, error: message });
+      console.error('Error fetching atividades:', error);
+    }
+  },
+
+  fetchAtividadeById: async (id: number) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api(`/api/v1/atividades/${id}`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar atividade: ${response.status}`);
+      }
+
+      const data = await response.json();
+      set({ atividadeAtual: data, isLoading: false });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao buscar atividade';
+      set({ isLoading: false, error: message });
+      console.error('Error fetching atividade:', error);
+    }
+  },
+
+  fetchProfessorAtividades: async (professorId: number) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api(`/api/v1/atividades/turma-atividades/${professorId}`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar atividades do professor: ${response.status}`);
+      }
+
+      const data: TurmaAtividadesResponse = await response.json();
+      set({ atividades: data.atividades, isLoading: false });
+      return data;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao buscar atividades do professor';
+      set({ isLoading: false, error: message });
+      console.error('Error fetching professor atividades:', error);
+      return null;
+    }
+  },
+
+  createAtividade: async (data: CreateAtividadeInput) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api('/api/v1/atividades', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.erro || `Erro ao criar atividade: ${response.status}`);
+      }
+
+      const result = await response.json();
+      const novaAtividade = result.atividade || result;
+      
+      set(state => ({ 
+        atividades: [novaAtividade, ...state.atividades],
+        isLoading: false 
+      }));
+      
+      return novaAtividade;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao criar atividade';
+      set({ isLoading: false, error: message });
+      console.error('Error creating atividade:', error);
+      return null;
+    }
+  },
+
+  limparCache: () => {
+    set({ atividades: [], atividadeAtual: null, error: null });
+  }
+}));
