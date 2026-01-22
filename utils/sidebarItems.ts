@@ -101,7 +101,7 @@ export function getProfessorSidebarItems(): SidebarItem[] {
     {
       id: "minhas-turmas",
       label: "Minhas Turmas",
-      href: "/minhas-turmas?section=minhas-turmas",
+      href: "/professor/turmas",
       icon: BookOpen,
     },
     {
