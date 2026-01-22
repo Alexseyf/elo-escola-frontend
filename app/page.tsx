@@ -1,14 +1,22 @@
 "use client"
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/useAuthStore';
 
 export default function Home() {
   const router = useRouter();
-  const { user, isAuthenticated, checkAuth } = useAuthStore();
+  const { user, isAuthenticated, checkAuth, _hasHydrated } = useAuthStore();
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
+    setIsHydrated(_hasHydrated);
+  }, [_hasHydrated]);
+
+  useEffect(() => {
+    // Só verifica auth depois que o store terminou de carregar do localStorage
+    if (!isHydrated) return;
+
     const isAuth = checkAuth() || (isAuthenticated && !!user);
 
     if (isAuth && user?.roles) {
@@ -24,7 +32,7 @@ export default function Home() {
     } else {
       router.push('/login');
     }
-  }, [user, isAuthenticated, checkAuth, router]);
+  }, [user, isAuthenticated, checkAuth, router, isHydrated]);
 
   return null;
 }

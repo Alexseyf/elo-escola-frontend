@@ -10,7 +10,7 @@ export default function ProfessorDashboard() {
     <RouteGuard allowedRoles={['PROFESSOR']}>
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-6">Painel do Professor</h1>
-        <p className="mb-4">Olá, professor(a) {user?.email}</p>
+        <p className="mb-4">Olá, professora {user?.nome?.split(' ')[0]}</p>
         
         {/* TODO: Adicionar conteúdo */}
 

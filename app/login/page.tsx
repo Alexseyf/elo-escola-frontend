@@ -23,6 +23,25 @@ function LoginForm() {
   useTenant();
 
   useEffect(() => {
+    const { isAuthenticated, user, _hasHydrated } = useAuthStore.getState();
+    const isStoreHydrated = _hasHydrated || useAuthStore.persist.hasHydrated();
+
+    if (isStoreHydrated && isAuthenticated && user) {
+        if (user.roles?.includes("PLATFORM_ADMIN")) {
+            router.push("/platform/escolas");
+        } else if (user.roles?.includes("ADMIN")) {
+            router.push("/admin/dashboard");
+        } else if (user.roles?.includes("PROFESSOR")) {
+            router.push("/professor/dashboard");
+        } else if (user.roles?.includes("RESPONSAVEL")) {
+            router.push("/responsavel/dashboard");
+        } else {
+             router.push("/");
+        }
+    }
+  }, [router]);
+
+  useEffect(() => {
     const errorParam = searchParams.get('error');
     if (errorParam === 'tenant-mismatch') {
       toast.error('Acesso negado: você foi desconectado por segurança', {

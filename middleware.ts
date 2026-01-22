@@ -23,9 +23,6 @@ export function middleware(request: NextRequest) {
   }
 
   if (isRootDomain) {
-    if (url.pathname === '/') {
-       return NextResponse.redirect(new URL('/login', request.url));
-    }
     return NextResponse.next();
   }
 
