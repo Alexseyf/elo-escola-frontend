@@ -259,17 +259,20 @@ export default function CadastrarAtividadePage() {
                   <label htmlFor="quantHora" className="block text-sm font-medium text-gray-700 mb-2">
                     Quantidade de Horas*
                   </label>
-                  <input
-                    type="number"
+                  <CustomSelect
                     id="quantHora"
                     name="quantHora"
                     value={formData.quantHora}
                     onChange={handleInputChange}
-                    min="1"
-                    className={`w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 transition-colors ${
-                      errors.quantHora ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'
-                    }`}
-                    placeholder="Horas"
+                    options={[
+                      { value: '', label: 'Selecione as horas' },
+                      { value: '1', label: '1 hora' },
+                      { value: '2', label: '2 horas' },
+                      { value: '3', label: '3 horas' },
+                      { value: '4', label: '4 horas' }
+                    ]}
+                    className="rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
+                    error={!!errors.quantHora}
                   />
                   {errors.quantHora && <p className="mt-1 text-sm text-red-600">{errors.quantHora}</p>}
                 </div>
