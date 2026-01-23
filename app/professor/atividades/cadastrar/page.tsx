@@ -116,9 +116,6 @@ export default function CadastrarAtividadePage() {
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.ano || Number(formData.ano) < 1900) {
-      newErrors.ano = 'Ano inválido';
-    }
     if (!formData.periodo) {
       newErrors.periodo = 'Selecione um período';
     }
@@ -222,26 +219,7 @@ export default function CadastrarAtividadePage() {
           <div className="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                {/* Ano */}
-                <div>
-                  <label htmlFor="ano" className="block text-sm font-medium text-gray-700 mb-2">
-                    Ano*
-                  </label>
-                  <input
-                    type="number"
-                    id="ano"
-                    name="ano"
-                    value={formData.ano}
-                    onChange={handleInputChange}
-                    min="1900"
-                    max="2100"
-                    className={`w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 transition-colors ${
-                      errors.ano ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'
-                    }`}
-                    placeholder="2026"
-                  />
-                  {errors.ano && <p className="mt-1 text-sm text-red-600">{errors.ano}</p>}
-                </div>
+
 
                 {/* Período */}
                 <div>
