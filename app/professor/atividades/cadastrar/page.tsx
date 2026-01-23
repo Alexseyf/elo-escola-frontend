@@ -22,7 +22,7 @@ export default function CadastrarAtividadePage() {
   const mapearTurmaParaGrupo = useTurmasStore(state => state.mapearTurmaParaGrupo);
   const mapearGrupoParaId = useTurmasStore(state => state.mapearGrupoParaId);
   const { objetivos, objetivosPorGrupoECampo, fetchObjetivosPorGrupoIdCampoId } = useObjetivosStore();
-  const { fetchCampos, mapearCampoParaId } = useCamposStore();
+  const { campos, fetchCampos, mapearCampoParaId } = useCamposStore();
   
   const [mensagem, setMensagem] = useState<{texto: string, tipo: 'sucesso' | 'erro'} | null>(null);
   const [formData, setFormData] = useState({
@@ -66,7 +66,7 @@ export default function CadastrarAtividadePage() {
 
   useEffect(() => {
     async function loadObjetivos() {
-      if (!formData.turmaId || !formData.campoExperiencia) {
+      if (!formData.turmaId || !formData.campoExperiencia || campos.length === 0) {
         return;
       }
 
@@ -101,7 +101,7 @@ export default function CadastrarAtividadePage() {
     }
 
     loadObjetivos();
-  }, [formData.turmaId, formData.campoExperiencia, turmas, fetchObjetivosPorGrupoIdCampoId]);
+  }, [formData.turmaId, formData.campoExperiencia, turmas, campos, fetchObjetivosPorGrupoIdCampoId, mapearCampoParaId, mapearGrupoParaId, mapearTurmaParaGrupo]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
