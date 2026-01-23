@@ -39,21 +39,21 @@ export default function CadastrarAtividadePage() {
   
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Filter turmas to only show professor's classes
   const profTurmas = useMemo(() => 
     turmas.filter(t => t.professores?.some(p => p.usuarioId === user?.id)),
     [turmas, user?.id]
   );
 
   useEffect(() => {
+    if (!user) return;
+    
     if (turmas.length === 0) {
       fetchTurmas();
     }
     fetchGrupos();
     fetchCampos();
-  }, [fetchTurmas, fetchGrupos, fetchCampos, turmas.length]);
+  }, [user, fetchTurmas, fetchGrupos, fetchCampos, turmas.length]);
 
-  // Load objetivos when turma and campo are selected
   useEffect(() => {
     async function loadObjetivos() {
       if (!formData.turmaId || !formData.campoExperiencia) {
@@ -61,36 +61,29 @@ export default function CadastrarAtividadePage() {
       }
 
       try {
-        // Find selected turma
         const turma = turmas.find(t => t.id === Number(formData.turmaId));
         if (!turma) return;
 
-        // Map turma to grupo
         const grupo = mapearTurmaParaGrupo(turma.nome);
         if (!grupo) {
           console.error('Não foi possível mapear turma para grupo:', turma.nome);
           return;
         }
 
-        // Get grupo ID
         const grupoId = await mapearGrupoParaId(grupo);
         if (!grupoId) {
           console.error('Não foi possível obter ID do grupo:', grupo);
           return;
         }
 
-        // Get campo ID
         const campoId = mapearCampoParaId(formData.campoExperiencia as CAMPO_EXPERIENCIA);
         if (!campoId) {
           console.error('Não foi possível obter ID do campo:', formData.campoExperiencia);
           return;
         }
 
-        // Fetch objetivos
-        console.log(`Carregando objetivos para grupoId=${grupoId}, campoId=${campoId}`);
         await fetchObjetivosPorGrupoIdCampoId(grupoId, campoId);
         
-        // Reset objetivo selection
         setFormData(prev => ({ ...prev, objetivoId: '' }));
       } catch (error) {
         console.error('Erro ao carregar objetivos:', error);
@@ -105,7 +98,6 @@ export default function CadastrarAtividadePage() {
     setFormData(prev => ({ ...prev, [name]: value }));
     setErrors(prev => ({ ...prev, [name]: '' }));
 
-    // Reset objetivo when turma or campo changes
     if (name === 'turmaId' || name === 'campoExperiencia') {
       setFormData(prev => ({ ...prev, objetivoId: '' }));
     }

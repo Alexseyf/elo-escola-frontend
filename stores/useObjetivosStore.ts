@@ -64,12 +64,12 @@ export const useObjetivosStore = create<ObjetivosState>((set, get) => ({
     }
 
     try {
-      console.log(`Filtrando objetivos localmente: grupoId=${grupoId} campoId=${campoId}`);
+
 
       let todosObjetivos = get().objetivos;
       
       if (!todosObjetivos || todosObjetivos.length === 0) {
-        console.log('Cache de objetivos vazio, buscando do backend...');
+
         await get().fetchObjetivos();
         todosObjetivos = get().objetivos;
       }
@@ -85,7 +85,7 @@ export const useObjetivosStore = create<ObjetivosState>((set, get) => ({
         return obj.grupoId === grupoId && (obj.campoExperienciaId === campoId || obj.campoId === campoId);
       });
 
-      console.log(`Objetivos filtrados: ${filtrados.length} de ${todosObjetivos.length}`);
+
       set({ objetivosPorGrupoECampo: filtrados, isLoading: false, error: null });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erro ao filtrar objetivos';

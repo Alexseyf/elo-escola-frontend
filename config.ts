@@ -1,10 +1,5 @@
 const config = {
-    API_URL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+    API_URL: "http://localhost:3000"
 };
 
 export default config;
-
-
-    // API_URL: process.env.NODE_ENV === 'development' 
-    //     ? "http://localhost:3000" 
-    //     : process.env.NEXT_PUBLIC_API_URL || ""

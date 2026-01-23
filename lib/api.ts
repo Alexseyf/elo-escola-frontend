@@ -87,15 +87,7 @@ export const api = async (endpoint: string, options: ApiRequestOptions = {}) => 
 
   const url = `${config.API_URL}${endpoint}`;
 
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[API] ${options.method || 'GET'} ${url}`);
-    console.log('[API] Headers:', {
-      'Content-Type': headers['Content-Type'],
-      'Authorization': token ? `Bearer ${token.substring(0, 20)}...` : 'NOT SET',
-      'x-tenant-id': headers['x-tenant-id'] || (isPublicEndpoint ? 'OMITTED (public endpoint)' : (isBNCCEndpoint ? 'OMITTED (BNCC endpoint)' : 'NOT SET')),
-    });
-    console.log('[API] Tenant Slug from Store:', tenantSlug || 'NOT SET');
-  }
+
 
   const response = await fetch(url, {
     ...options,
