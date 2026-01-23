@@ -27,12 +27,12 @@ export default function CadastrarAtividadePage() {
   const [mensagem, setMensagem] = useState<{texto: string, tipo: 'sucesso' | 'erro'} | null>(null);
   const [formData, setFormData] = useState({
     ano: new Date().getFullYear().toString(),
-    periodo: '',
-    quantHora: '',
+    periodo: SEMESTRE.PRIMEIRO_SEMESTRE,
+    quantHora: '1',
     descricao: '',
     data: new Date().toISOString().split('T')[0],
     turmaId: '',
-    campoExperiencia: '',
+    campoExperiencia: CAMPO_EXPERIENCIA.EU_OUTRO_NOS,
     objetivoId: '',
     isAtivo: true
   });
@@ -47,12 +47,22 @@ export default function CadastrarAtividadePage() {
   useEffect(() => {
     if (!user) return;
     
-    if (turmas.length === 0) {
-      fetchTurmas();
-    }
-    fetchGrupos();
-    fetchCampos();
+    const loadInitialData = async () => {
+      if (turmas.length === 0) {
+        await fetchTurmas();
+      }
+      await Promise.all([fetchGrupos(), fetchCampos()]);
+    };
+
+    loadInitialData();
   }, [user, fetchTurmas, fetchGrupos, fetchCampos, turmas.length]);
+
+  // Set initial turmaId when turmas are loaded
+  useEffect(() => {
+    if (profTurmas.length > 0 && !formData.turmaId) {
+      setFormData(prev => ({ ...prev, turmaId: profTurmas[0].id.toString() }));
+    }
+  }, [profTurmas, formData.turmaId]);
 
   useEffect(() => {
     async function loadObjetivos() {
@@ -244,7 +254,6 @@ export default function CadastrarAtividadePage() {
                     value={formData.periodo}
                     onChange={handleInputChange}
                     options={[
-                      { value: '', label: 'Selecione um período' },
                       { value: SEMESTRE.PRIMEIRO_SEMESTRE, label: '1º Semestre' },
                       { value: SEMESTRE.SEGUNDO_SEMESTRE, label: '2º Semestre' }
                     ]}
@@ -265,7 +274,6 @@ export default function CadastrarAtividadePage() {
                     value={formData.quantHora}
                     onChange={handleInputChange}
                     options={[
-                      { value: '', label: 'Selecione as horas' },
                       { value: '1', label: '1 hora' },
                       { value: '2', label: '2 horas' },
                       { value: '3', label: '3 horas' },
@@ -305,13 +313,10 @@ export default function CadastrarAtividadePage() {
                     name="turmaId"
                     value={formData.turmaId}
                     onChange={handleInputChange}
-                    options={[
-                      { value: '', label: 'Selecione uma turma' },
-                      ...profTurmas.map(turma => ({
-                        value: turma.id,
-                        label: formatarNomeTurma(turma.nome)
-                      }))
-                    ]}
+                    options={profTurmas.map(turma => ({
+                      value: turma.id,
+                      label: formatarNomeTurma(turma.nome)
+                    }))}
                     className="rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
                     error={!!errors.turmaId}
                   />
@@ -328,13 +333,10 @@ export default function CadastrarAtividadePage() {
                     name="campoExperiencia"
                     value={formData.campoExperiencia}
                     onChange={handleInputChange}
-                    options={[
-                      { value: '', label: 'Selecione um campo' },
-                      ...Object.values(CAMPO_EXPERIENCIA).map(campo => ({
-                        value: campo,
-                        label: formatarCampoExperiencia(campo)
-                      }))
-                    ]}
+                    options={Object.values(CAMPO_EXPERIENCIA).map(campo => ({
+                      value: campo,
+                      label: formatarCampoExperiencia(campo)
+                    }))}
                     className="rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
                     error={!!errors.campoExperiencia}
                   />
