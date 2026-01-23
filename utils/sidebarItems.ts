@@ -196,6 +196,12 @@ export function getPlatformAdminSidebarItems(): SidebarItem[] {
       href: "/platform/escolas",
       icon: Building2,
     },
+    {
+      id: "platform-bncc",
+      label: "BNCC",
+      href: "/platform/bncc",
+      icon: BookOpen,
+    },
   ];
 }
 

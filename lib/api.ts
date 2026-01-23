@@ -1,13 +1,13 @@
 import config from '@/config';
-import { useAuthStore } from '@/stores/useAuthStore';
-import { useTenantStore } from '@/stores/useTenantStore';
-
 
 interface ApiRequestOptions extends RequestInit {
   headers?: Record<string, string>;
 }
 
 export const api = async (endpoint: string, options: ApiRequestOptions = {}) => {
+  const { useAuthStore } = await import('@/stores/useAuthStore');
+  const { useTenantStore } = await import('@/stores/useTenantStore');
+
   let tenantSlug = useTenantStore.getState().tenantSlug;
 
   if (!tenantSlug) {
@@ -44,14 +44,19 @@ export const api = async (endpoint: string, options: ApiRequestOptions = {}) => 
   }
 
   /* 
-    The backend documentation states that login and password recovery are public routes 
-    and do not require the x-tenant-id header.
+    Login, recuperação de senha e validação de senha são rotas públicas e não exigem o cabeçalho x-tenant-id.
+    Os endpoints do BNCC (campos, objetivos, grupos) também são acessíveis para PLATFORM_ADMIN sem contexto de tenant.
+
   */
   const isPublicEndpoint = endpoint.includes('/api/v1/login') || 
                           endpoint.includes('/api/v1/recupera-senha') || 
                           endpoint.includes('/api/v1/valida-senha');
   
-  if (!isPublicEndpoint) {
+  const isBNCCEndpoint = endpoint.includes('/api/v1/campos') ||
+                        endpoint.includes('/api/v1/objetivos') ||
+                        endpoint.includes('/api/v1/grupos');
+  
+  if (!isPublicEndpoint && !isBNCCEndpoint) {
     let finalTenantId = tenantSlug;
 
     // Em desenvolvimento, tenta recuperar do localStorage ou stores se não veio automática
@@ -66,7 +71,6 @@ export const api = async (endpoint: string, options: ApiRequestOptions = {}) => 
        if (localSlug) {
          finalTenantId = localSlug;
        } else if (!finalTenantId) {
-         // Fallback para AuthStore se TenantStore também estiver vazio
          const user = useAuthStore.getState().user;
          if (user?.school?.slug) {
            finalTenantId = user.school.slug;
@@ -88,7 +92,7 @@ export const api = async (endpoint: string, options: ApiRequestOptions = {}) => 
     console.log('[API] Headers:', {
       'Content-Type': headers['Content-Type'],
       'Authorization': token ? `Bearer ${token.substring(0, 20)}...` : 'NOT SET',
-      'x-tenant-id': headers['x-tenant-id'] || (isPublicEndpoint ? 'OMITTED (public endpoint)' : 'NOT SET'),
+      'x-tenant-id': headers['x-tenant-id'] || (isPublicEndpoint ? 'OMITTED (public endpoint)' : (isBNCCEndpoint ? 'OMITTED (BNCC endpoint)' : 'NOT SET')),
     });
     console.log('[API] Tenant Slug from Store:', tenantSlug || 'NOT SET');
   }
@@ -98,14 +102,19 @@ export const api = async (endpoint: string, options: ApiRequestOptions = {}) => 
     headers,
   });
 
-  if (response.status === 403) {
-    console.error('[API] 403 Forbidden - Tenant context mismatch detected');
-    
-    if (typeof window !== 'undefined') {
-      const { useAuthStore } = await import('@/stores/useAuthStore');
-      useAuthStore.getState().logout();
+  // Faça logout somente em caso de erro 403 para endpoints relacionados ao locatário onde a incompatibilidade de locatário é o problema.
+  // Não faça logout para endpoints BNCC ou quando o usuário for PLATFORM_ADMIN sem locatário.
+  if (response.status === 403 && !isBNCCEndpoint && !isPublicEndpoint) {
+    // Faça logout somente se tivermos um tenant-id mas ainda recebemos 403 (incompatibilidade de locatário real)
+    if (headers['x-tenant-id']) {
+      console.error('[API] 403 Forbidden - Tenant context mismatch detected');
       
-      window.location.href = '/login?error=tenant-mismatch';
+      if (typeof window !== 'undefined') {
+        const { useAuthStore } = await import('@/stores/useAuthStore');
+        useAuthStore.getState().logout();
+        
+        window.location.href = '/login?error=tenant-mismatch';
+      }
     }
   }
 
