@@ -23,6 +23,7 @@ export default function CadastrarAtividadePage() {
   const mapearGrupoParaId = useTurmasStore(state => state.mapearGrupoParaId);
   const { objetivos, objetivosPorGrupoECampo, fetchObjetivosPorGrupoIdCampoId } = useObjetivosStore();
   const { campos, fetchCampos, mapearCampoParaId } = useCamposStore();
+  const grupos = useTurmasStore(state => state.grupos);
   
   const [mensagem, setMensagem] = useState<{texto: string, tipo: 'sucesso' | 'erro'} | null>(null);
   const [formData, setFormData] = useState({
@@ -66,7 +67,7 @@ export default function CadastrarAtividadePage() {
 
   useEffect(() => {
     async function loadObjetivos() {
-      if (!formData.turmaId || !formData.campoExperiencia || campos.length === 0) {
+      if (!formData.turmaId || !formData.campoExperiencia || campos.length === 0 || grupos.length === 0) {
         return;
       }
 
@@ -80,7 +81,7 @@ export default function CadastrarAtividadePage() {
           return;
         }
 
-        const grupoId = await mapearGrupoParaId(grupo);
+        const grupoId = mapearGrupoParaId(grupo);
         if (!grupoId) {
           console.error('Não foi possível obter ID do grupo:', grupo);
           return;
@@ -101,7 +102,7 @@ export default function CadastrarAtividadePage() {
     }
 
     loadObjetivos();
-  }, [formData.turmaId, formData.campoExperiencia, turmas, campos, fetchObjetivosPorGrupoIdCampoId, mapearCampoParaId, mapearGrupoParaId, mapearTurmaParaGrupo]);
+  }, [formData.turmaId, formData.campoExperiencia, turmas, campos, grupos, fetchObjetivosPorGrupoIdCampoId, mapearCampoParaId, mapearGrupoParaId, mapearTurmaParaGrupo]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

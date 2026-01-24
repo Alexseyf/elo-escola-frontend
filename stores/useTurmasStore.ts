@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import config from '@/config';
 import { useAuthStore } from './useAuthStore';
 import { api } from '@/lib/api';
@@ -98,6 +97,7 @@ interface TurmasState {
   fetchTurmaById: (id: number) => Promise<TurmaData | null>;
   fetchGrupos: () => Promise<void>;
   fetchTotalAlunosPorTurma: (filters?: TotalAlunosFilters) => Promise<void>;
+  fetchTotalAlunosPorTurmaById: (id: number) => Promise<TurmaComTotalAlunos | null>;
   fetchMensalidadesPorTurma: () => Promise<void>;
   getTurmaById: (id: number) => TurmaData | undefined;
   getGrupoById: (id: number) => Grupo | undefined;
@@ -130,283 +130,304 @@ const mapeamentoNomeTurma: Record<string, string> = {
 };
 
 export const useTurmasStore = create<TurmasState>()(
-  persist(
-    (set, get) => ({
-      turmas: [],
-      grupos: [],
-      turmasComTotal: [],
-      mensalidadesPorTurma: null,
-      pagination: null,
-      isLoading: false,
-      error: null,
+  (set, get) => ({
+    turmas: [],
+    grupos: [],
+    turmasComTotal: [],
+    mensalidadesPorTurma: null,
+    pagination: null,
+    isLoading: false,
+    error: null,
 
-      fetchTurmas: async (filters?: TurmaFilters) => {
-        set({ isLoading: true, error: null });
-        try {
-          const params = new URLSearchParams();
-          if (filters?.page) params.append('page', String(filters.page));
-          if (filters?.limit) params.append('limit', String(filters.limit));
-          if (filters?.ano) params.append('ano', String(filters.ano));
-          
-          const queryString = params.toString();
-          const url = `/api/v1/turmas${queryString ? `?${queryString}` : ''}`;
-          
-          const response = await api(url, {
-            method: 'GET'
-          });
+    fetchTurmas: async (filters?: TurmaFilters) => {
+      set({ isLoading: true, error: null });
+      try {
+        const params = new URLSearchParams();
+        if (filters?.page) params.append('page', String(filters.page));
+        if (filters?.limit) params.append('limit', String(filters.limit));
+        if (filters?.ano) params.append('ano', String(filters.ano));
+        
+        const queryString = params.toString();
+        const url = `/api/v1/turmas${queryString ? `?${queryString}` : ''}`;
+        
+        const response = await api(url, {
+          method: 'GET'
+        });
 
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `Erro ao buscar turmas: ${response.status}`);
-          }
-
-          const data = await response.json();
-          const turmasFormatadas = data.map((turma: TurmaData) => ({
-            ...turma,
-            nome: formatarNomeTurma(turma.nome)
-          }));
-
-          set({ turmas: turmasFormatadas, isLoading: false, error: null });
-        } catch (error) {
-          const message = error instanceof Error ? error.message : 'Erro ao buscar turmas';
-          set({ isLoading: false, error: message });
-          console.error('Error fetching turmas:', error);
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `Erro ao buscar turmas: ${response.status}`);
         }
-      },
 
-      fetchTurmaById: async (id: number) => {
-        set({ isLoading: true, error: null });
-        try {
-          const response = await api(`/api/v1/turmas/${id}`, {
-            method: 'GET'
-          });
+        const data = await response.json();
+        const turmasFormatadas = data.map((turma: TurmaData) => ({
+          ...turma,
+          nome: formatarNomeTurma(turma.nome)
+        }));
 
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `Erro ao buscar turma: ${response.status}`);
-          }
+        set({ turmas: turmasFormatadas, isLoading: false, error: null });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Erro ao buscar turmas';
+        set({ isLoading: false, error: message });
+        console.error('Error fetching turmas:', error);
+      }
+    },
 
-          const turma = await response.json();
+    fetchTurmaById: async (id: number) => {
+      set({ isLoading: true, error: null });
+      try {
+        const response = await api(`/api/v1/turmas/${id}`, {
+          method: 'GET'
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `Erro ao buscar turma: ${response.status}`);
+        }
+
+        const turma = await response.json();
+        turma.nome = formatarNomeTurma(turma.nome);
+
+        set({ isLoading: false, error: null });
+        return turma;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Erro ao buscar turma';
+        set({ isLoading: false, error: message });
+        console.error('Error fetching turma:', error);
+        return null;
+      }
+    },
+
+    fetchGrupos: async () => {
+      set({ isLoading: true, error: null });
+      try {
+        const response = await api('/api/v1/grupos', {
+          method: 'GET'
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `Erro ao buscar grupos: ${response.status}`);
+        }
+
+        const grupos = await response.json();
+        set({ grupos, isLoading: false, error: null });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Erro ao buscar grupos';
+        set({ isLoading: false, error: message });
+        console.error('Error fetching grupos:', error);
+      }
+    },
+
+    fetchTotalAlunosPorTurma: async (filters?: TotalAlunosFilters) => {
+      set({ isLoading: true, error: null });
+      try {
+        const params = new URLSearchParams();
+        if (filters?.turmaId) params.append('turmaId', String(filters.turmaId));
+        
+        const queryString = params.toString();
+        const url = `/api/v1/turmas/totalAlunosTurma${queryString ? `?${queryString}` : ''}`;
+        
+        const response = await api(url, {
+          method: 'GET'
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `Erro ao buscar total de alunos: ${response.status}`);
+        }
+
+        const turmasComTotal = await response.json();
+        const turmasFormatadas = turmasComTotal.map((turma: TurmaComTotalAlunos) => ({
+          ...turma,
+          nome: formatarNomeTurma(turma.nome)
+        }));
+
+        set({ turmasComTotal: turmasFormatadas, isLoading: false, error: null });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Erro ao buscar total de alunos por turma';
+        set({ isLoading: false, error: message });
+        console.error('Error fetching total alunos:', error);
+      }
+    },
+
+    fetchTotalAlunosPorTurmaById: async (id: number) => {
+      set({ isLoading: true, error: null });
+      try {
+        const response = await api(`/api/v1/turmas/totalAlunosTurma?turmaId=${id}`, {
+          method: 'GET'
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `Erro ao buscar total de alunos da turma: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (Array.isArray(data) && data.length > 0) {
+          const turma = data[0];
           turma.nome = formatarNomeTurma(turma.nome);
-
           set({ isLoading: false, error: null });
-          return turma;
-        } catch (error) {
-          const message = error instanceof Error ? error.message : 'Erro ao buscar turma';
-          set({ isLoading: false, error: message });
-          console.error('Error fetching turma:', error);
-          return null;
+          return turma as TurmaComTotalAlunos;
         }
-      },
 
-      fetchGrupos: async () => {
-        set({ isLoading: true, error: null });
-        try {
-          const response = await api('/api/v1/grupos', {
-            method: 'GET'
-          });
+        set({ isLoading: false, error: null });
+        return null;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Erro ao buscar total de alunos da turma';
+        set({ isLoading: false, error: message });
+        console.error('Error fetching total alunos by id:', error);
+        return null;
+      }
+    },
 
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `Erro ao buscar grupos: ${response.status}`);
-          }
+    fetchMensalidadesPorTurma: async () => {
+      set({ isLoading: true, error: null });
+      try {
+        const response = await api('/api/v1/alunos/relatorios/mensalidades-por-turma', {
+          method: 'GET'
+        });
 
-          const grupos = await response.json();
-          set({ grupos, isLoading: false, error: null });
-        } catch (error) {
-          const message = error instanceof Error ? error.message : 'Erro ao buscar grupos';
-          set({ isLoading: false, error: message });
-          console.error('Error fetching grupos:', error);
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `Erro ao buscar mensalidades: ${response.status}`);
         }
-      },
 
-      fetchTotalAlunosPorTurma: async (filters?: TotalAlunosFilters) => {
-        set({ isLoading: true, error: null });
-        try {
-          const params = new URLSearchParams();
-          if (filters?.turmaId) params.append('turmaId', String(filters.turmaId));
-          
-          const queryString = params.toString();
-          const url = `/api/v1/turmas/totalAlunosTurma${queryString ? `?${queryString}` : ''}`;
-          
-          const response = await api(url, {
-            method: 'GET'
-          });
+        const data: MensalidadesResponse = await response.json();
 
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `Erro ao buscar total de alunos: ${response.status}`);
-          }
+        const turmasFormatadas = data.turmas.map(turma => ({
+          ...turma,
+          turmaNome: formatarNomeTurma(turma.turmaNome)
+        }));
 
-          const turmasComTotal = await response.json();
-          const turmasFormatadas = turmasComTotal.map((turma: TurmaComTotalAlunos) => ({
-            ...turma,
-            nome: formatarNomeTurma(turma.nome)
-          }));
+        set({ 
+          mensalidadesPorTurma: {
+            ...data,
+            turmas: turmasFormatadas
+          }, 
+          isLoading: false, 
+          error: null 
+        });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Ocorreu um erro desconhecido ao buscar mensalidades por turma.';
+        set({ isLoading: false, error: message });
+        console.error('Error fetching mensalidades:', error);
+      }
+    },
 
-          set({ turmasComTotal: turmasFormatadas, isLoading: false, error: null });
-        } catch (error) {
-          const message = error instanceof Error ? error.message : 'Erro ao buscar total de alunos por turma';
-          set({ isLoading: false, error: message });
-          console.error('Error fetching total alunos:', error);
+    getTurmaById: (id: number) => {
+      const state = get();
+      return state.turmas.find(t => t.id === id);
+    },
+
+    getGrupoById: (id: number) => {
+      const state = get();
+      return state.grupos.find(g => g.id === id);
+    },
+
+    mapearTurmaParaGrupo: (nomeTurma: string) => {
+      // Normaliza para remover acentos, espaços e converter para maiúsculo
+      const turmaKey = nomeTurma
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, "")
+        .toUpperCase()
+        .replace(/\s+/g, '');
+      return mapeamentoTurmaGrupo[turmaKey] || '';
+    },
+
+    mapearGrupoParaId: (nomeGrupo: string) => {
+      const state = get();
+      const grupo = state.grupos.find(g => g.nome.toUpperCase() === nomeGrupo.toUpperCase());
+      return grupo?.id || 0;
+    },
+
+    cadastrarTurma: async (nome: TURMA) => {
+      set({ isLoading: true, error: null });
+      try {
+        const authState = useAuthStore.getState();
+        const token = authState.token;
+        if (!token) {
+          throw new Error('Usuário não autenticado ou sessão expirada.');
         }
-      },
 
-      fetchMensalidadesPorTurma: async () => {
-        set({ isLoading: true, error: null });
-        try {
-          const response = await api('/api/v1/alunos/relatorios/mensalidades-por-turma', {
-            method: 'GET'
-          });
-
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `Erro ao buscar mensalidades: ${response.status}`);
-          }
-
-          const data: MensalidadesResponse = await response.json();
-
-          const turmasFormatadas = data.turmas.map(turma => ({
-            ...turma,
-            turmaNome: formatarNomeTurma(turma.turmaNome)
-          }));
-
-          set({ 
-            mensalidadesPorTurma: {
-              ...data,
-              turmas: turmasFormatadas
-            }, 
-            isLoading: false, 
-            error: null 
-          });
-        } catch (error) {
-          const message = error instanceof Error ? error.message : 'Ocorreu um erro desconhecido ao buscar mensalidades por turma.';
-          set({ isLoading: false, error: message });
-          console.error('Error fetching mensalidades:', error);
+        if (!Object.values(TURMA).includes(nome)) {
+          throw new Error(`Nome de turma inválido: ${nome}`);
         }
-      },
 
-      getTurmaById: (id: number) => {
-        const state = get();
-        return state.turmas.find(t => t.id === id);
-      },
+        const response = await api('/api/v1/turmas', {
+          method: 'POST',
+          body: JSON.stringify({ nome })
+        });
 
-      getGrupoById: (id: number) => {
-        const state = get();
-        return state.grupos.find(g => g.id === id);
-      },
-
-      mapearTurmaParaGrupo: (nomeTurma: string) => {
-        // Normaliza para remover acentos, espaços e converter para maiúsculo
-        const turmaKey = nomeTurma
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, "")
-          .toUpperCase()
-          .replace(/\s+/g, '');
-        return mapeamentoTurmaGrupo[turmaKey] || '';
-      },
-
-      mapearGrupoParaId: (nomeGrupo: string) => {
-        const state = get();
-        const grupo = state.grupos.find(g => g.nome.toUpperCase() === nomeGrupo.toUpperCase());
-        return grupo?.id || 0;
-      },
-
-      cadastrarTurma: async (nome: TURMA) => {
-        set({ isLoading: true, error: null });
-        try {
-          const authState = useAuthStore.getState();
-          const token = authState.token;
-          if (!token) {
-            throw new Error('Usuário não autenticado ou sessão expirada.');
-          }
-
-          if (!Object.values(TURMA).includes(nome)) {
-            throw new Error(`Nome de turma inválido: ${nome}`);
-          }
-
-          const response = await api('/api/v1/turmas', {
-            method: 'POST',
-            body: JSON.stringify({ nome })
-          });
-
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
-            throw new Error(errorData?.message || `Erro ao cadastrar turma: ${response.status}`);
-          }
-
-          await get().fetchTurmas();
-          set({ isLoading: false, error: null });
-          return true;
-        } catch (error) {
-          const message = error instanceof Error ? error.message : 'Erro ao cadastrar turma';
-          set({ isLoading: false, error: message });
-          console.error('Error cadastrando turma:', error);
-          return false;
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => null);
+          throw new Error(errorData?.message || `Erro ao cadastrar turma: ${response.status}`);
         }
-      },
 
-      vincularProfessor: async (turmaId: number, usuarioId: number) => {
-        set({ isLoading: true, error: null });
-        try {
-          const response = await api(`/api/v1/turmas/${turmaId}/professor`, {
-            method: 'POST',
-            body: JSON.stringify({ usuarioId })
-          });
+        await get().fetchTurmas();
+        set({ isLoading: false, error: null });
+        return true;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Erro ao cadastrar turma';
+        set({ isLoading: false, error: message });
+        console.error('Error cadastrando turma:', error);
+        return false;
+      }
+    },
 
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
-            const message = errorData?.message || errorData?.erro || 'Erro ao vincular professor';
-            set({ isLoading: false });
-            return { success: false, message };
-          }
+    vincularProfessor: async (turmaId: number, usuarioId: number) => {
+      set({ isLoading: true, error: null });
+      try {
+        const response = await api(`/api/v1/turmas/${turmaId}/professor`, {
+          method: 'POST',
+          body: JSON.stringify({ usuarioId })
+        });
 
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => null);
+          const message = errorData?.message || errorData?.erro || 'Erro ao vincular professor';
           set({ isLoading: false });
-          return { success: true, message: 'Professor vinculado com sucesso' };
-        } catch (error) {
-          set({ isLoading: false, error: 'Erro ao vincular professor' });
-          console.error('Error linking professor:', error);
-          return { success: false, message: 'Erro ao vincular professor' };
-        }
-      },
-
-      desvincularProfessor: async (turmaId: number, usuarioId: number) => {
-        set({ isLoading: true, error: null });
-        try {
-          const response = await api(`/api/v1/turmas/${turmaId}/professor/${usuarioId}`, {
-            method: 'DELETE'
-          });
-
-          const data = await response.json().catch(() => ({}));
-
-          if (!response.ok) {
-            const message = data.message || data.erro || 'Erro ao desvincular professor';
-            set({ isLoading: false });
-            return { success: false, message };
-          }
-
-          set({ isLoading: false });
-          return { success: true, message: data.message || 'Professor desvinculado com sucesso' };
-        } catch (error) {
-          const message = error instanceof Error ? error.message : 'Erro ao desvincular professor';
-          set({ isLoading: false, error: message });
-          console.error('Error unlinking professor:', error);
           return { success: false, message };
         }
-      },
 
-      limparCache: () => {
-        set({ turmas: [], grupos: [], turmasComTotal: [], mensalidadesPorTurma: null, pagination: null, error: null });
+        set({ isLoading: false });
+        return { success: true, message: 'Professor vinculado com sucesso' };
+      } catch (error) {
+        set({ isLoading: false, error: 'Erro ao vincular professor' });
+        console.error('Error linking professor:', error);
+        return { success: false, message: 'Erro ao vincular professor' };
       }
-    }),
-    {
-      name: 'turmas-storage',
-      partialize: (state) => ({
-        turmas: state.turmas,
-        grupos: state.grupos
-      })
+    },
+
+    desvincularProfessor: async (turmaId: number, usuarioId: number) => {
+      set({ isLoading: true, error: null });
+      try {
+        const response = await api(`/api/v1/turmas/${turmaId}/professor/${usuarioId}`, {
+          method: 'DELETE'
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          const message = data.message || data.erro || 'Erro ao desvincular professor';
+          set({ isLoading: false });
+          return { success: false, message };
+        }
+
+        set({ isLoading: false });
+        return { success: true, message: data.message || 'Professor desvinculado com sucesso' };
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Erro ao desvincular professor';
+        set({ isLoading: false, error: message });
+        console.error('Error unlinking professor:', error);
+        return { success: false, message };
+      }
+    },
+
+    limparCache: () => {
+      set({ turmas: [], grupos: [], turmasComTotal: [], mensalidadesPorTurma: null, pagination: null, error: null });
     }
-  )
+  })
 );
 
 export function formatarNomeTurma(nomeTurma: string): string {
