@@ -297,8 +297,12 @@ export const useTurmasStore = create<TurmasState>()(
       },
 
       mapearTurmaParaGrupo: (nomeTurma: string) => {
-        // Remove spaces and convert to uppercase to handle both "MATERNAL1" and "Maternal 1"
-        const turmaKey = nomeTurma.toUpperCase().replace(/\s+/g, '');
+        // Normaliza para remover acentos, espaços e converter para maiúsculo
+        const turmaKey = nomeTurma
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, "")
+          .toUpperCase()
+          .replace(/\s+/g, '');
         return mapeamentoTurmaGrupo[turmaKey] || '';
       },
 

@@ -20,7 +20,9 @@ export default function Home() {
     const isAuth = checkAuth() || (isAuthenticated && !!user);
 
     if (isAuth && user?.roles) {
-      if (user.roles.includes('ADMIN')) {
+      if (user.roles.includes('PLATFORM_ADMIN')) {
+        router.push('/platform/escolas');
+      } else if (user.roles.includes('ADMIN')) {
         router.push('/admin/dashboard');
       } else if (user.roles.includes('PROFESSOR')) {
         router.push('/professor/dashboard');
