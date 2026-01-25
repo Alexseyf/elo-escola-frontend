@@ -55,37 +55,37 @@ export function getAdminSidebarItems(): SidebarItem[] {
       href: "/admin/cadastro/aluno-responsavel",
       icon: UserPlus,
     },
-    {
-      id: "diarios",
-      label: "Diários",
-      href: "/diario?section=diarios",
-      icon: ClipboardList,
-    },
+    // {
+    //   id: "diarios",
+    //   label: "Diários",
+    //   href: "/diario?section=diarios",
+    //   icon: ClipboardList,
+    // },
     {
       id: "atividades",
       label: "Atividades Pedagógicas",
       href: "/admin/atividades",
       icon: FileText,
     },
-    {
-      id: "calendario",
-      label: "Calendário",
-      href: "/calendario?section=calendario",
-      icon: CalendarDays,
-      divider: true,
-    },
+    // {
+    //   id: "calendario",
+    //   label: "Calendário",
+    //   href: "/calendario?section=calendario",
+    //   icon: CalendarDays,
+    //   divider: true,
+    // },
     {
       id: "cronograma",
       label: "Cronograma Anual",
       href: "/admin/cronograma",
       icon: Clock,
     },
-        {
-      id: "relatorios",
-      label: "Relatórios",
-      href: "/relatorios?section=relatorios",
-      icon: BarChart3,
-    },
+    //     {
+    //   id: "relatorios",
+    //   label: "Relatórios",
+    //   href: "/relatorios?section=relatorios",
+    //   icon: BarChart3,
+    // },
   ];
 }
 
@@ -166,12 +166,12 @@ export function getResponsavelSidebarItems(): SidebarItem[] {
       href: "/responsavel/diarios",
       icon: FileText,
     },
-    {
-      id: "comunicados",
-      label: "Comunicados",
-      href: "/comunicados?section=comunicados",
-      icon: ClipboardList,
-    },
+    // {
+    //   id: "comunicados",
+    //   label: "Comunicados",
+    //   href: "/comunicados?section=comunicados",
+    //   icon: ClipboardList,
+    // },
     {
       id: "cronograma",
       label: "Cronograma Anual",
