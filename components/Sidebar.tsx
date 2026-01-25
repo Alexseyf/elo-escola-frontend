@@ -87,7 +87,7 @@ function SidebarNav({ items }: SidebarNavProps) {
   )
 }
 
-import { LogOut } from "lucide-react"
+import { LogOut, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface AppSidebarProps {
@@ -95,6 +95,23 @@ interface AppSidebarProps {
   logout: () => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user: any
+}
+
+function MobileHeader() {
+  const { toggleSidebar } = useSidebar()
+  return (
+    <header className="flex h-14 items-center border-b bg-white px-4 sticky top-0 z-20 md:hidden shadow-sm">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={toggleSidebar}
+        className="-ml-2 hover:bg-gray-100"
+      >
+        <Menu className="h-6 w-6" />
+        <span className="sr-only">Toggle Sidebar</span>
+      </Button>
+    </header>
+  )
 }
 
 function AppSidebar({ items, logout, user }: AppSidebarProps) {
@@ -106,12 +123,12 @@ function AppSidebar({ items, logout, user }: AppSidebarProps) {
         <div className="flex flex-col gap-3">
           {state === "expanded" && (
             <>
-                <img src="/logo_line.png" alt="logo" className="h-10 w-auto" />
-                {!user?.roles.includes('PLATFORM_ADMIN') && user?.school?.name && (
-                    <div className="text-xs font-semibold text-muted-foreground px-1">
-                        {user.school.name}
-                    </div>
-                )}
+              <img src="/logo_line.png" alt="logo" className="h-10 w-auto" />
+              {!user?.roles.includes('PLATFORM_ADMIN') && user?.school?.name && (
+                <div className="text-xs font-semibold text-muted-foreground px-1">
+                  {user.school.name}
+                </div>
+              )}
             </>
           )}
         </div>
@@ -124,30 +141,30 @@ function AppSidebar({ items, logout, user }: AppSidebarProps) {
       <SidebarFooter>
         <div className="p-4">
           {state === "expanded" ? (
-             <div className="flex flex-col gap-2">
-                <div className="text-xs font-medium truncate text-muted-foreground">
-                   <div className="font-bold">
-                      {user?.nome?.split(' ').slice(0, 2).join(' ')}
-                   </div>
-                   <div className="text-muted-foreground">
-                      {user?.email}
-                   </div>
+            <div className="flex flex-col gap-2">
+              <div className="text-xs font-medium truncate text-muted-foreground">
+                <div className="font-bold">
+                  {user?.nome?.split(' ').slice(0, 2).join(' ')}
                 </div>
-                <Button 
-                  variant="destructive" 
-                  className="w-full justify-center"
-                  onClick={logout}
-                >
-                  Sair
-                </Button>
-                <div className="text-xs text-center text-muted-foreground mt-2">
-                 © 2025 Elo Escola
+                <div className="text-muted-foreground">
+                  {user?.email}
                 </div>
-             </div>
+              </div>
+              <Button
+                variant="destructive"
+                className="w-full justify-center"
+                onClick={logout}
+              >
+                Sair
+              </Button>
+              <div className="text-xs text-center text-muted-foreground mt-2">
+                © 2025 Elo Escola
+              </div>
+            </div>
           ) : (
-             <Button variant="ghost" size="icon" onClick={logout} title="Sair">
-                <LogOut className="h-4 w-4" />
-             </Button>
+            <Button variant="ghost" size="icon" onClick={logout} title="Sair">
+              <LogOut className="h-4 w-4" />
+            </Button>
           )}
         </div>
       </SidebarFooter>
@@ -160,7 +177,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const { user, isAuthenticated } = useAuthStore()
   const [mounted, setMounted] = useState(false)
-  
+
   useTenant();
 
   useEffect(() => {
@@ -169,12 +186,12 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (mounted && user?.primeiroAcesso && pathname !== '/auth/nova-senha' && pathname !== '/login') {
-       router.push('/auth/nova-senha');
+      router.push('/auth/nova-senha');
     }
   }, [mounted, user, pathname, router]);
 
   if (!mounted) {
-      return <>{children}</> 
+    return <>{children}</>
   }
 
   if (pathname === '/login' || !isAuthenticated || !user) {
@@ -188,10 +205,8 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <AppSidebar items={items} logout={useAuthStore.getState().logout} user={user} />
       <SidebarInset>
-        <div className="md:hidden fixed top-4 left-4 z-40">
-           <SidebarTrigger />
-        </div>
-        <div className="pt-12 md:pt-0">
+        <MobileHeader />
+        <div className="">
           {children}
         </div>
       </SidebarInset>
