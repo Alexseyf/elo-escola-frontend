@@ -34,9 +34,17 @@ export async function createDiario(data: CreateDiarioDTO): Promise<{ success: bo
     const result = await response.json();
     
     if (!response.ok) {
+      let msg = result.message || result.erro || 'Erro ao criar diário';
+      if (typeof msg !== 'string') {
+        if (msg.issues && Array.isArray(msg.issues)) {
+          msg = msg.issues.map((i: any) => i.message).join(', ');
+        } else {
+          msg = JSON.stringify(msg);
+        }
+      }
       return { 
         success: false, 
-        message: result.message || result.erro || 'Erro ao criar diário' 
+        message: msg 
       };
     }
     
@@ -70,9 +78,22 @@ export async function updateDiario(id: number, data: Partial<CreateDiarioDTO>): 
     const result = await response.json();
     
     if (!response.ok) {
+      let msg = result.message || result.erro || 'Erro ao atualizar diário';
+      if (typeof msg !== 'string') {
+        if (msg.issues && Array.isArray(msg.issues)) {
+          msg = msg.issues.map((i: any) => i.message).join(', ');
+        } else {
+          msg = JSON.stringify(msg);
+        }
+      }
+      
+      if (msg.includes('Unique constraint failed')) {
+        msg = 'Conflito de dados: Já existe um registro para esta data. (Duplicidade detectada)';
+      }
+      
       return { 
         success: false, 
-        message: result.message || result.erro || 'Erro ao atualizar diário' 
+        message: msg 
       };
     }
     
