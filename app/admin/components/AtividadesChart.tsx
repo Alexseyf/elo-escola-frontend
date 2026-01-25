@@ -33,14 +33,24 @@ interface TurmaComCampos {
 const COLORS = CHART_COLORS;
 
 export default function AtividadesChart({ turmaId, minimal = false }: AtividadesChartProps) {
-  const relatorio = useCamposStore((state) => state.relatorio);
+  const relatorioLegacy = useCamposStore((state) => state.relatorio);
+  const relatoriosCache = useCamposStore((state) => state.relatoriosCache);
   const isLoading = useCamposStore((state) => state.isLoading);
   const error = useCamposStore((state) => state.error);
   const fetchRelatorio = useCamposStore((state) => state.fetchRelatorioAtividades);
 
+  const activeRelatorio = useMemo(() => {
+    if (turmaId) {
+      return relatoriosCache[String(turmaId)];
+    }
+    return relatorioLegacy;
+  }, [turmaId, relatoriosCache, relatorioLegacy]);
+
   useEffect(() => {
-    fetchRelatorio();
-  }, [fetchRelatorio]);
+    fetchRelatorio(turmaId);
+  }, [fetchRelatorio, turmaId]);
+
+  const relatorio = activeRelatorio;
   const turmasComCampos = useMemo(() => {
     if (!relatorio || !relatorio.relatorio) return [];
 
@@ -68,7 +78,7 @@ export default function AtividadesChart({ turmaId, minimal = false }: Atividades
         turmaData.campos.push({
           campo: campoFormatado,
           total: detalhe.total,
-          percentual: 0, 
+          percentual: 0,
         });
       });
     });
@@ -86,14 +96,14 @@ export default function AtividadesChart({ turmaId, minimal = false }: Atividades
     return (
       <div className="space-y-3 sm:space-y-4 w-full">
         {!minimal && (
-            <div className="rounded-lg bg-white p-3 sm:p-6 shadow animate-pulse">
-              <div className="h-5 sm:h-6 bg-gray-200 rounded w-1/3 mb-3 sm:mb-4"></div>
-              <div className="space-y-2 sm:space-y-3">
-                <div className="h-3 sm:h-4 bg-gray-200 rounded w-full"></div>
-                <div className="h-3 sm:h-4 bg-gray-200 rounded w-full"></div>
-                <div className="h-3 sm:h-4 bg-gray-200 rounded w-2/3"></div>
-              </div>
+          <div className="rounded-lg bg-white p-3 sm:p-6 shadow animate-pulse">
+            <div className="h-5 sm:h-6 bg-gray-200 rounded w-1/3 mb-3 sm:mb-4"></div>
+            <div className="space-y-2 sm:space-y-3">
+              <div className="h-3 sm:h-4 bg-gray-200 rounded w-full"></div>
+              <div className="h-3 sm:h-4 bg-gray-200 rounded w-full"></div>
+              <div className="h-3 sm:h-4 bg-gray-200 rounded w-2/3"></div>
             </div>
+          </div>
         )}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {[1, 2, 3].map((i) => (
@@ -131,18 +141,18 @@ export default function AtividadesChart({ turmaId, minimal = false }: Atividades
     <div className="space-y-4 sm:space-y-6 w-full">
       {!minimal && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            <div className="rounded-lg bg-blue-50 border border-blue-200 p-3 sm:p-4">
+          <div className="rounded-lg bg-blue-50 border border-blue-200 p-3 sm:p-4">
             <p className="text-xs sm:text-sm font-medium text-blue-700">Total de Atividades</p>
             <p className="text-xl sm:text-2xl font-bold text-blue-900 mt-1 sm:mt-2">{totalAtividades}</p>
-            </div>
-            <div className="rounded-lg bg-green-50 border border-green-200 p-3 sm:p-4">
+          </div>
+          <div className="rounded-lg bg-green-50 border border-green-200 p-3 sm:p-4">
             <p className="text-xs sm:text-sm font-medium text-green-700">Campos de Experiência</p>
             <p className="text-xl sm:text-2xl font-bold text-green-900 mt-1 sm:mt-2">{relatorio.resumo.totalCampos}</p>
-            </div>
-            <div className="rounded-lg bg-purple-50 border border-purple-200 p-3 sm:p-4">
+          </div>
+          <div className="rounded-lg bg-purple-50 border border-purple-200 p-3 sm:p-4">
             <p className="text-xs sm:text-sm font-medium text-purple-700">Turmas</p>
             <p className="text-xl sm:text-2xl font-bold text-purple-900 mt-1 sm:mt-2">{turmasComCampos.length}</p>
-            </div>
+          </div>
         </div>
       )}
 
@@ -151,7 +161,7 @@ export default function AtividadesChart({ turmaId, minimal = false }: Atividades
         <div className="w-full min-h-56 sm:min-h-80 -mx-3 sm:-mx-6 px-3 sm:px-6 overflow-x-auto min-w-0">
           <ChartContainer
             config={Object.fromEntries(
-                relatorio.relatorio.map((campo, index) => [
+              relatorio.relatorio.map((campo, index) => [
                 campo.campoExperiencia,
                 {
                   label: formatarCampoExperiencia(campo.campoExperiencia),
@@ -202,11 +212,11 @@ export default function AtividadesChart({ turmaId, minimal = false }: Atividades
       </div>
 
       {!minimal && turmasComCampos.map((turma, turmaIndex) => (
-        <TurmaChartCard 
-            key={turma.turmaId}
-            turma={turma}
-            index={turmaIndex}
-            colors={COLORS}
+        <TurmaChartCard
+          key={turma.turmaId}
+          turma={turma}
+          index={turmaIndex}
+          colors={COLORS}
         />
       ))}
     </div>

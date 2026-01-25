@@ -95,7 +95,7 @@ export function getProfessorSidebarItems(): SidebarItem[] {
     {
       id: "visao-geral",
       label: "Visão Geral",
-      href: "/visao-geral?section=visao-geral",
+      href: "/professor/dashboard",
       icon: LayoutDashboard,
     },
     {
@@ -123,25 +123,25 @@ export function getProfessorSidebarItems(): SidebarItem[] {
       icon: ClipboardList,
       
     },
-    {
-      id: "calendario",
-      label: "Calendário",
-      href: "/calendario?section=calendario",
-      icon: CalendarDays,
-      divider: true,
-    },
+    // {
+    //   id: "calendario",
+    //   label: "Calendário",
+    //   href: "/calendario?section=calendario",
+    //   icon: CalendarDays,
+    //   divider: true,
+    // },
     {
       id: "cronograma",
       label: "Cronograma Anual",
       href: "/professor/cronograma",
       icon: Clock,
     },
-    {
-      id: "relatorios",
-      label: "Relatórios",
-      href: "/relatorios?section=relatorios",
-      icon: BarChart3,
-    },
+    // {
+    //   id: "relatorios",
+    //   label: "Relatórios",
+    //   href: "/relatorios?section=relatorios",
+    //   icon: BarChart3,
+    // },
   ];
 }
 

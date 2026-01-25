@@ -94,9 +94,15 @@ export const api = async (endpoint: string, options: ApiRequestOptions = {}) => 
     headers,
   });
 
+  /* 
+    Relatórios de atividades podem retornar 403 se o usuário não tiver permissão (ex: professor acessando rota de admin).
+    Nesse caso, não queremos deslogar, apenas falhar a requisição para que a UI trate o erro.
+  */
+  const isRelatorioEndpoint = endpoint.includes('/api/v1/atividades/relatorio');
+
   // Faça logout somente em caso de erro 403 para endpoints relacionados ao locatário onde a incompatibilidade de locatário é o problema.
   // Não faça logout para endpoints BNCC ou quando o usuário for PLATFORM_ADMIN sem locatário.
-  if (response.status === 403 && !isBNCCEndpoint && !isPublicEndpoint) {
+  if (response.status === 403 && !isBNCCEndpoint && !isPublicEndpoint && !isRelatorioEndpoint) {
     // Faça logout somente se tivermos um tenant-id mas ainda recebemos 403 (incompatibilidade de locatário real)
     if (headers['x-tenant-id']) {
       console.error('[API] 403 Forbidden - Tenant context mismatch detected');
