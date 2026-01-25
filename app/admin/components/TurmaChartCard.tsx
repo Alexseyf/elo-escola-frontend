@@ -10,6 +10,8 @@ import {
   type ChartConfig,
 } from '@/components/ui/chart';
 
+import { useAuthStore } from '@/stores/useAuthStore';
+
 interface TurmaComCampos {
   turmaId: number;
   turma: string;
@@ -29,17 +31,21 @@ interface TurmaChartCardProps {
 
 export default function TurmaChartCard({ turma, index: turmaIndex, colors: COLORS }: TurmaChartCardProps) {
   const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+  const isAdmin = user?.roles?.includes('ADMIN');
 
   return (
     <div className="rounded-lg bg-white p-3 sm:p-6 shadow">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
         <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">{turma.turma}</h3>
-        <button
-          onClick={() => router.push(`/admin/atividades?turmaId=${turma.turmaId}`)}
-          className="px-3 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors whitespace-nowrap"
-        >
-          Detalhar
-        </button>
+        {isAdmin && (
+          <button
+            onClick={() => router.push(`/admin/atividades?turmaId=${turma.turmaId}`)}
+            className="px-3 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors whitespace-nowrap"
+          >
+            Detalhar
+          </button>
+        )}
       </div>
 
       <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 sm:gap-6">
