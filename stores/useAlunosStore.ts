@@ -42,6 +42,7 @@ export interface AlunoDetalhes {
       id: number;
       nome: string;
       email: string;
+      telefone: string;
     };
   }>;
   diario: unknown[];

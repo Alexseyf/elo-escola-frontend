@@ -1,18 +1,22 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { RouteGuard } from '@/components/auth/RouteGuard';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useTurmasStore, formatarNomeTurma } from '@/stores/useTurmasStore';
 import { CustomSelect } from '@/components/CustomSelect';
-import { Search, User, GraduationCap } from 'lucide-react';
+import { ChevronRight, Search, User, GraduationCap } from 'lucide-react';
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function ProfessorAlunosPage() {
+  const router = useRouter();
   const user = useAuthStore(state => state.user);
+  const isMobile = useIsMobile();
   const turmas = useTurmasStore(state => state.turmas);
   const fetchTurmas = useTurmasStore(state => state.fetchTurmas);
   const loadingTurmas = useTurmasStore(state => state.isLoading);
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTurmaId, setSelectedTurmaId] = useState<number | null>(null);
 
@@ -22,29 +26,26 @@ export default function ProfessorAlunosPage() {
     }
   }, [fetchTurmas, turmas.length]);
 
-  // Filter turmas to only show professor's classes
-  const profTurmas = useMemo(() => 
+  const profTurmas = useMemo(() =>
     turmas.filter(t => t.professores?.some(p => p.usuarioId === user?.id)),
     [turmas, user?.id]
   );
 
-  // Set initial turma selection
   useEffect(() => {
     if (profTurmas.length > 0 && selectedTurmaId === null) {
       setSelectedTurmaId(profTurmas[0].id);
     }
   }, [profTurmas.length, selectedTurmaId]);
 
-  // Filter students by turma and search term
   const filteredAlunos = useMemo(() => {
     const selectedTurma = profTurmas.find(t => t.id === selectedTurmaId);
     if (!selectedTurma) return [];
 
     const alunos = selectedTurma.alunos || [];
-    
+
     if (!searchTerm) return alunos;
-    
-    return alunos.filter(aluno => 
+
+    return alunos.filter(aluno =>
       aluno.nome.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [profTurmas, selectedTurmaId, searchTerm]);
@@ -73,15 +74,15 @@ export default function ProfessorAlunosPage() {
                 className="w-full pl-12 pr-4 py-3 rounded-lg bg-white border border-gray-200 shadow-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all placeholder:text-gray-400"
               />
             </div>
-            
+
             {profTurmas.length > 1 && (
               <CustomSelect
                 id="turma-select"
                 name="turmaId"
                 value={selectedTurmaId || ''}
                 onChange={(e) => setSelectedTurmaId(Number(e.target.value))}
-                options={profTurmas.map(t => ({ 
-                  value: t.id, 
+                options={profTurmas.map(t => ({
+                  value: t.id,
                   label: formatarNomeTurma(t.nome)
                 }))}
                 className="h-full rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
@@ -128,8 +129,8 @@ export default function ProfessorAlunosPage() {
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900">Nenhum aluno encontrado</h3>
                   <p className="text-gray-500 mt-2">
-                    {searchTerm 
-                      ? 'Tente ajustar sua busca.' 
+                    {searchTerm
+                      ? 'Tente ajustar sua busca.'
                       : 'Esta turma ainda não possui alunos cadastrados.'}
                   </p>
                 </div>
@@ -138,7 +139,8 @@ export default function ProfessorAlunosPage() {
                   {filteredAlunos.map(aluno => (
                     <div
                       key={aluno.id}
-                      className="bg-white p-4 rounded-lg border border-gray-200 transition-all hover:shadow-md hover:border-blue-200"
+                      className={`bg-white p-4 rounded-lg border border-gray-200 transition-all hover:shadow-md hover:border-blue-200 relative ${!isMobile ? 'cursor-pointer' : ''}`}
+                      onClick={() => !isMobile && router.push(`/professor/alunos/${aluno.id}`)}
                     >
                       <div className="flex items-start gap-3">
                         <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
@@ -153,6 +155,16 @@ export default function ProfessorAlunosPage() {
                           </p>
                         </div>
                       </div>
+
+                      <button
+                        className="md:hidden absolute top-1/2 -translate-y-1/2 right-4 p-2 text-gray-400 hover:text-blue-600"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/professor/alunos/${aluno.id}`);
+                        }}
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
                     </div>
                   ))}
                 </div>
