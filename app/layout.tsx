@@ -26,6 +26,11 @@ export const metadata: Metadata = {
     shortcut: "/logo_elo64.jpg",
     apple: "/logo_elo64.jpg",
   },
+  openGraph: {
+    title: "Elo Escola",
+    description: "Plataforma Elo Escola",
+    images: ["/logo.png"],
+  },
 };
 
 export default function RootLayout({
