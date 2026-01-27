@@ -30,6 +30,13 @@ export default function EditarDiarioPage() {
 
                 if (diario.aluno) {
                     setAlunoNome(diario.aluno.nome);
+
+                    const isTurnoInverso = diario.aluno.turma?.nome.toUpperCase().replace(/\s/g, '') === 'TURNOINVERSO';
+                    if (isTurnoInverso) {
+                        toast.error('Esta turma não possui mais acesso aos diários.');
+                        router.push('/professor/dashboard');
+                        return;
+                    }
                 }
 
                 const mappedData: Partial<DiarioFormData> = {

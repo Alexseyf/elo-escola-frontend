@@ -30,7 +30,10 @@ export default function ProfessorDiariosPage() {
   }, [fetchTurmas, turmas.length]);
 
   const profTurmas = useMemo(() =>
-    turmas.filter(t => t.professores?.some(p => p.usuarioId === user?.id)),
+    turmas.filter(t =>
+      t.professores?.some(p => p.usuarioId === user?.id) &&
+      t.nome.toUpperCase().replace(/\s/g, '') !== 'TURNOINVERSO'
+    ),
     [turmas, user?.id]
   );
 

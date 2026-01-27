@@ -22,12 +22,22 @@ export default function NovoDiarioPage() {
     }
   }, [alunoId, getAlunoDetalhes]);
 
+  useEffect(() => {
+    if (currentAluno && currentAluno.turma) {
+      const isTurnoInverso = currentAluno.turma.nome.toUpperCase().replace(/\s/g, '') === 'TURNOINVERSO';
+      if (isTurnoInverso) {
+        toast.error('Esta turma não possui preenchimento de diário.');
+        router.push('/professor/dashboard');
+      }
+    }
+  }, [currentAluno, router]);
+
   const handleSubmit = async (formData: DiarioFormData & { [key: string]: any }) => {
     setLoading(true);
     try {
       const today = new Date();
-      const localDate = today.getFullYear() + '-' + 
-        String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+      const localDate = today.getFullYear() + '-' +
+        String(today.getMonth() + 1).padStart(2, '0') + '-' +
         String(today.getDate()).padStart(2, '0');
 
       const payload: any = {

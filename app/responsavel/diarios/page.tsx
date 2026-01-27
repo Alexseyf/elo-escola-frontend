@@ -33,15 +33,18 @@ function DiariosContent() {
     async function loadAlunos() {
       setIsLoading(true);
       const data = await getAlunosDoResponsavel();
-      setAlunos(data);
-      
-      if (data.length === 1) {
-        setSelectedAlunoId(data[0].id);
+      const filtered = data.filter(aluno =>
+        aluno.turma?.nome.toUpperCase().replace(/\s/g, '') !== 'TURNOINVERSO'
+      );
+      setAlunos(filtered);
+
+      if (filtered.length === 1) {
+        setSelectedAlunoId(filtered[0].id);
       }
-      
+
       setIsLoading(false);
     }
-    
+
     loadAlunos();
   }, []);
 
@@ -53,7 +56,7 @@ function DiariosContent() {
 
     async function loadDiarios() {
       if (!selectedAlunoId) return;
-      
+
       setIsLoadingDiarios(true);
       const data = await getDiariosByAlunoId(selectedAlunoId, filtroData || undefined);
       setDiarios(data);
@@ -174,7 +177,7 @@ function DiariosContent() {
             <Card>
               <CardContent className="pt-6">
                 <p className="text-center text-muted-foreground">
-                  {filtroData 
+                  {filtroData
                     ? 'Nenhum diário encontrado para esta data.'
                     : 'Nenhum diário registrado ainda.'}
                 </p>

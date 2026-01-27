@@ -38,6 +38,10 @@ export interface Diario {
   aluno?: {
     id: number;
     nome: string;
+    turma?: {
+      id: number;
+      nome: string;
+    };
   };
 }
 

@@ -35,6 +35,15 @@ export default function VisualizarDiariosPage() {
     }
   }, [alunoId, getAlunoDetalhes, loadDiarios]);
 
+  useEffect(() => {
+    if (currentAluno && currentAluno.turma) {
+      const isTurnoInverso = currentAluno.turma.nome.toUpperCase().replace(/\s/g, '') === 'TURNOINVERSO';
+      if (isTurnoInverso) {
+        router.push('/professor/dashboard');
+      }
+    }
+  }, [currentAluno, router]);
+
   const formatDate = (dateStr: string) => {
     if (!dateStr) return '';
     const [year, month, day] = dateStr.split('T')[0].split('-').map(Number);
@@ -87,8 +96,8 @@ export default function VisualizarDiariosPage() {
                         key={d.id}
                         onClick={() => setSelectedDiario(d)}
                         className={`w-full text-left p-4 rounded-lg transition-all border ${selectedDiario?.id === d.id
-                            ? 'bg-blue-50 border-blue-200 text-blue-700'
-                            : 'bg-white border-gray-100 text-gray-600 hover:border-blue-100 hover:bg-blue-50/30'
+                          ? 'bg-blue-50 border-blue-200 text-blue-700'
+                          : 'bg-white border-gray-100 text-gray-600 hover:border-blue-100 hover:bg-blue-50/30'
                           }`}
                       >
                         <div className="flex items-center justify-between">

@@ -45,9 +45,12 @@ export function UltimosDiariosCard() {
   useEffect(() => {
     async function loadUltimosDiarios() {
       setIsLoading(true);
-      
-      const alunos = await getAlunosDoResponsavel();
-      
+
+      const data = await getAlunosDoResponsavel();
+      const alunos = data.filter(aluno =>
+        aluno.turma?.nome.toUpperCase().replace(/\s/g, '') !== 'TURNOINVERSO'
+      );
+
       const diariosPromises = alunos.map(async (aluno) => {
         const diariosDoAluno = await getDiariosByAlunoId(aluno.id);
         return {
@@ -55,12 +58,12 @@ export function UltimosDiariosCard() {
           diario: diariosDoAluno.length > 0 ? diariosDoAluno[0] : null
         };
       });
-      
+
       const resultado = await Promise.all(diariosPromises);
       setDiarios(resultado);
       setIsLoading(false);
     }
-    
+
     loadUltimosDiarios();
   }, []);
 
@@ -160,9 +163,9 @@ export function UltimosDiariosCard() {
                     <div className="flex justify-between">
                       <span>Evacuação:</span>
                       <span className="font-medium">
-                        {diario.evacuacao === 'NORMAL' ? 'Normal' : 
-                         diario.evacuacao === 'LIQUIDA' ? 'Líquida' : 
-                         diario.evacuacao === 'DURA' ? 'Dura' : 'Não evacuou'}
+                        {diario.evacuacao === 'NORMAL' ? 'Normal' :
+                          diario.evacuacao === 'LIQUIDA' ? 'Líquida' :
+                            diario.evacuacao === 'DURA' ? 'Dura' : 'Não evacuou'}
                       </span>
                     </div>
                     <div className="flex justify-between">

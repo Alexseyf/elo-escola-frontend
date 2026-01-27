@@ -4,7 +4,9 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useAuthStore } from "@/stores/useAuthStore"
 import { useTenant } from "@/hooks/useTenant"
-import { useEffect, useState } from "react"
+import { useTurmasStore } from "@/stores/useTurmasStore"
+import { useAlunosStore } from "@/stores/useAlunosStore"
+import { useEffect, useState, useMemo } from "react"
 import {
   Sidebar as SidebarUI,
   SidebarContent,
@@ -203,9 +205,23 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
   const { user, isAuthenticated, activeRole } = useAuthStore()
+  const { turmas, fetchTurmas } = useTurmasStore()
+  const { alunos, fetchAlunosDoResponsavel } = useAlunosStore()
   const [mounted, setMounted] = useState(false)
 
   useTenant();
+
+  useEffect(() => {
+    if (mounted && user) {
+      const currentRole = activeRole || user.roles[0];
+      if (currentRole === 'PROFESSOR' && turmas.length === 0) {
+        fetchTurmas();
+      }
+      if (currentRole === 'RESPONSAVEL' && alunos.length === 0) {
+        fetchAlunosDoResponsavel();
+      }
+    }
+  }, [mounted, user, activeRole, turmas.length, alunos.length, fetchTurmas, fetchAlunosDoResponsavel]);
 
   useEffect(() => {
     setMounted(true)
@@ -245,6 +261,37 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
     }
   }, [mounted, user, activeRole, pathname, router]);
 
+  const role = user ? (activeRole || user.roles[0]) : '';
+  const items = useMemo(() => {
+    if (!role) return [];
+
+    let sidebarItems = getSidebarItems(role);
+
+    // Regra: Ocultar Diários se a turma for TURNOINVERSO
+    if (role === 'PROFESSOR' && turmas.length > 0) {
+      // Verifica se o professor tem pelo menos uma turma que NÃO seja Turno Inverso
+      const hasRegularTurma = turmas.some(t =>
+        t.professores?.some(p => p.usuarioId === user?.id) &&
+        t.nome.toUpperCase().replace(/\s/g, '') !== 'TURNOINVERSO'
+      );
+      if (!hasRegularTurma) {
+        sidebarItems = sidebarItems.filter(item => item.id !== 'diarios');
+      }
+    }
+
+    if (role === 'RESPONSAVEL' && alunos.length > 0) {
+      // Verifica se o responsável tem pelo menos um filho que NÃO esteja no Turno Inverso
+      const hasRegularAluno = alunos.some(a =>
+        a.turma?.nome.toUpperCase().replace(/\s/g, '') !== 'TURNOINVERSO'
+      );
+      if (!hasRegularAluno) {
+        sidebarItems = sidebarItems.filter(item => item.id !== 'diarios');
+      }
+    }
+
+    return sidebarItems;
+  }, [role, turmas, alunos, user?.id]);
+
   if (!mounted) {
     return <>{children}</>
   }
@@ -253,9 +300,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
     return <>{children}</>
   }
 
-  const role = activeRole || user.roles[0];
-  const items = getSidebarItems(role);
-
+  // Render regular sidebar
   return (
     <SidebarProvider>
       <AppSidebar items={items} logout={useAuthStore.getState().logout} user={user} />
