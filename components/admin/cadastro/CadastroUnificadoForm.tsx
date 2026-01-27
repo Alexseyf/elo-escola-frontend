@@ -45,7 +45,7 @@ type CadastroUnificadoValues = z.infer<typeof cadastroUnificadoSchema>;
 
 export function CadastroUnificadoForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const { createAluno, adicionarResponsavelAluno } = useAlunosStore();
   const { criarUsuario } = useUsuariosStore();
   const { turmas, fetchTurmas } = useTurmasStore();
@@ -107,36 +107,56 @@ export function CadastroUnificadoForm() {
 
       let successCount = 0;
       for (const responsavel of data.responsaveis) {
-          const responsavelPayload = {
-            ...responsavel,
-            dataNascimento: `${responsavel.dataNascimento}T00:00:00.000Z`,
-            roles: ["RESPONSAVEL"],
-          };
+        const responsavelPayload = {
+          ...responsavel,
+          dataNascimento: `${responsavel.dataNascimento}T00:00:00.000Z`,
+          roles: ["RESPONSAVEL"],
+        };
 
-          const usuarioResult = await criarUsuario(responsavelPayload);
+        const usuarioResult = await criarUsuario(responsavelPayload);
 
-          if (!usuarioResult) {
-            toast.error(`Erro ao criar responsável ${responsavel.nome}.`);
-            continue; 
-          }
+        if (!usuarioResult) {
+          toast.error(`Erro ao criar responsável ${responsavel.nome}.`);
+          continue;
+        }
 
-          const responsavelId = usuarioResult.id;
-          
-          const linkResult = await adicionarResponsavelAluno(alunoId, responsavelId);
-          if (linkResult.success) {
-            successCount++;
-          } else {
-             toast.error(`Erro ao vincular responsável ${responsavel.nome}: ${linkResult.message}`);
-          }
+        const responsavelId = usuarioResult.id;
+
+        const linkResult = await adicionarResponsavelAluno(alunoId, responsavelId);
+        if (linkResult.success) {
+          successCount++;
+        } else {
+          toast.error(`Erro ao vincular responsável ${responsavel.nome}: ${linkResult.message}`);
+        }
       }
 
       if (successCount === data.responsaveis.length) {
-         toast.success("Todos os responsáveis foram vinculados com sucesso!");
-         form.reset();
+        toast.success("Todos os responsáveis foram vinculados com sucesso!");
+        form.reset({
+          aluno: {
+            nome: "",
+            dataNasc: "",
+            turmaId: 0,
+            mensalidade: undefined,
+          },
+          responsaveis: [
+            {
+              nome: "",
+              email: "",
+              cpf: "",
+              rg: "",
+              dataNascimento: "",
+              telefone: "",
+              telefoneComercial: "",
+              enderecoLogradouro: "",
+              enderecoNumero: "",
+            }
+          ],
+        });
       } else if (successCount > 0) {
-         toast.warning(`Cadastro concluído, mas apenas ${successCount} de ${data.responsaveis.length} responsáveis foram vinculados.`);
+        toast.warning(`Cadastro concluído, mas apenas ${successCount} de ${data.responsaveis.length} responsáveis foram vinculados.`);
       } else {
-         toast.error("Erro ao vincular responsáveis.");
+        toast.error("Erro ao vincular responsáveis.");
       }
 
     } catch (error) {
@@ -152,14 +172,14 @@ export function CadastroUnificadoForm() {
       <CardContent className="p-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            
+
             {/* --- Dados do Aluno --- */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 pb-2 border-b">
                 <GraduationCap className="h-5 w-5 text-muted-foreground" />
                 <h3 className="font-semibold text-lg">Dados do Aluno</h3>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -191,15 +211,15 @@ export function CadastroUnificadoForm() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 <FormField
+                <FormField
                   control={form.control}
                   name="aluno.turmaId"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Turma</FormLabel>
-                      <Select 
-                        onValueChange={(val) => field.onChange(Number(val))} 
-                        value={field.value ? String(field.value) : undefined}
+                      <Select
+                        onValueChange={(val) => field.onChange(Number(val))}
+                        value={field.value ? String(field.value) : ""}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -207,11 +227,11 @@ export function CadastroUnificadoForm() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                            {turmas.map((turma) => (
-                                <SelectItem key={turma.id} value={String(turma.id)}>
-                                    {turma.nome}
-                                </SelectItem>
-                            ))}
+                          {turmas.map((turma) => (
+                            <SelectItem key={turma.id} value={String(turma.id)}>
+                              {turma.nome}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -226,8 +246,8 @@ export function CadastroUnificadoForm() {
                     <FormItem>
                       <FormLabel>Mensalidade (R$)</FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="0,00" 
+                        <Input
+                          placeholder="0,00"
                           value={field.value ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(Number(field.value)) : ''}
                           onChange={(e) => {
                             const rawValue = e.target.value.replace(/\D/g, '');
@@ -266,7 +286,7 @@ export function CadastroUnificadoForm() {
                       </Button>
                     )}
                   </div>
-                  
+
                   <div className="mb-4 font-medium text-sm text-muted-foreground">
                     Responsável {index + 1}
                   </div>
@@ -431,19 +451,19 @@ export function CadastroUnificadoForm() {
             </div>
 
             <div className="flex justify-end pt-4">
-                <Button type="submit" size="lg" disabled={isSubmitting} className="w-full md:w-auto">
-                    {isSubmitting ? (
-                        <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Processando...
-                        </>
-                    ) : (
-                        <>
-                            <Save className="mr-2 h-4 w-4" />
-                            Salvar
-                        </>
-                    )}
-                </Button>
+              <Button type="submit" size="lg" disabled={isSubmitting} className="w-full md:w-auto">
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processando...
+                  </>
+                ) : (
+                  <>
+                    <Save className="mr-2 h-4 w-4" />
+                    Salvar
+                  </>
+                )}
+              </Button>
             </div>
           </form>
         </Form>
