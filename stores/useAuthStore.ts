@@ -29,6 +29,8 @@ interface AuthState {
   error: string | null;
   tempPassword?: string;
   
+  activeRole: string | null;
+  setActiveRole: (role: string) => void;
   login: (credentials: LoginCredentials) => Promise<boolean>;
   logout: () => void;
   checkAuth: () => boolean;
@@ -45,6 +47,8 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       error: null,
       _hasHydrated: false,
+      activeRole: null,
+      setActiveRole: (role: string) => set({ activeRole: role }),
       setHasHydrated: (state) => set({ _hasHydrated: state }),
 
       login: async (credentials: LoginCredentials) => {
@@ -85,6 +89,7 @@ export const useAuthStore = create<AuthState>()(
                 primeiroAcesso: data.primeiroAcesso,
                 school: data.schoolSlug ? { slug: data.schoolSlug, name: data.schoolName } : undefined
               },
+              activeRole: data.roles.length === 1 ? data.roles[0] : null,
               isAuthenticated: true,
               isLoading: false,
               error: null,
@@ -109,7 +114,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
-        set({ token: null, user: null, isAuthenticated: false, error: null });
+        set({ token: null, user: null, activeRole: null, isAuthenticated: false, error: null });
         
         if (typeof window !== 'undefined') {
           import('./useTenantStore').then(({ useTenantStore }) => {
@@ -139,6 +144,7 @@ export const useAuthStore = create<AuthState>()(
           roles: state.user.roles,
           primeiroAcesso: state.user.primeiroAcesso
         } : null, 
+        activeRole: state.activeRole,
         isAuthenticated: state.isAuthenticated 
       }),
       onRehydrateStorage: () => (state) => {

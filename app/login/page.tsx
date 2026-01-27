@@ -28,19 +28,28 @@ function LoginForm() {
     if (!_hasHydrated) return;
 
     if (isAuthenticated && user) {
-        if (user.roles?.includes("PLATFORM_ADMIN")) {
-            router.push("/platform/escolas");
-        } else if (user.roles?.includes("ADMIN")) {
-            router.push("/admin/dashboard");
-        } else if (user.roles?.includes("PROFESSOR")) {
-            router.push("/professor/dashboard");
-        } else if (user.roles?.includes("RESPONSAVEL")) {
-            router.push("/responsavel/dashboard");
-        } else {
-             router.push("/");
-        }
+      const { activeRole } = useAuthStore.getState();
+
+      if (user.roles?.length > 1 && !activeRole) {
+        router.push("/auth/select-role");
+        return;
+      }
+
+      const roleToUse = activeRole || user.roles?.[0];
+
+      if (roleToUse === "PLATFORM_ADMIN") {
+        router.push("/platform/escolas");
+      } else if (roleToUse === "ADMIN") {
+        router.push("/admin/dashboard");
+      } else if (roleToUse === "PROFESSOR") {
+        router.push("/professor/dashboard");
+      } else if (roleToUse === "RESPONSAVEL") {
+        router.push("/responsavel/dashboard");
+      } else {
+        router.push("/");
+      }
     } else {
-        setIsChecking(false);
+      setIsChecking(false);
     }
   }, [router, _hasHydrated, isAuthenticated, user]);
 
@@ -77,21 +86,29 @@ function LoginForm() {
           description: "Sucesso!",
         });
         setTimeout(() => {
-          const user = useAuthStore.getState().user;
+          const state = useAuthStore.getState();
+          const user = state.user;
+          const activeRole = state.activeRole;
 
-            if (user?.primeiroAcesso) {
-              router.push("/auth/nova-senha");
-            } else if (user?.roles?.includes("PLATFORM_ADMIN")) {
+          if (user?.primeiroAcesso) {
+            router.push("/auth/nova-senha");
+          } else if (user && user.roles.length > 1 && !activeRole) {
+            router.push("/auth/select-role");
+          } else {
+            const roleToUse = activeRole || user?.roles?.[0];
+
+            if (roleToUse === "PLATFORM_ADMIN") {
               router.push("/platform/escolas");
-            } else if (user?.roles?.includes("ADMIN")) {
+            } else if (roleToUse === "ADMIN") {
               router.push("/admin/dashboard");
-            } else if (user?.roles?.includes("PROFESSOR")) {
+            } else if (roleToUse === "PROFESSOR") {
               router.push("/professor/dashboard");
-            } else if (user?.roles?.includes("RESPONSAVEL")) {
+            } else if (roleToUse === "RESPONSAVEL") {
               router.push("/responsavel/dashboard");
             } else {
               router.push("/");
             }
+          }
         }, 2000);
       } else {
         const authError = useAuthStore.getState().error;

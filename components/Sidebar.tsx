@@ -87,7 +87,7 @@ function SidebarNav({ items }: SidebarNavProps) {
   )
 }
 
-import { LogOut, Menu } from "lucide-react"
+import { LogOut, Menu, ArrowLeftRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface AppSidebarProps {
@@ -115,7 +115,8 @@ function MobileHeader() {
 }
 
 function AppSidebar({ items, logout, user }: AppSidebarProps) {
-  const { state } = useSidebar()
+  const { state, setOpenMobile } = useSidebar()
+  const router = useRouter()
 
   return (
     <SidebarUI className="h-screen sticky top-0">
@@ -150,21 +151,47 @@ function AppSidebar({ items, logout, user }: AppSidebarProps) {
                   {user?.email}
                 </div>
               </div>
+
+              {user?.roles?.length > 1 && (
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-2 h-9 text-xs mb-1"
+                  onClick={() => {
+                    setOpenMobile(false);
+                    router.push('/auth/select-role');
+                  }}
+                >
+                  <ArrowLeftRight className="h-4 w-4" />
+                  Trocar Perfil
+                </Button>
+              )}
+
               <Button
                 variant="destructive"
-                className="w-full justify-center"
+                className="w-full justify-start gap-2 h-9 text-xs"
                 onClick={logout}
               >
+                <LogOut className="h-4 w-4" />
                 Sair
               </Button>
               <div className="text-xs text-center text-muted-foreground mt-2">
-                © 2025 Elo Escola
+                © 2026 Elo Escola
               </div>
             </div>
           ) : (
-            <Button variant="ghost" size="icon" onClick={logout} title="Sair">
-              <LogOut className="h-4 w-4" />
-            </Button>
+            <div className="flex flex-col gap-2">
+              {user?.roles?.length > 1 && (
+                <Button variant="ghost" size="icon" onClick={() => {
+                  setOpenMobile(false);
+                  router.push('/auth/select-role');
+                }} title="Trocar Perfil">
+                  <ArrowLeftRight className="h-4 w-4" />
+                </Button>
+              )}
+              <Button variant="ghost" size="icon" onClick={logout} title="Sair">
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
           )}
         </div>
       </SidebarFooter>
@@ -175,7 +202,7 @@ function AppSidebar({ items, logout, user }: AppSidebarProps) {
 export function Sidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
-  const { user, isAuthenticated } = useAuthStore()
+  const { user, isAuthenticated, activeRole } = useAuthStore()
   const [mounted, setMounted] = useState(false)
 
   useTenant();
@@ -185,10 +212,38 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
-    if (mounted && user?.primeiroAcesso && pathname !== '/auth/nova-senha' && pathname !== '/login') {
+    if (!mounted || !user) return;
+
+    // 1. Redir para seleção de papel se houver múltiplos e nenhum ativo
+    if (user.roles.length > 1 && !activeRole && pathname !== '/auth/select-role' && !pathname.startsWith('/auth/')) {
+      router.push('/auth/select-role');
+      return;
+    }
+
+    // 2. Trava de Segurança por Perfil (Active Role Guard)
+    const currentRole = activeRole || user.roles[0];
+
+    const isAccessingWrongRole =
+      (pathname.startsWith('/admin') && currentRole !== 'ADMIN') ||
+      (pathname.startsWith('/professor') && currentRole !== 'PROFESSOR') ||
+      (pathname.startsWith('/platform') && currentRole !== 'PLATFORM_ADMIN') ||
+      (pathname.startsWith('/responsavel') && currentRole !== 'RESPONSAVEL');
+
+    if (isAccessingWrongRole && pathname !== '/auth/select-role') {
+      const rolePaths: Record<string, string> = {
+        ADMIN: '/admin/dashboard',
+        PROFESSOR: '/professor/dashboard',
+        PLATFORM_ADMIN: '/platform/escolas',
+        RESPONSAVEL: '/responsavel/dashboard'
+      };
+      router.push(rolePaths[currentRole] || '/');
+    }
+
+    // 3. Forçar troca de senha no primeiro acesso
+    if (user.primeiroAcesso && pathname !== '/auth/nova-senha' && pathname !== '/login') {
       router.push('/auth/nova-senha');
     }
-  }, [mounted, user, pathname, router]);
+  }, [mounted, user, activeRole, pathname, router]);
 
   if (!mounted) {
     return <>{children}</>
@@ -198,7 +253,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
     return <>{children}</>
   }
 
-  const role = user.roles[0];
+  const role = activeRole || user.roles[0];
   const items = getSidebarItems(role);
 
   return (
