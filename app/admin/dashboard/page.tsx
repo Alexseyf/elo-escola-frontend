@@ -19,7 +19,7 @@ export default function AdminDashboard() {
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
         <p className="mb-6">Bem-vindo, {user?.nome?.split(' ')[0]}</p>
-        
+
         <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
           <Card className="flex flex-col">
             <CardHeader>
@@ -28,10 +28,8 @@ export default function AdminDashboard() {
                 Atividades Pedagógicas
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex-1">
-              <div className="mb-4">
-                 <AtividadesChart minimal={true} />
-              </div>
+            <CardContent className="py-2">
+              <AtividadesChart minimal={true} />
             </CardContent>
             <CardFooter>
               <Button
@@ -51,10 +49,8 @@ export default function AdminDashboard() {
                 Alunos por Turma
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex-1">
-              <div className="mb-4">
-                 <AlunosChart minimal={true} />
-              </div>
+            <CardContent className="py-2">
+              <AlunosChart minimal={true} />
             </CardContent>
             <CardFooter>
               <Button
@@ -70,23 +66,20 @@ export default function AdminDashboard() {
           <Card className="flex flex-col">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="w-5 h-5" />
-                Mensalidades por Turma
+                <BarChart3 className="w-5 h-5 text-emerald-600" />
+                Balanço Financeiro (Mês Atual)
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex-1">
-              <div className="mb-4">
-                 <MensalidadesChart minimal={true} />
-              </div>
+            <CardContent className="py-2">
+              <MensalidadesChart minimal={true} />
             </CardContent>
             <CardFooter>
               <Button
-                onClick={() => {}}
-                className="w-full opacity-50 cursor-not-allowed"
+                onClick={() => router.push("/admin/financeiro")}
+                className="w-full"
                 variant="primary"
-                disabled
               >
-                Detalhar (em desenvolvimento)
+                Gerenciar Finanças
               </Button>
             </CardFooter>
           </Card>

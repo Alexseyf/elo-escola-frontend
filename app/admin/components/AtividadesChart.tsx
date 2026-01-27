@@ -156,8 +156,8 @@ export default function AtividadesChart({ turmaId, minimal = false }: Atividades
         </div>
       )}
 
-      <div className="rounded-lg bg-white p-3 sm:p-6 shadow">
-        <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-900">Total de Atividades por Campo de Experiência</h3>
+      <div className={minimal ? "" : "rounded-lg bg-white p-3 sm:p-6 shadow"}>
+        {!minimal && <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-900">Total de Atividades por Campo de Experiência</h3>}
         <div className="w-full min-h-56 sm:min-h-80 -mx-3 sm:-mx-6 px-3 sm:px-6 overflow-x-auto min-w-0">
           <ChartContainer
             config={Object.fromEntries(

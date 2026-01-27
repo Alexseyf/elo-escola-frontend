@@ -1,75 +1,56 @@
-import React, { useEffect } from 'react';
-import { useTurmasStore, formatarNomeTurma } from '@/stores/useTurmasStore';
-import {
-  ChartContainer,
-  ChartBarChart,
-  ChartBar,
-  ChartXAxis,
-  ChartYAxis,
-  ChartCartesianGrid,
-  ChartCell,
-  COLORS as CHART_COLORS,
-  type ChartConfig,
-} from '@/components/ui/chart';
+"use client";
 
-const COLORS = CHART_COLORS;
+import React, { useEffect } from 'react';
+import { useFinancasStore } from '@/stores/useFinancasStore';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell
+} from "recharts";
+import { COLORS as CHART_COLORS } from '@/components/ui/chart';
 
 interface MensalidadesChartProps {
   minimal?: boolean;
 }
 
 export default function MensalidadesChart({ minimal = false }: MensalidadesChartProps) {
-  const mensalidadesPorTurma = useTurmasStore((state) => state.mensalidadesPorTurma);
-  const isLoading = useTurmasStore((state) => state.isLoading);
-  const error = useTurmasStore((state) => state.error);
-  const fetchMensalidadesPorTurma = useTurmasStore((state) => state.fetchMensalidadesPorTurma);
+  const { balanco, fetchBalanco, isLoading } = useFinancasStore();
+  const currentMonth = new Date().getMonth() + 1;
+  const currentYear = new Date().getFullYear();
+  const COLORS = CHART_COLORS;
 
   useEffect(() => {
-    fetchMensalidadesPorTurma();
-  }, [fetchMensalidadesPorTurma]);
+    fetchBalanco(currentMonth, currentYear);
+  }, [fetchBalanco, currentMonth, currentYear]);
 
-  if (isLoading && !mensalidadesPorTurma) {
+  if (isLoading && !balanco) {
     return (
-      <div className="space-y-4 w-full">
-        <div className="rounded-lg bg-white p-6 shadow animate-pulse">
-            <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
-            <div className="h-64 bg-gray-200 rounded w-full"></div>
-        </div>
+      <div className="w-full h-48 animate-pulse bg-muted rounded-lg flex items-center justify-center">
+        <span className="text-sm text-muted-foreground">Carregando dados financeiros...</span>
       </div>
     );
   }
 
-  if (error && !mensalidadesPorTurma) {
+  if (!balanco || balanco.turmas.length === 0) {
     return (
-      <div className="rounded-lg bg-red-50 border border-red-200 p-6">
-        <p className="text-base text-red-700 font-medium">Erro ao carregar dados</p>
-        <p className="text-sm text-red-600 mt-2">{error}</p>
+      <div className="h-48 flex items-center justify-center border border-dashed rounded-lg bg-muted/30">
+        <p className="text-sm text-muted-foreground text-center px-4">
+          Nenhum dado financeiro registrado para {currentMonth}/{currentYear}.
+        </p>
       </div>
     );
   }
 
-  if (!mensalidadesPorTurma || mensalidadesPorTurma.turmas.length === 0) {
-    return (
-      <div className="rounded-lg bg-amber-50 border border-amber-200 p-6 text-center">
-        <p className="text-base text-amber-700 font-medium">Nenhum dado disponível</p>
-        <p className="text-sm text-amber-600 mt-2">Não há dados de mensalidades registrados.</p>
-      </div>
-    );
-  }
-
-  const { turmas, totalGeral } = mensalidadesPorTurma;
-
-  const chartData = turmas.map((turma: { turmaNome: string; totalMensalidade: number }) => ({
-    turma: turma.turmaNome,
-    total: turma.totalMensalidade,
+  // Preparar dados: Saldo por Turma
+  const chartData = balanco.turmas.map(t => ({
+    name: t.nome,
+    saldo: t.saldo,
   }));
-
-  const chartConfig: ChartConfig = {
-    total: {
-      label: "Total (R$)",
-      color: "hsl(var(--primary))",
-    },
-  };
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -79,58 +60,68 @@ export default function MensalidadesChart({ minimal = false }: MensalidadesChart
   };
 
   return (
-    <div className="space-y-6 w-full">
+    <div className="space-y-4 w-full min-h-[350px] flex flex-col">
+      <div className="h-[250px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+            <XAxis
+              dataKey="name"
+              fontSize={10}
+              tickLine={false}
+              axisLine={false}
+              interval={0}
+              angle={-45}
+              textAnchor="end"
+              hide={minimal}
+            />
+            <YAxis
+              fontSize={10}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => `R$${value}`}
+            />
+            <Tooltip
+              cursor={{ fill: '#f8fafc' }}
+              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+              formatter={(value: number) => [formatCurrency(value), "Saldo Final"]}
+            />
+            <Bar dataKey="saldo" radius={[4, 4, 0, 0]}>
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Legenda colorida por turmas */}
+      <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {chartData.map((entry, index) => (
+          <div key={entry.name} className="flex items-center gap-2">
+            <div
+              className="w-2.5 h-2.5 rounded-full shrink-0"
+              style={{ backgroundColor: COLORS[index % COLORS.length] }}
+            />
+            <span className="text-[11px] text-gray-700 truncate font-medium">
+              {entry.name}: {formatCurrency(entry.saldo)}
+            </span>
+          </div>
+        ))}
+      </div>
+
       {!minimal && (
-        <div className="rounded-lg bg-green-50 border border-green-200 p-4 w-fit">
-            <p className="text-sm font-medium text-green-700">Total Geral de Mensalidades</p>
-            <p className="text-2xl font-bold text-green-900 mt-2">{formatCurrency(totalGeral)}</p>
+        <div className="grid grid-cols-2 gap-4 pt-2">
+          <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-100">
+            <p className="text-[10px] uppercase font-bold text-emerald-700">Receita Mês</p>
+            <p className="text-lg font-bold text-emerald-900">{formatCurrency(balanco.totalReceitas)}</p>
+          </div>
+          <div className="bg-rose-50 p-3 rounded-lg border border-rose-100">
+            <p className="text-[10px] uppercase font-bold text-rose-700">Despesa Mês</p>
+            <p className="text-lg font-bold text-rose-900">{formatCurrency(balanco.totalDespesasTurmas + balanco.totalDespesasGeral)}</p>
+          </div>
         </div>
       )}
-
-      <div className="rounded-lg bg-white p-3 sm:p-6 shadow">
-        <h3 className="text-lg font-semibold mb-3 sm:mb-4 text-gray-900">Total de Mensalidades por Turma</h3>
-        <div className="w-full min-h-56 sm:min-h-80 -mx-3 sm:-mx-6 px-3 sm:px-6 overflow-x-auto min-w-0">
-          <ChartContainer config={chartConfig} className="h-56 sm:h-80 w-full">
-            <ChartBarChart data={chartData} margin={{ top: 0, right: 0, left: 10, bottom: 0 }}>
-              <ChartCartesianGrid vertical={false} />
-              <ChartXAxis
-                dataKey="turma"
-                tick={false}
-                axisLine={false}
-              />
-              <ChartYAxis 
-                tickFormatter={(value) => `R$ ${value}`}
-                axisLine={false}
-                tickLine={false}
-              />
-
-              <ChartBar 
-                dataKey="total" 
-                fill="var(--color-total)" 
-                radius={[8, 8, 0, 0]} 
-                isAnimationActive={false}
-                activeBar={false}
-              >
-                 {chartData.map((entry, index) => (
-                    <ChartCell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-              </ChartBar>
-            </ChartBarChart>
-          </ChartContainer>
-        </div>
-
-        <div className="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 px-3 sm:px-0">
-          {chartData.map((entry, index) => (
-            <div key={entry.turma} className="flex items-center gap-2">
-              <div
-                className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0"
-                style={{ backgroundColor: COLORS[index % COLORS.length] }}
-              />
-              <span className="text-xs sm:text-sm text-gray-700 truncate">{entry.turma}: {formatCurrency(entry.total)}</span>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

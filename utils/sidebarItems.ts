@@ -11,6 +11,7 @@ import {
   Clock,
   Building2,
   UserPlus,
+  CircleDollarSign,
 } from "lucide-react";
 
 export interface SidebarItem {
@@ -80,12 +81,14 @@ export function getAdminSidebarItems(): SidebarItem[] {
       href: "/admin/cronograma",
       icon: Clock,
     },
-    //     {
-    //   id: "relatorios",
-    //   label: "Relatórios",
-    //   href: "/relatorios?section=relatorios",
     //   icon: BarChart3,
     // },
+    {
+      id: "financeiro",
+      label: "Financeiro",
+      href: "/admin/financeiro",
+      icon: CircleDollarSign,
+    },
   ];
 }
 

@@ -32,8 +32,8 @@ export default function AlunosChart({ minimal = false }: AlunosChartProps) {
     return (
       <div className="space-y-4 w-full">
         <div className="rounded-lg bg-white p-6 shadow animate-pulse">
-            <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
-            <div className="h-64 bg-gray-200 rounded w-full"></div>
+          <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
+          <div className="h-64 bg-gray-200 rounded w-full"></div>
         </div>
       </div>
     );
@@ -75,13 +75,13 @@ export default function AlunosChart({ minimal = false }: AlunosChartProps) {
     <div className="space-y-6 w-full">
       {!minimal && (
         <div className="rounded-lg bg-blue-50 border border-blue-200 p-4 w-fit">
-            <p className="text-sm font-medium text-blue-700">Total de Alunos</p>
-            <p className="text-2xl font-bold text-blue-900 mt-2">{totalAlunos}</p>
+          <p className="text-sm font-medium text-blue-700">Total de Alunos</p>
+          <p className="text-2xl font-bold text-blue-900 mt-2">{totalAlunos}</p>
         </div>
       )}
 
-      <div className="rounded-lg bg-white p-3 sm:p-6 shadow">
-        <h3 className="text-lg font-semibold mb-3 sm:mb-4 text-gray-900">Quantidade de Alunos por Turma</h3>
+      <div className={minimal ? "" : "rounded-lg bg-white p-3 sm:p-6 shadow"}>
+        {!minimal && <h3 className="text-lg font-semibold mb-3 sm:mb-4 text-gray-900">Quantidade de Alunos por Turma</h3>}
         <div className="w-full min-h-56 sm:min-h-80 -mx-3 sm:-mx-6 px-3 sm:px-6 overflow-x-auto min-w-0">
           <ChartContainer config={chartConfig} className="h-56 sm:h-80 w-full">
             <ChartBarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
@@ -92,17 +92,17 @@ export default function AlunosChart({ minimal = false }: AlunosChartProps) {
                 axisLine={false}
               />
               <ChartYAxis allowDecimals={false} />
-              
-              <ChartBar 
-                dataKey="total" 
-                fill="var(--color-total)" 
-                radius={[8, 8, 0, 0]} 
-                isAnimationActive={false} 
+
+              <ChartBar
+                dataKey="total"
+                fill="var(--color-total)"
+                radius={[8, 8, 0, 0]}
+                isAnimationActive={false}
                 activeBar={false}
               >
-                 {chartData.map((entry, index) => (
-                    <ChartCell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
+                {chartData.map((entry, index) => (
+                  <ChartCell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
               </ChartBar>
             </ChartBarChart>
           </ChartContainer>
@@ -157,7 +157,7 @@ export default function AlunosChart({ minimal = false }: AlunosChartProps) {
                 const percentual = ((turma.totalAlunosAtivos / totalAlunos) * 100).toFixed(1);
                 let status = '';
                 let statusColor = '';
-                
+
                 if (turma.totalAlunosAtivos <= 7) {
                   status = 'Muito Baixo';
                   statusColor = 'text-red-600 bg-red-50';
