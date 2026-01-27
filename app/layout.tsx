@@ -22,14 +22,14 @@ export const metadata: Metadata = {
   title: "Elo Escola",
   description: "Plataforma Elo Escola",
   icons: {
-    icon: "/logo_elo64.jpg",
-    shortcut: "/logo_elo64.jpg",
-    apple: "/logo_elo64.jpg",
+    icon: "/logo_elo_circle.png",
+    shortcut: "/logo_elo_circle.png",
+    apple: "/logo_elo_circle.png",
   },
   openGraph: {
     title: "Elo Escola",
     description: "Plataforma Elo Escola",
-    images: ["/logo.png"],
+    images: ["/logo_elo_circle.png"],
   },
 };
 
