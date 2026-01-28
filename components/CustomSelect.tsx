@@ -65,7 +65,7 @@ export function CustomSelect({
       const spaceAbove = rect.top;
       const dropdownHeight = Math.min(240, options.length * 40);
 
-      if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
+      if (spaceBelow < dropdownHeight + 20 && spaceAbove > spaceBelow) {
         dropdown.style.bottom = '100%';
         dropdown.style.top = 'auto';
         dropdown.style.marginBottom = '0.25rem';

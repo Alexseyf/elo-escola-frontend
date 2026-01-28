@@ -44,7 +44,6 @@ export function ExpenseForm({ isOpen, onClose, mes, ano }: ExpenseFormProps) {
             fetchPagamentos(mes, ano);
             fetchBalanco(mes, ano);
             onClose();
-            // Reset form
             setFormData({
                 descricao: "",
                 valor: 0,
@@ -52,7 +51,30 @@ export function ExpenseForm({ isOpen, onClose, mes, ano }: ExpenseFormProps) {
                 tipo: "OUTRO",
                 turmaId: null
             });
+            setDisplayValor("0,00");
         }
+    };
+
+    const [displayValor, setDisplayValor] = useState("0,00");
+
+    const formatCurrencyMask = (value: string) => {
+        const cleanValue = value.replace(/\D/g, "");
+        const cents = parseInt(cleanValue || "0") / 100;
+
+        return new Intl.NumberFormat('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(cents);
+    };
+
+    const handleValorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        const formatted = formatCurrencyMask(value);
+
+        setDisplayValor(formatted);
+
+        const numericValue = parseFloat(formatted.replace(/\./g, "").replace(",", "."));
+        setFormData({ ...formData, valor: numericValue });
     };
 
     const tiposOptions = [
@@ -96,16 +118,20 @@ export function ExpenseForm({ isOpen, onClose, mes, ano }: ExpenseFormProps) {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label htmlFor="valor">Valor (R$)</Label>
-                            <Input
-                                id="valor"
-                                type="number"
-                                step="0.01"
-                                placeholder="0,00"
-                                value={formData.valor || ""}
-                                onChange={e => setFormData({ ...formData, valor: parseFloat(e.target.value) })}
-                                required
-                            />
+                            <Label htmlFor="valor">Valor</Label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">R$</span>
+                                <Input
+                                    id="valor"
+                                    type="text"
+                                    inputMode="numeric"
+                                    placeholder="0,00"
+                                    className="pl-9 text-right font-medium"
+                                    value={displayValor}
+                                    onChange={handleValorChange}
+                                    required
+                                />
+                            </div>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="data">Data</Label>

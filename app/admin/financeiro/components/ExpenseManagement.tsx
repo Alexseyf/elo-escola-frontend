@@ -53,13 +53,13 @@ export function ExpenseManagement({ mes, ano, isFechado }: ExpenseManagementProp
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h2 className="text-xl font-semibold">Listagem de Pagamentos</h2>
-                    <p className="text-sm text-muted-foreground">Todos os gastos registrados para o mês {mes}/{ano}.</p>
+                    <p className="text-sm text-muted-foreground">Gastos para o mês {mes}/{ano}.</p>
                 </div>
                 {!isFechado && (
-                    <Button onClick={() => setIsFormOpen(true)} className="gap-2 bg-slate-900">
+                    <Button onClick={() => setIsFormOpen(true)} className="gap-2 bg-slate-900 w-full sm:w-auto justify-center">
                         <Plus className="h-4 w-4" />
                         Novo Lançamento
                     </Button>
@@ -67,9 +67,9 @@ export function ExpenseManagement({ mes, ano, isFechado }: ExpenseManagementProp
             </div>
 
             <Card>
-                <CardContent className="p-0">
+                <CardContent className="p-0 overflow-hidden">
                     {/* Mobile View: Card List */}
-                    <div className="grid grid-cols-1 gap-4 p-4 md:hidden">
+                    <div className="grid grid-cols-1 gap-4 p-3 md:hidden overflow-hidden">
                         {isLoading && pagamentos.length === 0 ? (
                             <div className="text-center py-10 text-muted-foreground animate-pulse">
                                 Carregando...

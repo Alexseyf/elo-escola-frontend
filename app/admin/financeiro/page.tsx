@@ -50,7 +50,7 @@ export default function FinanceiroPage() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-                    <div className="flex flex-1 items-center justify-between gap-2 bg-card border rounded-xl p-2 shadow-sm min-w-[280px]">
+                    <div className="flex flex-1 items-center justify-between gap-2 bg-card border rounded-xl p-2 shadow-sm">
                         <div className="flex items-center gap-2 px-2">
                             <Calendar className="h-4 w-4 text-slate-400" />
                             <Select value={mes.toString()} onValueChange={(v) => setMes(parseInt(v))}>
