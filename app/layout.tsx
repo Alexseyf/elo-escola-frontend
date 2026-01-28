@@ -1,20 +1,13 @@
 import type { Metadata } from "next";
-import { Montserrat, Inter } from "next/font/google";
+import { Nunito_Sans } from "next/font/google"; // Removed Montserrat and Inter
 import { Sidebar } from "@/components/Sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
+const nunitoSans = Nunito_Sans({
+  variable: "--font-nunito-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400", "600", "700"], // Lighter weights included
   display: "swap",
 });
 
@@ -39,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${montserrat.variable} ${inter.variable}`}>
+    <html lang="pt-BR" className={`${nunitoSans.variable}`}>
       <body className="antialiased">
         <Sidebar>
           {children}

@@ -8,9 +8,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-inter)', 'sans-serif'],
-        mono: ['ui-monospace', 'monospace'],
-        display: ['var(--font-montserrat)', 'sans-serif'],
+        sans: ['var(--font-nunito-sans)', 'sans-serif'],
+        display: ['var(--font-nunito-sans)', 'sans-serif'],
       },
       colors: {
         soft: {
