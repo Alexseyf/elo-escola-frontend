@@ -12,6 +12,7 @@ interface CustomSelectProps {
   error?: boolean;
   errorColor?: string;
   searchable?: boolean;
+  disableMobileSearch?: boolean;
 }
 
 export function CustomSelect({
@@ -23,7 +24,8 @@ export function CustomSelect({
   className = '',
   error = false,
   errorColor = 'border-red-300 focus:ring-red-500',
-  searchable = false
+  searchable = false,
+  disableMobileSearch = false
 }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -49,7 +51,8 @@ export function CustomSelect({
   }, []);
 
   useEffect(() => {
-    if (isOpen && searchable && searchInputRef.current) {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    if (isOpen && searchable && (!disableMobileSearch || !isMobile) && searchInputRef.current) {
       searchInputRef.current.focus();
     }
 
@@ -61,7 +64,7 @@ export function CustomSelect({
       const spaceBelow = viewportHeight - rect.bottom;
       const spaceAbove = rect.top;
       const dropdownHeight = Math.min(240, options.length * 40);
-      
+
       if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
         dropdown.style.bottom = '100%';
         dropdown.style.top = 'auto';
@@ -74,7 +77,7 @@ export function CustomSelect({
         dropdown.style.marginBottom = '0';
       }
     }
-  }, [isOpen, searchable, options.length]);
+  }, [isOpen, searchable, options.length, disableMobileSearch]);
 
   const handleSelectOption = (optionValue: string | number) => {
     const event = {
@@ -95,9 +98,9 @@ export function CustomSelect({
   const baseClass = error ? errorColor : 'border-gray-300 focus:ring-blue-500';
 
   const filteredOptions = searchable && searchTerm
-    ? options.filter(opt => 
-        opt.label.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+    ? options.filter(opt =>
+      opt.label.toLowerCase().includes(searchTerm.toLowerCase())
+    )
     : options;
 
   return (
@@ -125,7 +128,7 @@ export function CustomSelect({
           className="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-[min(15rem,40vh)] overflow-y-auto"
         >
           {searchable && (
-            <div className="sticky top-0 bg-white border-b border-gray-200 p-2">
+            <div className={`sticky top-0 bg-white border-b border-gray-200 p-2 ${disableMobileSearch ? 'hidden md:block' : ''}`}>
               <input
                 ref={searchInputRef}
                 type="text"
@@ -143,9 +146,8 @@ export function CustomSelect({
                 key={`${option.value}-${index}`}
                 type="button"
                 onClick={() => handleSelectOption(option.value)}
-                className={`w-full px-3 py-2 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none ${
-                  String(value) === String(option.value) ? 'bg-blue-100' : ''
-                }`}
+                className={`w-full px-3 py-2 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none ${String(value) === String(option.value) ? 'bg-blue-100' : ''
+                  }`}
               >
                 <span className="block whitespace-normal break-words">{option.label}</span>
               </button>

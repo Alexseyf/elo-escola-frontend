@@ -131,7 +131,7 @@ export function ExpenseForm({ isOpen, onClose, mes, ano }: ExpenseFormProps) {
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Vincular a Turma (Opcional)</Label>
+                        <Label>Vincular Turma (Opcional)</Label>
                         <CustomSelect
                             id="turmaId"
                             name="turmaId"
@@ -139,6 +139,7 @@ export function ExpenseForm({ isOpen, onClose, mes, ano }: ExpenseFormProps) {
                             onChange={(e) => setFormData({ ...formData, turmaId: e.target.value === "null" ? null : parseInt(e.target.value) })}
                             options={turmasOptions}
                             searchable
+                            disableMobileSearch
                         />
                     </div>
 
