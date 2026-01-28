@@ -15,6 +15,7 @@ import {
     Pie
 } from "recharts";
 import { ArrowDownRight, ArrowUpRight, Banknote, Users, TrendingUp } from "lucide-react";
+import { COLORS as CHART_COLORS } from "@/components/ui/chart";
 
 export function FinancialDashboard({ mes, ano }: { mes: number; ano: number }) {
     const { balanco, isLoading } = useFinancasStore();
@@ -37,7 +38,6 @@ export function FinancialDashboard({ mes, ano }: { mes: number; ano: number }) {
         despesa: t.despesaDireta + t.rateioGeral
     }));
 
-    const COLORS = ['#10b981', '#f43f5e', '#3b82f6', '#f59e0b', '#8b5cf6'];
 
     return (
         <div className="space-y-6">
@@ -109,21 +109,42 @@ export function FinancialDashboard({ mes, ano }: { mes: number; ano: number }) {
                     <CardContent>
                         <div className="h-[300px] w-full mt-4">
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={chartData}>
+                                <BarChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                    <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
+                                    <XAxis dataKey="name" hide />
                                     <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `R$${value}`} />
                                     <Tooltip
                                         cursor={{ fill: '#f8fafc' }}
                                         contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                        formatter={(value: number) => [
+                                            new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value),
+                                            "Saldo Final"
+                                        ]}
                                     />
                                     <Bar dataKey="saldo" radius={[4, 4, 0, 0]}>
                                         {chartData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.saldo >= 0 ? '#10b981' : '#f43f5e'} />
+                                            <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                                         ))}
                                     </Bar>
                                 </BarChart>
                             </ResponsiveContainer>
+                        </div>
+
+                        {/* Legenda colorida por turmas */}
+                        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 border-t border-slate-50">
+                            {chartData.map((entry, index) => (
+                                <div key={entry.name} className="flex items-center gap-2.5">
+                                    <div
+                                        className="w-3 h-3 rounded-full shrink-0"
+                                        style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }}
+                                    />
+                                    <span className="text-xs text-slate-700 truncate font-medium">
+                                        {entry.name}: <span className={entry.saldo >= 0 ? 'text-blue-600' : 'text-rose-600'}>
+                                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(entry.saldo)}
+                                        </span>
+                                    </span>
+                                </div>
+                            ))}
                         </div>
                     </CardContent>
                 </Card>
