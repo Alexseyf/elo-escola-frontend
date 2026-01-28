@@ -95,7 +95,7 @@ export function CustomSelect({
 
   const selectedLabel = options.find(opt => String(opt.value) === String(value))?.label || 'Selecione uma opção';
 
-  const baseClass = error ? errorColor : 'border-gray-300 focus:ring-blue-500';
+  const baseClass = error ? errorColor : 'border-gray-200 focus:ring-blue-100 focus:border-blue-400';
 
   const filteredOptions = searchable && searchTerm
     ? options.filter(opt =>
@@ -109,11 +109,11 @@ export function CustomSelect({
         ref={buttonRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full px-3 py-2 border rounded-md shadow-sm text-left bg-white focus:outline-none focus:ring-1 flex justify-between items-center ${baseClass} ${className}`}
+        className={`w-full h-11 px-4 py-2 border rounded-xl shadow-sm text-left bg-white focus:outline-none focus:ring-4 flex justify-between items-center transition-all text-base md:text-sm ${baseClass} ${className}`}
       >
-        <span className="truncate">{selectedLabel}</span>
+        <span className="truncate text-gray-700">{selectedLabel}</span>
         <svg
-          className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -125,10 +125,10 @@ export function CustomSelect({
       {isOpen && (
         <div
           ref={dropdownRef}
-          className="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-[min(15rem,40vh)] overflow-y-auto"
+          className="absolute z-50 w-full bg-white border border-gray-200 rounded-xl shadow-xl mt-2 max-h-[min(15rem,40vh)] overflow-y-auto animate-in fade-in zoom-in duration-200"
         >
           {searchable && (
-            <div className={`sticky top-0 bg-white border-b border-gray-200 p-2 ${disableMobileSearch ? 'hidden md:block' : ''}`}>
+            <div className={`sticky top-0 bg-white border-b border-gray-100 p-2 ${disableMobileSearch ? 'hidden md:block' : ''}`}>
               <input
                 ref={searchInputRef}
                 type="text"
@@ -146,7 +146,7 @@ export function CustomSelect({
                 key={`${option.value}-${index}`}
                 type="button"
                 onClick={() => handleSelectOption(option.value)}
-                className={`w-full px-3 py-2 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none ${String(value) === String(option.value) ? 'bg-blue-100' : ''
+                className={`w-full px-4 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors border-b border-gray-50 last:border-0 ${String(value) === String(option.value) ? 'bg-blue-50/50 text-blue-600 font-medium' : 'text-gray-600'
                   }`}
               >
                 <span className="block whitespace-normal break-words">{option.label}</span>

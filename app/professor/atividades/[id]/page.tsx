@@ -9,6 +9,8 @@ import { formatarCampoExperiencia } from '@/stores/useCamposStore';
 import { SEMESTRE_LABELS } from '@/types/atividades';
 import { ArrowLeft } from 'lucide-react';
 
+import { PageHeader } from '@/components/PageHeader';
+
 export default function AtividadeDetalhesPage() {
   const params = useParams();
   const router = useRouter();
@@ -57,18 +59,12 @@ export default function AtividadeDetalhesPage() {
 
   return (
     <RouteGuard allowedRoles={['PROFESSOR']}>
-      <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-        <div className="max-w-3xl mx-auto space-y-6">
-          {/* Header */}
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => router.back()}
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <h1 className="text-2xl font-medium text-gray-900">Detalhes da Atividade</h1>
-          </div>
+      <div className="min-h-screen bg-gray-50 pb-8">
+        <PageHeader
+          title="Detalhes da Atividade"
+          backHref={() => router.back()}
+        />
+        <div className="max-w-3xl mx-auto space-y-6 pt-6 px-4 md:px-8">
 
           {/* Content */}
           <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-200">

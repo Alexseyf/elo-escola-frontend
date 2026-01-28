@@ -15,7 +15,7 @@ interface AtividadesState {
   limparCache: () => void;
 }
 
-export const useAtividadesStore = create<AtividadesState>()((set, get) => ({
+export const useAtividadesStore = create<AtividadesState>()((set) => ({
   atividades: [],
   atividadeAtual: null,
   isLoading: false,

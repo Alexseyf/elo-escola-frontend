@@ -1,4 +1,4 @@
-import { useCamposStore, CAMPO_EXPERIENCIA, formatarCampoExperiencia, textoParaCampoExperiencia } from '@/stores/useCamposStore';
+import { useCamposStore, CAMPO_EXPERIENCIA } from '@/stores/useCamposStore';
 
 export { CAMPO_EXPERIENCIA, formatarCampoExperiencia, textoParaCampoExperiencia } from '@/stores/useCamposStore';
 
@@ -11,7 +11,7 @@ export interface CreateCampoExperienciaResult {
   };
 }
 
-export async function createCampoExperiencia(campo: CAMPO_EXPERIENCIA): Promise<CreateCampoExperienciaResult> {
+export async function createCampoExperiencia(): Promise<CreateCampoExperienciaResult> {
   const store = useCamposStore.getState();
   try {
     store.fetchCampos();

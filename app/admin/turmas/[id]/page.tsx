@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useTurmasStore, type TurmaData } from "@/stores/useTurmasStore"
 import { useUsuariosStore } from "@/stores/useUsuariosStore"
 import { RouteGuard } from "@/components/auth/RouteGuard"
+import { PageHeader } from "@/components/PageHeader"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, GraduationCap, Users, UserPlus, Trash2, Plus } from "lucide-react"
@@ -68,10 +69,10 @@ export default function TurmaDetailsPage() {
 
   async function handleVincularProfessor() {
     if (!selectedProfessor) return;
-    
+
     setIsLinking(true);
     const result = await vincularProfessor(id, Number(selectedProfessor));
-    
+
     if (result.success) {
       toast.success(result.message);
       setIsSheetOpen(false);
@@ -85,10 +86,10 @@ export default function TurmaDetailsPage() {
 
   async function handleDesvincularProfessor() {
     if (!professorToUnbind) return;
-    
+
     setIsUnlinking(true);
     const result = await desvincularProfessor(id, professorToUnbind);
-    
+
     if (result.success) {
       toast.success(result.message);
       setProfessorToUnbind(null);
@@ -111,10 +112,10 @@ export default function TurmaDetailsPage() {
 
   if (!turma) {
     return (
-        <div className="p-8 text-center">
-            <h2 className="text-xl font-semibold mb-2">Turma não encontrada</h2>
-            <Button variant="outline" onClick={() => router.back()}>Voltar</Button>
-        </div>
+      <div className="p-8 text-center">
+        <h2 className="text-xl font-semibold mb-2">Turma não encontrada</h2>
+        <Button variant="outline" onClick={() => router.back()}>Voltar</Button>
+      </div>
     );
   }
 
@@ -122,37 +123,33 @@ export default function TurmaDetailsPage() {
     <RouteGuard allowedRoles={['ADMIN']}>
       <div className="p-6 space-y-6">
         <AlertDialog open={professorToUnbind !== null} onOpenChange={(open) => !open && !isUnlinking && setProfessorToUnbind(null)}>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Remover vínculo do professor?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        Esta ação irá remover o professor desta turma. O usuário continuará ativo no sistema.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isUnlinking}>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction 
-                        onClick={(e) => {
-                            e.preventDefault();
-                            handleDesvincularProfessor();
-                        }} 
-                        className="bg-red-600 hover:bg-red-700"
-                        disabled={isUnlinking}
-                    >
-                        {isUnlinking ? 'Removendo...' : 'Remover'}
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Remover vínculo do professor?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Esta ação irá remover o professor desta turma. O usuário continuará ativo no sistema.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isUnlinking}>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDesvincularProfessor();
+                }}
+                className="bg-red-600 hover:bg-red-700"
+                disabled={isUnlinking}
+              >
+                {isUnlinking ? 'Removendo...' : 'Remover'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
         </AlertDialog>
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="icon" onClick={() => router.back()}>
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold">{turma.nome}</h1>
-            <p className="text-gray-500">Ano Letivo: {turma.ano}</p>
-          </div>
-        </div>
+        <PageHeader
+          title={turma.nome}
+          subtitle={`Ano Letivo: ${turma.ano}`}
+          backHref="/admin/turmas"
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Professores Section */}
@@ -160,109 +157,109 @@ export default function TurmaDetailsPage() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div className="space-y-1">
                 <CardTitle className="text-lg flex items-center gap-2">
-                    <Users className="h-5 w-5" />
-                    Professores Vinculados
+                  <Users className="h-5 w-5" />
+                  Professores Vinculados
                 </CardTitle>
                 <CardDescription>Gerencie os professores desta turma</CardDescription>
               </div>
               <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                 <SheetTrigger asChild>
-                    <Button 
-                      size="sm" 
-                      disabled={turma.professores && turma.professores.length > 0}
-                      title={turma.professores && turma.professores.length > 0 ? "Limite de 1 professor por turma atingido" : ""}
-                    >
-                        <UserPlus className="h-4 w-4 mr-2" />
-                        Vincular
-                    </Button>
+                  <Button
+                    size="sm"
+                    disabled={turma.professores && turma.professores.length > 0}
+                    title={turma.professores && turma.professores.length > 0 ? "Limite de 1 professor por turma atingido" : ""}
+                  >
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Vincular
+                  </Button>
                 </SheetTrigger>
                 <SheetContent>
-                    <SheetHeader>
-                        <SheetTitle>Vincular Professor</SheetTitle>
-                        <SheetDescription>
-                            Selecione um professor para vincular a esta turma.
-                        </SheetDescription>
-                    </SheetHeader>
-                    <div className="py-6 px-4">
-                        <Select value={selectedProfessor} onValueChange={setSelectedProfessor}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecione um professor..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {professoresDisponiveis.map(p => (
-                                    <SelectItem key={p.id} value={String(p.id)}>{p.nome}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <SheetFooter>
-                        <Button onClick={handleVincularProfessor} disabled={isLinking}>
-                            {isLinking ? 'Vinculando...' : 'Confirmar Vínculo'}
-                        </Button>
-                    </SheetFooter>
+                  <SheetHeader>
+                    <SheetTitle>Vincular Professor</SheetTitle>
+                    <SheetDescription>
+                      Selecione um professor para vincular a esta turma.
+                    </SheetDescription>
+                  </SheetHeader>
+                  <div className="py-6 px-4">
+                    <Select value={selectedProfessor} onValueChange={setSelectedProfessor}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione um professor..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {professoresDisponiveis.map(p => (
+                          <SelectItem key={p.id} value={String(p.id)}>{p.nome}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <SheetFooter>
+                    <Button onClick={handleVincularProfessor} disabled={isLinking}>
+                      {isLinking ? 'Vinculando...' : 'Confirmar Vínculo'}
+                    </Button>
+                  </SheetFooter>
                 </SheetContent>
               </Sheet>
             </CardHeader>
             <CardContent>
-                <div className="space-y-4">
-                    {turma.professores && turma.professores.length > 0 ? (
-                        turma.professores.map((prof) => (
-                            <div key={prof.id} className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
-                                <div className="flex items-center gap-3">
-                                    <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold">
-                                        {prof.usuario.nome.substring(0,2).toUpperCase()}
-                                    </div>
-                                    <div>
-                                        <p className="font-medium">{prof.usuario.nome}</p>
-                                        <p className="text-xs text-gray-500">{prof.usuario.email}</p>
-                                    </div>
-                                </div>
-                                <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                                    onClick={() => setProfessorToUnbind(prof.usuarioId)}
-                                >
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                            </div>
-                        ))
-                    ) : (
-                        <p className="text-sm text-gray-500 text-center py-4">Nenhum professor vinculado.</p>
-                    )}
-                </div>
+              <div className="space-y-4">
+                {turma.professores && turma.professores.length > 0 ? (
+                  turma.professores.map((prof) => (
+                    <div key={prof.id} className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold">
+                          {prof.usuario.nome.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-medium">{prof.usuario.nome}</p>
+                          <p className="text-xs text-gray-500">{prof.usuario.email}</p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => setProfessorToUnbind(prof.usuarioId)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500 text-center py-4">Nenhum professor vinculado.</p>
+                )}
+              </div>
             </CardContent>
           </Card>
 
           {/* Alunos Section */}
           <Card>
             <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                    <GraduationCap className="h-5 w-5" />
-                    Alunos ({turma.alunos?.length || 0})
-                </CardTitle>
-                <CardDescription>Lista de alunos matriculados</CardDescription>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <GraduationCap className="h-5 w-5" />
+                Alunos ({turma.alunos?.length || 0})
+              </CardTitle>
+              <CardDescription>Lista de alunos matriculados</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
-                    {turma.alunos && turma.alunos.length > 0 ? (
-                        turma.alunos.map((aluno) => (
-                            <div key={aluno.id} className="flex items-center justify-between p-3 border rounded-lg bg-white">
-                                <span className="font-medium text-sm">{aluno.nome}</span>
-                                <Button 
-                                    variant="outline" 
-                                    size="icon" 
-                                    className="h-8 w-8 text-primary border-primary/20 hover:bg-primary/10 hover:border-primary/50 transition-colors" 
-                                    onClick={() => router.push(`/admin/alunos/${aluno.id}`)}
-                                >
-                                    <Plus className="h-4 w-4" />
-                                </Button>
-                            </div>
-                        ))
-                    ) : (
-                        <p className="text-sm text-gray-500 text-center py-4">Nenhum aluno matriculado.</p>
-                    )}
-                </div>
+              <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
+                {turma.alunos && turma.alunos.length > 0 ? (
+                  turma.alunos.map((aluno) => (
+                    <div key={aluno.id} className="flex items-center justify-between p-3 border rounded-lg bg-white">
+                      <span className="font-medium text-sm">{aluno.nome}</span>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 text-primary border-primary/20 hover:bg-primary/10 hover:border-primary/50 transition-colors"
+                        onClick={() => router.push(`/admin/alunos/${aluno.id}`)}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500 text-center py-4">Nenhum aluno matriculado.</p>
+                )}
+              </div>
             </CardContent>
           </Card>
         </div>

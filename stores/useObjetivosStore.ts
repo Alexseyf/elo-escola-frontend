@@ -1,14 +1,15 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
-import { CAMPO_EXPERIENCIA } from './useCamposStore';
+
 
 export interface Objetivo {
   id: number;
+  codigo: string;
   descricao: string;
   grupoId: number;
   campoId?: number;
   campoExperienciaId?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface ObjetivosState {

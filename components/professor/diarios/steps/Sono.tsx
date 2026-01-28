@@ -39,7 +39,7 @@ export default function Sono({ value, onChange }: SonoProps) {
 
   const handleSleepMinuteChange = (minute: number) => {
     setNewSleepMinute(minute);
-    
+
     const currentWakeTime = newWakeHour * 60 + newWakeMinute;
     const newSleepTime = newSleepHour * 60 + minute;
 
@@ -71,7 +71,7 @@ export default function Sono({ value, onChange }: SonoProps) {
       return '00:00';
     }
 
-    let sleepMinutes = sleepHour * 60 + sleepMinute;
+    const sleepMinutes = sleepHour * 60 + sleepMinute;
     let wakeMinutes = wakeHour * 60 + wakeMinute;
 
     if (wakeMinutes < sleepMinutes) {
@@ -147,16 +147,15 @@ export default function Sono({ value, onChange }: SonoProps) {
               <div className="text-center py-1">
                 <span className="text-xl font-semibold text-blue-600">{formatTimeString(newSleepHour, newSleepMinute)}</span>
               </div>
-              
+
               <div className="space-y-2">
                 <div className="flex gap-2 overflow-x-auto pb-2 px-1 scrollbar-none -mx-1">
                   {HOURS.map((h) => (
                     <button
                       key={`sleep-h-${h}`}
                       onClick={() => handleSleepHourChange(h)}
-                      className={`flex-shrink-0 w-10 h-10 rounded-lg font-medium text-sm transition-all ${
-                        newSleepHour === h ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
-                      }`}
+                      className={`flex-shrink-0 w-10 h-10 rounded-lg font-medium text-sm transition-all ${newSleepHour === h ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                        }`}
                     >
                       {h}
                     </button>
@@ -167,9 +166,8 @@ export default function Sono({ value, onChange }: SonoProps) {
                     <button
                       key={`sleep-m-${m}`}
                       onClick={() => handleSleepMinuteChange(m)}
-                      className={`w-12 h-10 rounded-lg font-medium text-sm transition-all ${
-                        newSleepMinute === m ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
-                      }`}
+                      className={`w-12 h-10 rounded-lg font-medium text-sm transition-all ${newSleepMinute === m ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                        }`}
                     >
                       {m}
                     </button>
@@ -186,7 +184,7 @@ export default function Sono({ value, onChange }: SonoProps) {
               <div className="text-center py-1">
                 <span className="text-xl font-semibold text-blue-600">{formatTimeString(newWakeHour, newWakeMinute)}</span>
               </div>
-              
+
               <div className="space-y-2">
                 <div className="flex gap-2 overflow-x-auto pb-2 px-1 scrollbar-none -mx-1">
                   {HOURS.map((h) => {
@@ -196,10 +194,9 @@ export default function Sono({ value, onChange }: SonoProps) {
                         key={`wake-h-${h}`}
                         disabled={disabled}
                         onClick={() => setNewWakeHour(h)}
-                        className={`flex-shrink-0 w-10 h-10 rounded-lg font-medium text-sm transition-all ${
-                          newWakeHour === h ? 'bg-blue-600 text-white' : 
-                          disabled ? 'opacity-20 cursor-not-allowed' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
-                        }`}
+                        className={`flex-shrink-0 w-10 h-10 rounded-lg font-medium text-sm transition-all ${newWakeHour === h ? 'bg-blue-600 text-white' :
+                            disabled ? 'opacity-20 cursor-not-allowed' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                          }`}
                       >
                         {h}
                       </button>
@@ -214,10 +211,9 @@ export default function Sono({ value, onChange }: SonoProps) {
                         key={`wake-m-${m}`}
                         disabled={disabled}
                         onClick={() => setNewWakeMinute(m)}
-                        className={`w-12 h-10 rounded-lg font-medium text-sm transition-all ${
-                          newWakeMinute === m ? 'bg-blue-600 text-white' : 
-                          disabled ? 'opacity-20 cursor-not-allowed' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
-                        }`}
+                        className={`w-12 h-10 rounded-lg font-medium text-sm transition-all ${newWakeMinute === m ? 'bg-blue-600 text-white' :
+                            disabled ? 'opacity-20 cursor-not-allowed' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                          }`}
                       >
                         {m}
                       </button>
@@ -250,7 +246,7 @@ export default function Sono({ value, onChange }: SonoProps) {
                   {formatTimeString(period.sleepHour || 0, period.sleepMinute || 0)}
                 </span>
               </div>
-              
+
               {/* Top Right: Delete Button */}
               <div className="flex justify-end">
                 <button
@@ -262,7 +258,7 @@ export default function Sono({ value, onChange }: SonoProps) {
                   </svg>
                 </button>
               </div>
-              
+
               {/* Bottom Left: Acordou */}
               <div className="flex flex-col gap-1">
                 <span className="text-xs text-gray-500">Acordou</span>
@@ -270,7 +266,7 @@ export default function Sono({ value, onChange }: SonoProps) {
                   {formatTimeString(period.wakeHour || 0, period.wakeMinute || 0)}
                 </span>
               </div>
-              
+
               {/* Bottom Right: Duration */}
               <div className="flex flex-col gap-1 items-end">
                 <span className="text-xs text-gray-500">Duração</span>

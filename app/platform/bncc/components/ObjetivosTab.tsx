@@ -36,37 +36,37 @@ import {
 import { Plus, Pencil, Trash2, Search } from 'lucide-react';
 
 export default function ObjetivosTab() {
-  const { 
-    objetivos, 
-    campos, 
-    isLoadingObjetivos, 
-    fetchObjetivos, 
+  const {
+    objetivos,
+    campos,
+    isLoadingObjetivos,
+    fetchObjetivos,
     fetchCampos,
-    createObjetivo, 
-    updateObjetivo, 
-    deleteObjetivo 
+    createObjetivo,
+    updateObjetivo,
+    deleteObjetivo
   } = useBNCCStore();
-  
+
   const { grupos, fetchGrupos } = useTurmasStore();
-  
+
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  
+
   const [formData, setFormData] = useState({
     codigo: '',
     descricao: '',
     grupoId: '',
     campoExperienciaId: '',
   });
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterGrupoId, setFilterGrupoId] = useState<string>('');
   const [filterCampoId, setFilterCampoId] = useState<string>('');
-  
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -80,13 +80,13 @@ export default function ObjetivosTab() {
   // Filter and search objetivos
   const filteredObjetivos = useMemo(() => {
     return objetivos.filter((obj) => {
-      const matchesSearch = 
+      const matchesSearch =
         obj.codigo.toLowerCase().includes(searchTerm.toLowerCase()) ||
         obj.descricao.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       const matchesGrupo = !filterGrupoId || obj.grupoId === Number(filterGrupoId);
       const matchesCampo = !filterCampoId || obj.campoExperienciaId === Number(filterCampoId);
-      
+
       return matchesSearch && matchesGrupo && matchesCampo;
     });
   }, [objetivos, searchTerm, filterGrupoId, filterCampoId]);
@@ -104,7 +104,13 @@ export default function ObjetivosTab() {
     setIsSheetOpen(true);
   };
 
-  const handleOpenEditSheet = (obj: any) => {
+  const handleOpenEditSheet = (obj: {
+    id: number;
+    codigo: string;
+    descricao: string;
+    grupoId: number;
+    campoExperienciaId: number;
+  }) => {
     setIsEditing(true);
     setEditingId(obj.id);
     setFormData({
@@ -120,7 +126,7 @@ export default function ObjetivosTab() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
-    
+
     if (!formData.codigo || !formData.descricao || !formData.grupoId || !formData.campoExperienciaId) {
       setErrorMessage('Todos os campos são obrigatórios');
       return;
@@ -167,7 +173,7 @@ export default function ObjetivosTab() {
 
     try {
       const result = await deleteObjetivo(deleteId);
-      
+
       if (result.success) {
         setSuccessMessage(result.message);
         setTimeout(() => setSuccessMessage(''), 3000);
@@ -211,7 +217,7 @@ export default function ObjetivosTab() {
           {successMessage}
         </div>
       )}
-      
+
       {errorMessage && (
         <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
           {errorMessage}
@@ -280,7 +286,7 @@ export default function ObjetivosTab() {
         <p className="text-sm text-gray-600">
           {filteredObjetivos.length} de {objetivos.length} objetivo(s)
         </p>
-        
+
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetTrigger asChild>
             <Button onClick={handleOpenCreateSheet} className="gap-2">
@@ -288,7 +294,7 @@ export default function ObjetivosTab() {
               Novo Objetivo
             </Button>
           </SheetTrigger>
-          
+
           <SheetContent className="overflow-y-auto">
             <SheetHeader>
               <SheetTitle>{isEditing ? 'Editar Objetivo' : 'Novo Objetivo'}</SheetTitle>
@@ -408,11 +414,10 @@ export default function ObjetivosTab() {
                       {obj.campoExperiencia ? formatarCampoExperiencia(obj.campoExperiencia.campoExperiencia) : '-'}
                     </td>
                     <td className="px-4 py-4 text-sm">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        obj.isAtivo 
-                          ? 'bg-green-100 text-green-800' 
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${obj.isAtivo
+                          ? 'bg-green-100 text-green-800'
                           : 'bg-gray-100 text-gray-800'
-                      }`}>
+                        }`}>
                         {obj.isAtivo ? 'Ativo' : 'Inativo'}
                       </span>
                     </td>

@@ -37,7 +37,7 @@ export async function createDiario(data: CreateDiarioDTO): Promise<{ success: bo
       let msg = result.message || result.erro || 'Erro ao criar diário';
       if (typeof msg !== 'string') {
         if (msg.issues && Array.isArray(msg.issues)) {
-          msg = msg.issues.map((i: any) => i.message).join(', ');
+          msg = msg.issues.map((i: { message: string }) => i.message).join(', ');
         } else {
           msg = JSON.stringify(msg);
         }
@@ -81,7 +81,7 @@ export async function updateDiario(id: number, data: Partial<CreateDiarioDTO>): 
       let msg = result.message || result.erro || 'Erro ao atualizar diário';
       if (typeof msg !== 'string') {
         if (msg.issues && Array.isArray(msg.issues)) {
-          msg = msg.issues.map((i: any) => i.message).join(', ');
+          msg = msg.issues.map((i: { message: string }) => i.message).join(', ');
         } else {
           msg = JSON.stringify(msg);
         }

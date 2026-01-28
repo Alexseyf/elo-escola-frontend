@@ -155,7 +155,7 @@ export async function getAlunoDetalhes(id: number): Promise<AlunoDetalhes | null
 export interface AdicionarResponsavelResult {
   success: boolean;
   message: string;
-  data?: any;
+  data?: unknown;
 }
 
 export async function adicionarResponsavelAluno(

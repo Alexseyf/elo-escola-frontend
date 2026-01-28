@@ -146,7 +146,7 @@ function AppSidebar({ items, logout, user }: AppSidebarProps) {
           {state === "expanded" ? (
             <div className="flex flex-col gap-2">
               <div className="text-xs font-medium truncate text-muted-foreground">
-                <div className="font-bold">
+                <div className="font-semibold">
                   {user?.nome?.split(' ').slice(0, 2).join(' ')}
                 </div>
                 <div className="text-muted-foreground">

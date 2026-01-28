@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { useFinancasStore } from '@/stores/useFinancasStore';
+import { formatarNomeTurma } from '@/stores/useTurmasStore';
 import {
   BarChart,
   Bar,
@@ -48,7 +49,7 @@ export default function MensalidadesChart({ minimal = false }: MensalidadesChart
 
   // Preparar dados: Saldo por Turma
   const chartData = balanco.turmas.map(t => ({
-    name: t.nome,
+    name: formatarNomeTurma(t.nome),
     saldo: t.saldo,
   }));
 
@@ -113,12 +114,12 @@ export default function MensalidadesChart({ minimal = false }: MensalidadesChart
       {!minimal && (
         <div className="grid grid-cols-2 gap-4 pt-2">
           <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-100">
-            <p className="text-[10px] uppercase font-bold text-emerald-700">Receita Mês</p>
-            <p className="text-lg font-bold text-emerald-900">{formatCurrency(balanco.totalReceitas)}</p>
+            <p className="text-[10px] uppercase font-semibold text-emerald-700">Receita Mês</p>
+            <p className="text-lg font-semibold text-emerald-900">{formatCurrency(balanco.totalReceitas)}</p>
           </div>
           <div className="bg-rose-50 p-3 rounded-lg border border-rose-100">
-            <p className="text-[10px] uppercase font-bold text-rose-700">Despesa Mês</p>
-            <p className="text-lg font-bold text-rose-900">{formatCurrency(balanco.totalDespesasTurmas + balanco.totalDespesasGeral)}</p>
+            <p className="text-[10px] uppercase font-semibold text-rose-700">Despesa Mês</p>
+            <p className="text-lg font-semibold text-rose-900">{formatCurrency(balanco.totalDespesasTurmas + balanco.totalDespesasGeral)}</p>
           </div>
         </div>
       )}

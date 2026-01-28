@@ -76,7 +76,7 @@ export default function AlunosChart({ minimal = false }: AlunosChartProps) {
       {!minimal && (
         <div className="rounded-lg bg-blue-50 border border-blue-200 p-4 w-fit">
           <p className="text-sm font-medium text-blue-700">Total de Alunos</p>
-          <p className="text-2xl font-bold text-blue-900 mt-2">{totalAlunos}</p>
+          <p className="text-2xl font-semibold text-blue-900 mt-2">{totalAlunos}</p>
         </div>
       )}
 

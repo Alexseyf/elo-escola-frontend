@@ -10,7 +10,7 @@ import { formatarCampoExperiencia } from '@/stores/useCamposStore';
 import { CustomSelect } from '@/components/CustomSelect';
 import { Search, Plus } from 'lucide-react';
 import { SEMESTRE_LABELS } from '@/types/atividades';
-import type { Atividade } from '@/types/atividades';
+import type { Atividade, AtividadeTurma } from '@/types/atividades';
 
 export default function ProfessorAtividadesPage() {
   const router = useRouter();
@@ -18,13 +18,13 @@ export default function ProfessorAtividadesPage() {
   const { atividades, isLoading, error, fetchProfessorAtividades } = useAtividadesStore();
   const turmas = useTurmasStore(state => state.turmas);
   const fetchTurmas = useTurmasStore(state => state.fetchTurmas);
-  
+
   const [filtroTurma, setFiltroTurma] = useState<number | string>('');
   const [filtroAno, setFiltroAno] = useState<number>(new Date().getFullYear());
   const [filtroPeriodo, setFiltroPeriodo] = useState<string>('');
-  const [turmasData, setTurmasData] = useState<any[]>([]);
+  const [turmasData, setTurmasData] = useState<AtividadeTurma[]>([]);
 
-  const profTurmas = useMemo(() => 
+  const profTurmas = useMemo(() =>
     turmas.filter(t => t.professores?.some(p => p.usuarioId === user?.id)),
     [turmas, user?.id]
   );
@@ -59,7 +59,7 @@ export default function ProfessorAtividadesPage() {
       const turmaMatch = !filtroTurma || String(atividadeTurmaId) === String(filtroTurma);
       const anoMatch = !filtroAno || atividade.ano === filtroAno;
       const periodoMatch = !filtroPeriodo || atividade.periodo === filtroPeriodo;
-      
+
       return turmaMatch && anoMatch && periodoMatch;
     });
   }, [atividades, filtroTurma, filtroAno, filtroPeriodo]);
@@ -109,7 +109,6 @@ export default function ProfessorAtividadesPage() {
                     value: t.id,
                     label: formatarNomeTurma(t.nome)
                   }))}
-                  className="rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
                 />
               </div>
 
@@ -126,7 +125,6 @@ export default function ProfessorAtividadesPage() {
                     { value: new Date().getFullYear(), label: new Date().getFullYear().toString() },
                     { value: new Date().getFullYear() - 1, label: (new Date().getFullYear() - 1).toString() }
                   ]}
-                  className="rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
                 />
               </div>
 
@@ -144,7 +142,6 @@ export default function ProfessorAtividadesPage() {
                     { value: 'PRIMEIRO_SEMESTRE', label: '1º Semestre' },
                     { value: 'SEGUNDO_SEMESTRE', label: '2º Semestre' }
                   ]}
-                  className="rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
                 />
               </div>
 

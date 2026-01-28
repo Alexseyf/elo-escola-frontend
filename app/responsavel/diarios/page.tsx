@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { getAlunosDoResponsavel } from '@/utils/alunos';
 import { getDiariosByAlunoId } from '@/utils/diarios';
 import { Diario } from '@/types/diario';
+import { Aluno } from '@/stores/useAlunosStore';
 import { Calendar, X } from 'lucide-react';
 import { DiarioCard } from '@/components/responsavel/DiarioCard';
 
@@ -22,7 +23,7 @@ export default function DiariosPage() {
 }
 
 function DiariosContent() {
-  const [alunos, setAlunos] = useState<any[]>([]);
+  const [alunos, setAlunos] = useState<Aluno[]>([]);
   const [selectedAlunoId, setSelectedAlunoId] = useState<number | null>(null);
   const [diarios, setDiarios] = useState<Diario[]>([]);
   const [filtroData, setFiltroData] = useState('');

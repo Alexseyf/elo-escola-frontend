@@ -12,6 +12,8 @@ import { CustomSelect } from '@/components/CustomSelect';
 import { SEMESTRE, type CreateAtividadeInput } from '@/types/atividades';
 import { ArrowLeft } from 'lucide-react';
 
+import { PageHeader } from '@/components/PageHeader';
+
 export default function CadastrarAtividadePage() {
   const router = useRouter();
   const user = useAuthStore(state => state.user);
@@ -24,8 +26,8 @@ export default function CadastrarAtividadePage() {
   const { objetivos, objetivosPorGrupoECampo, fetchObjetivosPorGrupoIdCampoId } = useObjetivosStore();
   const { campos, fetchCampos, mapearCampoParaId } = useCamposStore();
   const grupos = useTurmasStore(state => state.grupos);
-  
-  const [mensagem, setMensagem] = useState<{texto: string, tipo: 'sucesso' | 'erro'} | null>(null);
+
+  const [mensagem, setMensagem] = useState<{ texto: string, tipo: 'sucesso' | 'erro' } | null>(null);
   const [formData, setFormData] = useState({
     ano: new Date().getFullYear().toString(),
     periodo: SEMESTRE.PRIMEIRO_SEMESTRE,
@@ -37,17 +39,17 @@ export default function CadastrarAtividadePage() {
     objetivoId: '',
     isAtivo: true
   });
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const profTurmas = useMemo(() => 
+  const profTurmas = useMemo(() =>
     turmas.filter(t => t.professores?.some(p => p.usuarioId === user?.id)),
     [turmas, user?.id]
   );
 
   useEffect(() => {
     if (!user) return;
-    
+
     const loadInitialData = async () => {
       if (turmas.length === 0) {
         await fetchTurmas();
@@ -94,7 +96,7 @@ export default function CadastrarAtividadePage() {
         }
 
         await fetchObjetivosPorGrupoIdCampoId(grupoId, campoId);
-        
+
         setFormData(prev => ({ ...prev, objetivoId: '' }));
       } catch (error) {
         console.error('Erro ao carregar objetivos:', error);
@@ -145,7 +147,7 @@ export default function CadastrarAtividadePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -164,13 +166,13 @@ export default function CadastrarAtividadePage() {
       };
 
       const result = await createAtividade(atividadeData);
-      
+
       if (result) {
         setMensagem({
           texto: 'Atividade cadastrada com sucesso!',
           tipo: 'sucesso'
         });
-        
+
         setTimeout(() => {
           router.push('/professor/atividades');
         }, 1500);
@@ -180,9 +182,10 @@ export default function CadastrarAtividadePage() {
           tipo: 'erro'
         });
       }
-    } catch (error: any) {
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Erro ao cadastrar atividade';
       setMensagem({
-        texto: error.message || 'Erro ao cadastrar atividade',
+        texto: errorMsg,
         tipo: 'erro'
       });
     }
@@ -190,28 +193,20 @@ export default function CadastrarAtividadePage() {
 
   return (
     <RouteGuard allowedRoles={['PROFESSOR']}>
-      <div className="min-h-screen bg-gray-50/50 p-4 md:p-8">
-        <div className="max-w-4xl mx-auto space-y-6">
-          {/* Header */}
-          <div>
-            <button
-              onClick={() => router.back()}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              Voltar
-            </button>
-            <h1 className="text-2xl font-semibold text-gray-900">Cadastrar Nova Atividade</h1>
-            <p className="text-gray-500 mt-1">Preencha os campos abaixo para cadastrar uma nova atividade pedagógica</p>
-          </div>
+      <div className="min-h-screen bg-gray-50/50 pb-8">
+        <PageHeader
+          title="Cadastrar Nova Atividade"
+          subtitle="Preencha os campos abaixo para cadastrar uma nova atividade pedagógica"
+          backHref={() => router.back()}
+        />
+        <div className="max-w-4xl mx-auto space-y-6 pt-6 px-4 md:px-8">
 
           {/* Message */}
           {mensagem && (
-            <div className={`p-4 rounded-lg border ${
-              mensagem.tipo === 'sucesso' 
-                ? 'bg-green-50 text-green-700 border-green-200' 
-                : 'bg-red-50 text-red-700 border-red-200'
-            }`}>
+            <div className={`p-4 rounded-lg border ${mensagem.tipo === 'sucesso'
+              ? 'bg-green-50 text-green-700 border-green-200'
+              : 'bg-red-50 text-red-700 border-red-200'
+              }`}>
               <p>{mensagem.texto}</p>
             </div>
           )}
@@ -236,7 +231,6 @@ export default function CadastrarAtividadePage() {
                       { value: SEMESTRE.PRIMEIRO_SEMESTRE, label: '1º Semestre' },
                       { value: SEMESTRE.SEGUNDO_SEMESTRE, label: '2º Semestre' }
                     ]}
-                    className="rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
                     error={!!errors.periodo}
                   />
                   {errors.periodo && <p className="mt-1 text-sm text-red-600">{errors.periodo}</p>}
@@ -258,7 +252,6 @@ export default function CadastrarAtividadePage() {
                       { value: '3', label: '3 horas' },
                       { value: '4', label: '4 horas' }
                     ]}
-                    className="rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
                     error={!!errors.quantHora}
                   />
                   {errors.quantHora && <p className="mt-1 text-sm text-red-600">{errors.quantHora}</p>}
@@ -275,9 +268,8 @@ export default function CadastrarAtividadePage() {
                     name="data"
                     value={formData.data}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 transition-colors ${
-                      errors.data ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 transition-colors ${errors.data ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'
+                      }`}
                   />
                   {errors.data && <p className="mt-1 text-sm text-red-600">{errors.data}</p>}
                 </div>
@@ -296,7 +288,6 @@ export default function CadastrarAtividadePage() {
                       value: turma.id,
                       label: formatarNomeTurma(turma.nome)
                     }))}
-                    className="rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
                     error={!!errors.turmaId}
                   />
                   {errors.turmaId && <p className="mt-1 text-sm text-red-600">{errors.turmaId}</p>}
@@ -316,7 +307,6 @@ export default function CadastrarAtividadePage() {
                       value: campo,
                       label: formatarCampoExperiencia(campo)
                     }))}
-                    className="rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
                     error={!!errors.campoExperiencia}
                   />
                   {errors.campoExperiencia && <p className="mt-1 text-sm text-red-600">{errors.campoExperiencia}</p>}
@@ -334,12 +324,11 @@ export default function CadastrarAtividadePage() {
                     onChange={handleInputChange}
                     options={[
                       { value: '', label: 'Selecione um objetivo' },
-                      ...objetivosPorGrupoECampo.map((objetivo: any) => ({
+                      ...objetivosPorGrupoECampo.map((objetivo: { id: number; codigo: string; descricao: string }) => ({
                         value: objetivo.id,
                         label: `${objetivo.codigo} - ${objetivo.descricao}`
                       }))
                     ]}
-                    className="rounded-lg border-gray-200 shadow-sm text-gray-700 px-4 py-3"
                     error={!!errors.objetivoId}
                   />
                   {errors.objetivoId && <p className="mt-1 text-sm text-red-600">{errors.objetivoId}</p>}
@@ -356,9 +345,8 @@ export default function CadastrarAtividadePage() {
                     value={formData.descricao}
                     onChange={handleInputChange}
                     rows={4}
-                    className={`w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 transition-colors ${
-                      errors.descricao ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 transition-colors ${errors.descricao ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500'
+                      }`}
                     placeholder="Descreva a atividade pedagógica (máximo 500 caracteres)"
                     maxLength={500}
                   />

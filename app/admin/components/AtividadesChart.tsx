@@ -143,15 +143,15 @@ export default function AtividadesChart({ turmaId, minimal = false }: Atividades
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           <div className="rounded-lg bg-blue-50 border border-blue-200 p-3 sm:p-4">
             <p className="text-xs sm:text-sm font-medium text-blue-700">Total de Atividades</p>
-            <p className="text-xl sm:text-2xl font-bold text-blue-900 mt-1 sm:mt-2">{totalAtividades}</p>
+            <p className="text-xl sm:text-2xl font-semibold text-blue-900 mt-1 sm:mt-2">{totalAtividades}</p>
           </div>
           <div className="rounded-lg bg-green-50 border border-green-200 p-3 sm:p-4">
             <p className="text-xs sm:text-sm font-medium text-green-700">Campos de Experiência</p>
-            <p className="text-xl sm:text-2xl font-bold text-green-900 mt-1 sm:mt-2">{relatorio.resumo.totalCampos}</p>
+            <p className="text-xl sm:text-2xl font-semibold text-green-900 mt-1 sm:mt-2">{relatorio.resumo.totalCampos}</p>
           </div>
           <div className="rounded-lg bg-purple-50 border border-purple-200 p-3 sm:p-4">
             <p className="text-xs sm:text-sm font-medium text-purple-700">Turmas</p>
-            <p className="text-xl sm:text-2xl font-bold text-purple-900 mt-1 sm:mt-2">{turmasComCampos.length}</p>
+            <p className="text-xl sm:text-2xl font-semibold text-purple-900 mt-1 sm:mt-2">{turmasComCampos.length}</p>
           </div>
         </div>
       )}

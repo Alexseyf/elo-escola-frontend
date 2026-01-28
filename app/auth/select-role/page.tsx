@@ -8,7 +8,7 @@ import { Shield, GraduationCap, Users, LayoutGrid } from "lucide-react";
 import { SplashScreen } from "@/components/ui/splash-screen";
 import { toast } from "sonner";
 
-const roleConfig: Record<string, { label: string; description: string; icon: any; color: string; path: string }> = {
+const roleConfig: Record<string, { label: string; description: string; icon: React.ElementType; color: string; path: string }> = {
     PLATFORM_ADMIN: {
         label: "Administrador da Plataforma",
         description: "Gerenciar todas as escolas e configurações globais",

@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import config from '@/config';
 import { useAuthStore } from './useAuthStore';
 import { api } from '@/lib/api';
 

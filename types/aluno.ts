@@ -13,6 +13,4 @@ export interface Aluno {
   turma: Turma
 }
 
-export interface AlunoDetalhado extends Aluno {
-  // Campos adicionais futuros
-}
+export type AlunoDetalhado = Aluno

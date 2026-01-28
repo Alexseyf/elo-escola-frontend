@@ -1,11 +1,9 @@
 import {
   Users,
-  BarChart3,
   LucideIcon,
   LayoutDashboard,
   BookOpen,
   GraduationCap,
-  CalendarDays,
   ClipboardList,
   FileText,
   Clock,

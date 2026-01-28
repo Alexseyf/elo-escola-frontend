@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { getDiario, updateDiario } from '@/utils/diarios';
 import DiarioStepper from '@/components/professor/diarios/DiarioStepper';
 import { RouteGuard } from '@/components/auth/RouteGuard';
-import { DiarioFormData } from '@/types/diario';
+import { DiarioFormData, ItemProvidencia, CreateDiarioDTO } from '@/types/diario';
 import { toast } from 'sonner';
 
 export default function EditarDiarioPage() {
@@ -65,7 +65,7 @@ export default function EditarDiarioPage() {
                             saved: true
                         };
                     }),
-                    itensProvidencia: (diario.itensProvidencia || []).map((item: any) =>
+                    itensProvidencia: (diario.itensProvidencia || []).map((item: ItemProvidencia) =>
                         typeof item === 'string' ? item : (item.itemProvidencia?.nome || String(item.itemProvidenciaId))
                     ),
                 };
@@ -81,7 +81,7 @@ export default function EditarDiarioPage() {
         loadDiario();
     }, [id, router]);
 
-    const handleSubmit = async (formData: DiarioFormData & { [key: string]: any }) => {
+    const handleSubmit = async (formData: DiarioFormData) => {
         setLoading(true);
         try {
             // garantir que a data esteja no formato YYYY-MM-DD para evitar timezone
@@ -90,7 +90,7 @@ export default function EditarDiarioPage() {
                 dataPayload = dataPayload.split('T')[0];
             }
 
-            const payload: any = {
+            const payload: Partial<CreateDiarioDTO> = {
                 alunoId: formData.alunoId,
                 data: dataPayload,
                 evacuacao: formData.trocaFralda?.toUpperCase() || 'NORMAL',
@@ -100,7 +100,7 @@ export default function EditarDiarioPage() {
                 leite: formData.leite?.toUpperCase() || 'NAO_SE_APLICA',
                 disposicao: formData.sonoStatus?.toUpperCase() || 'NORMAL',
                 observacoes: formData.observacoes,
-                periodosSono: (formData.periodosSono || []).map((p: any) => ({
+                periodosSono: (formData.periodosSono || []).map((p: { id?: number; horaDormiu: string; horaAcordou: string; tempoTotal: string }) => ({
                     id: p.id,
                     horaDormiu: p.horaDormiu,
                     horaAcordou: p.horaAcordou,

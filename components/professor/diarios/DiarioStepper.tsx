@@ -52,7 +52,7 @@ export default function DiarioStepper({
     data: initialData?.data || new Date().toISOString(),
 
     ...initialData,
-  } as any);
+  } as DiarioFormData);
 
   const step = STEPS[currentStep];
   const StepComponent = step.Component;
@@ -85,14 +85,14 @@ export default function DiarioStepper({
             </div>
             {onCancel && (
               <button onClick={onCancel} className="md:hidden text-gray-400 hover:text-gray-600 p-2">
-                 ✕
+                ✕
               </button>
             )}
           </div>
 
           <div className="w-full md:flex-1 md:max-w-[150px] lg:max-w-[200px]">
             <div className="bg-gray-200 h-1.5 rounded-full overflow-hidden">
-              <div 
+              <div
                 className="bg-blue-500 h-full transition-all duration-300"
                 style={{ width: `${progress}%` }}
               />
@@ -104,7 +104,7 @@ export default function DiarioStepper({
 
           {onCancel && (
             <button onClick={onCancel} className="hidden md:block text-gray-400 hover:text-gray-600">
-               ✕
+              ✕
             </button>
           )}
         </div>
@@ -115,8 +115,9 @@ export default function DiarioStepper({
         <div className="max-w-3xl mx-auto p-6">
           <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
             <StepComponent
-              value={step.field ? (formData as any)[step.field] : formData}
-              onChange={(val: any) => {
+              // @ts-expect-error - dynamic step component field typing
+              value={step.field ? (formData[step.field as keyof DiarioFormData]) : formData}
+              onChange={(val: unknown) => {
                 if (step.field) {
                   setFormData({ ...formData, [step.field]: val });
                 }

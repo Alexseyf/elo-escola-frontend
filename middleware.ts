@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
   
   const hostname = request.headers.get('host') || '';
   
-  const currentHost = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'localhost:3001';
+  // const currentHost = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'localhost:3001';
   
   const isRootDomain = 
     hostname === 'localhost:3001' || 
@@ -27,7 +27,7 @@ export function middleware(request: NextRequest) {
   }
 
 
-  const subdomain = hostname.split('.')[0];
+  // const subdomain = hostname.split('.')[0];
 
   return NextResponse.next();
 }

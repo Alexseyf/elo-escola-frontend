@@ -106,7 +106,7 @@ async function fetchClientSideReport(turmaId: number): Promise<RelatorioAtividad
     });
 
     if (!turmaName && data.turmas) {
-        const t = data.turmas.find((t: any) => Number(t.id) === targetTurmaId);
+        const t = data.turmas.find((t: { id: number | string; nome: string }) => Number(t.id) === targetTurmaId);
         if (t) turmaName = t.nome;
     }
     
@@ -168,7 +168,6 @@ export const useCamposStore = create<CamposState>()(
       },
 
       fetchRelatorioAtividades: async (turmaId?: number) => {
-        const state = get();
         const key = turmaId ? String(turmaId) : 'global';
         
         set({ isLoading: true, error: null });
@@ -243,6 +242,6 @@ export function formatarCampoExperiencia(campo: CAMPO_EXPERIENCIA): string {
 export function textoParaCampoExperiencia(texto: string): CAMPO_EXPERIENCIA | undefined {
   const entrada = texto.trim();
   const entries = Object.entries(campoExperienciaTextos);
-  const found = entries.find(([_, value]) => value === entrada);
+  const found = entries.find(([, value]) => value === entrada);
   return found ? found[0] as CAMPO_EXPERIENCIA : undefined;
 }

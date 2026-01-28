@@ -1,38 +1,29 @@
 "use client"
 
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/PageHeader"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { RouteGuard } from "@/components/auth/RouteGuard"
-import { ArrowLeft } from "lucide-react"
 import AtividadesChart from "@/app/admin/components/AtividadesChart"
 
 export default function AtividadesGraficosPage() {
-  const router = useRouter()
 
   return (
     <RouteGuard allowedRoles={['ADMIN']}>
-      <div className="min-h-screen bg-background p-3 sm:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-6">
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => router.back()} // Likely back to /admin/graficos
-            className="w-full sm:w-auto"
-          >
-            <span className="sm:inline">Voltar</span>
-          </Button>
-          <h1 className="text-xl sm:text-2xl font-bold">Análise de Atividades</h1>
+      <div className="min-h-screen bg-background pb-12">
+        <PageHeader
+          title="Análise de Atividades"
+          backHref="/admin/dashboard"
+        />
+        <div className="p-3 sm:p-6 max-w-7xl mx-auto">
+          <Card className="mb-6 w-full">
+            <CardHeader className="p-3 sm:p-6">
+              <CardTitle className="text-lg sm:text-xl">Atividades Pedagógicas por Campo de Experiência</CardTitle>
+            </CardHeader>
+            <CardContent className="p-3 sm:p-6">
+              <AtividadesChart />
+            </CardContent>
+          </Card>
         </div>
-
-        <Card className="mb-6 w-full">
-          <CardHeader className="p-3 sm:p-6">
-            <CardTitle className="text-lg sm:text-xl">Atividades Pedagógicas por Campo de Experiência</CardTitle>
-          </CardHeader>
-          <CardContent className="p-3 sm:p-6">
-            <AtividadesChart />
-          </CardContent>
-        </Card>
       </div>
     </RouteGuard>
   )

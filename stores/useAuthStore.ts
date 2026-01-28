@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import config from '@/config';
 import { api } from '@/lib/api';
 
 interface User {
@@ -103,11 +102,11 @@ export const useAuthStore = create<AuthState>()(
             });
             return false;
           }
-        } catch (error: any) {
+        } catch (error) {
           console.error('Login error:', error);
           set({ 
             isLoading: false, 
-            error: error.message || 'Erro ao conectar com o servidor'
+            error: error instanceof Error ? error.message : 'Erro ao conectar com o servidor'
           });
           return false;
         }

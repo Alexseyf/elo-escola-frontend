@@ -9,6 +9,8 @@ import { formatarCampoExperiencia } from '@/stores/useCamposStore';
 import { SEMESTRE_LABELS } from '@/types/atividades';
 import { ArrowLeft, Calendar, Clock, BookOpen, Target, User } from 'lucide-react';
 
+import { PageHeader } from '@/components/PageHeader';
+
 export default function AdminAtividadeDetalhesPage() {
   const params = useParams();
   const router = useRouter();
@@ -57,20 +59,13 @@ export default function AdminAtividadeDetalhesPage() {
 
   return (
     <RouteGuard allowedRoles={['ADMIN']}>
-      <div className="min-h-screen bg-gray-50/50 p-4 md:p-8">
-        <div className="max-w-4xl mx-auto space-y-6">
-          {/* Header */}
-          <div>
-            <button
-              onClick={() => router.back()}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              Voltar
-            </button>
-            <h1 className="text-2xl font-semibold text-gray-900">Detalhes da Atividade</h1>
-            <p className="text-gray-500 mt-1">Informações completas da atividade pedagógica</p>
-          </div>
+      <div className="min-h-screen bg-gray-50/50 pb-8">
+        <PageHeader
+          title="Detalhes da Atividade"
+          subtitle="Informações completas da atividade pedagógica"
+          backHref={() => router.back()}
+        />
+        <div className="max-w-4xl mx-auto space-y-6 pt-6 px-4 md:px-8">
 
           {/* Content */}
           <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">

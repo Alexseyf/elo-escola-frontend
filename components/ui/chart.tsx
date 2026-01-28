@@ -75,7 +75,7 @@ ChartContainer.displayName = "ChartContainer"
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(
-    ([_, config]) => config.theme || typeof config.color === "string"
+    ([, config]) => config.theme || typeof config.color === "string"
   )
 
   if (!colorConfig.length) {
@@ -119,7 +119,7 @@ const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     active?: boolean
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     payload?: any[]
     label?: string
     indicator?: "dot" | "line"

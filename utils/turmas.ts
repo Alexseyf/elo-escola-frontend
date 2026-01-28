@@ -33,7 +33,7 @@ export async function getTurmas(): Promise<{id: number; nome: string}[]> {
 
 export async function fetchTurmas(): Promise<{ 
   success: boolean; 
-  data?: any[];
+  data?: TurmaData[];
   error?: string; 
 }> {
   try {
@@ -55,7 +55,7 @@ export async function fetchTurmas(): Promise<{
 
 export async function fetchTurmaById(id: number): Promise<{
   success: boolean;
-  data?: any;
+  data?: TurmaData;
   error?: string;
 }> {
   try {
@@ -122,7 +122,7 @@ export function limparCachesGrupos(): void {
   store.limparCache();
 }
 
-export function formatarTurmas(turmas: any[]): any[] {
+export function formatarTurmas(turmas: TurmaData[]): TurmaData[] {
   if (!turmas || !Array.isArray(turmas)) return [];
   
   return turmas.map(turma => ({
@@ -156,7 +156,7 @@ export async function fetchTotalAlunosPorTurma(): Promise<{
 export interface CreateTurmaResult {
   success: boolean;
   message: string;
-  data?: any;
+  data?: TurmaData;
 }
 
 export async function cadastrarTurma(dadosTurma: DadosTurma): Promise<CreateTurmaResult> {
@@ -200,7 +200,7 @@ export async function cadastrarTurma(dadosTurma: DadosTurma): Promise<CreateTurm
 
 export async function cadastrarTurmaComNomeFormatado(nomeFormatado: string): Promise<{
   success: boolean;
-  data?: any;
+  data?: TurmaData;
   error?: string;
 }> {
   const enumTurma = converterNomeParaEnum(nomeFormatado);

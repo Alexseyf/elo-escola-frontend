@@ -8,9 +8,33 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-montserrat)', 'sans-serif'],
-        mono: ['var(--font-inter)', 'monospace'],
+        sans: ['var(--font-inter)', 'sans-serif'],
+        mono: ['ui-monospace', 'monospace'],
+        display: ['var(--font-montserrat)', 'sans-serif'],
       },
+      colors: {
+        soft: {
+          blue: {
+            DEFAULT: '#f0f7ff',
+            foreground: '#2563eb', // blue-600
+            border: '#dbeafe', // blue-100
+          },
+          green: {
+            DEFAULT: '#f0fdf4',
+            foreground: '#16a34a', // green-600
+            border: '#dcfce7', // green-100
+          },
+          gray: {
+            DEFAULT: '#fafafa',
+            border: '#f3f4f6', // gray-100
+          },
+          brand: '#F9FBFF',
+        }
+      },
+      borderRadius: {
+        'xl': '1rem',
+        '2xl': '1.25rem',
+      }
     },
   },
   plugins: [],

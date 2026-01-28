@@ -4,7 +4,7 @@ import React from 'react';
 import { DiarioFormData } from '@/types/diario';
 
 interface DiarioSummaryProps {
-  data: DiarioFormData & { [key: string]: any };
+  data: DiarioFormData;
 }
 
 export default function DiarioSummary({ data }: DiarioSummaryProps) {

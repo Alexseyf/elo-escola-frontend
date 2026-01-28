@@ -6,7 +6,7 @@ import { useAlunosStore } from '@/stores/useAlunosStore';
 import { createDiario } from '@/utils/diarios';
 import DiarioStepper from '@/components/professor/diarios/DiarioStepper';
 import { RouteGuard } from '@/components/auth/RouteGuard';
-import { DiarioFormData } from '@/types/diario';
+import { DiarioFormData, CreateDiarioDTO } from '@/types/diario';
 import { toast } from 'sonner';
 
 export default function NovoDiarioPage() {
@@ -32,7 +32,7 @@ export default function NovoDiarioPage() {
     }
   }, [currentAluno, router]);
 
-  const handleSubmit = async (formData: DiarioFormData & { [key: string]: any }) => {
+  const handleSubmit = async (formData: DiarioFormData) => {
     setLoading(true);
     try {
       const today = new Date();
@@ -40,7 +40,7 @@ export default function NovoDiarioPage() {
         String(today.getMonth() + 1).padStart(2, '0') + '-' +
         String(today.getDate()).padStart(2, '0');
 
-      const payload: any = {
+      const payload: CreateDiarioDTO = {
         alunoId,
         data: localDate, // YYYY-MM-DD local
         evacuacao: formData.trocaFralda?.toUpperCase() || 'NORMAL',
@@ -50,7 +50,7 @@ export default function NovoDiarioPage() {
         leite: formData.leite?.toUpperCase() || 'NAO_SE_APLICA',
         disposicao: formData.sonoStatus?.toUpperCase() || 'NORMAL',
         observacoes: formData.observacoes,
-        periodosSono: (formData.periodosSono || []).map((p: any) => ({
+        periodosSono: (formData.periodosSono || []).map((p: { horaDormiu: string; horaAcordou: string; tempoTotal: string }) => ({
           horaDormiu: p.horaDormiu,
           horaAcordou: p.horaAcordou,
           tempoTotal: p.tempoTotal

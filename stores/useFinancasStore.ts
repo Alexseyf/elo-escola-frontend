@@ -29,9 +29,10 @@ export const useFinancasStore = create<FinancasState>((set) => ({
       if (!response.ok) throw new Error('Erro ao buscar balanço financeiro');
       const data = await response.json();
       set({ balanco: data, isLoading: false });
-    } catch (error: any) {
-      set({ error: error.message, isLoading: false });
-      toast.error(error.message);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Ocorreu um erro';
+      set({ error: message, isLoading: false });
+      toast.error(message);
     }
   },
 
@@ -42,9 +43,10 @@ export const useFinancasStore = create<FinancasState>((set) => ({
       if (!response.ok) throw new Error('Erro ao buscar listagem de pagamentos');
       const data = await response.json();
       set({ pagamentos: data, isLoading: false });
-    } catch (error: any) {
-      set({ error: error.message, isLoading: false });
-      toast.error(error.message);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Ocorreu um erro';
+      set({ error: message, isLoading: false });
+      toast.error(message);
     }
   },
 
@@ -63,8 +65,8 @@ export const useFinancasStore = create<FinancasState>((set) => ({
 
       toast.success('Pagamento registrado com sucesso!');
       return true;
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erro');
       return false;
     } finally {
       set({ isLoading: false });
@@ -84,8 +86,8 @@ export const useFinancasStore = create<FinancasState>((set) => ({
 
       toast.success('Pagamento removido com sucesso!');
       return true;
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erro ao excluir pagamento');
       return false;
     }
   },
@@ -105,8 +107,8 @@ export const useFinancasStore = create<FinancasState>((set) => ({
 
       toast.success('Mês fechado com sucesso! Os dados agora são permanentes.');
       return true;
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erro');
       return false;
     } finally {
       set({ isLoading: false });

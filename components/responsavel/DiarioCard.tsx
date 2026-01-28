@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Diario } from '@/types/diario';
-import { 
-  Calendar, 
-  ChevronDown, 
+import { Diario, ItemProvidencia } from '@/types/diario';
+import {
+  Calendar,
+  ChevronDown,
   ChevronUp
 } from 'lucide-react';
 
@@ -59,12 +59,12 @@ const getItemProvidenciaLabel = (item: string) => {
   return labels[item] || item;
 };
 
-const formatItemsList = (items: any[]): string => {
+const formatItemsList = (items: ItemProvidencia[]): string => {
   const formattedItems = items.map(item => {
     const nome = typeof item === 'string' ? item : item.itemProvidencia?.nome || '';
     return getItemProvidenciaLabel(nome);
   });
-  
+
   if (formattedItems.length === 0) return '';
   if (formattedItems.length === 1) return formattedItems[0];
   if (formattedItems.length === 2) return `${formattedItems[0]} e ${formattedItems[1]}`;
@@ -73,24 +73,24 @@ const formatItemsList = (items: any[]): string => {
 
 export function DiarioCard({ diario }: DiarioCardProps) {
   const [expanded, setExpanded] = useState(false);
-  
+
   const formatarData = (dataISO: string) => {
     const datePart = dataISO.split('T')[0];
     const [year, month, day] = datePart.split('-');
     return `${day}/${month}/${year}`;
   };
-  
+
   const dataFormatada = formatarData(diario.data);
 
   const calcularTempoTotalSono = () => {
     if (diario.periodosSono.length === 0) return '0h 0m';
-    
+
     let totalMinutos = 0;
     diario.periodosSono.forEach(periodo => {
       const [horas, minutos] = periodo.tempoTotal.split(':').map(Number);
       totalMinutos += (horas * 60) + minutos;
     });
-    
+
     const horas = Math.floor(totalMinutos / 60);
     const minutos = totalMinutos % 60;
     return `${horas}h ${minutos}m`;
@@ -123,7 +123,7 @@ export function DiarioCard({ diario }: DiarioCardProps) {
           </Button>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         {!expanded ? (
           null

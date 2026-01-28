@@ -11,7 +11,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { CalendarDays, ChevronRight, Calendar, User } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -62,10 +61,10 @@ export function UpcomingEventsCard() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768)
     }
-    
+
     checkMobile()
     window.addEventListener('resize', checkMobile)
-    
+
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
@@ -92,10 +91,10 @@ export function UpcomingEventsCard() {
         const eventoMonth = eventoDate.getUTCMonth()
         const eventoYear = eventoDate.getUTCFullYear()
         const eventoDay = new Date(eventoDate.getUTCFullYear(), eventoDate.getUTCMonth(), eventoDate.getUTCDate())
-        
-        return eventoYear === currentYear && 
-               eventoMonth === currentMonth && 
-               eventoDay >= today
+
+        return eventoYear === currentYear &&
+          eventoMonth === currentMonth &&
+          eventoDay >= today
       })
       .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
   }, [cronogramas])
@@ -119,7 +118,7 @@ export function UpcomingEventsCard() {
     if (!fim || inicio.split('T')[0] === fim.split('T')[0]) {
       return formatarData(inicio)
     }
-    
+
     return `${formatarData(inicio)} - ${formatarData(fim)}`
   }
 
@@ -166,129 +165,129 @@ export function UpcomingEventsCard() {
 
   return (
     <>
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-blue-600" />
-          Próximos Eventos - Cronograma
-        </CardTitle>
-        <p className="text-sm text-muted-foreground">
-          {upcomingEvents.length} {upcomingEvents.length === 1 ? 'evento' : 'eventos'} este mês
-        </p>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {/* Grid de eventos - 2 por linha no desktop */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {displayedEvents.map((evento) => (
-            <div
-              key={evento.id}
-              onClick={() => handleEventClick(evento)}
-              className="flex items-center gap-3 p-3 rounded-lg border hover:bg-gray-50 transition-colors cursor-pointer"
-            >
-              <div className="flex-shrink-0 text-center">
-                <div className="text-2xl font-bold text-gray-900">
-                  {new Date(evento.data).getUTCDate()}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-blue-600" />
+            Próximos Eventos - Cronograma
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {upcomingEvents.length} {upcomingEvents.length === 1 ? 'evento' : 'eventos'} este mês
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {/* Grid de eventos - 2 por linha no desktop */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {displayedEvents.map((evento) => (
+              <div
+                key={evento.id}
+                onClick={() => handleEventClick(evento)}
+                className="flex items-center gap-3 p-3 rounded-lg border hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                <div className="flex-shrink-0 text-center">
+                  <div className="text-2xl font-bold text-gray-900">
+                    {new Date(evento.data).getUTCDate()}
+                  </div>
+                  <div className="text-xs text-muted-foreground uppercase">
+                    {formatarData(evento.data).split(' ')[1]}
+                  </div>
                 </div>
-                <div className="text-xs text-muted-foreground uppercase">
-                  {formatarData(evento.data).split(' ')[1]}
-                </div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h4 className="font-semibold text-sm capitalize line-clamp-1">
-                  {evento.titulo}
-                </h4>
-                <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border uppercase ${getCorTipo(evento.tipoEvento)}`}>
-                  {formatarTipoEvento(evento.tipoEvento)}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Botão de ação */}
-        <div className="pt-2">
-          {hasMoreEvents && !showAll ? (
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => setShowAll(true)}
-            >
-              Mostrar Mais
-              <ChevronRight className="w-4 h-4 ml-2" />
-            </Button>
-          ) : (
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => router.push('/responsavel/cronograma')}
-            >
-              Acessar Cronograma
-              <ChevronRight className="w-4 h-4 ml-2" />
-            </Button>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-
-    {/* Modal de Detalhes do Evento */}
-    {selectedEvent && (
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <DialogTitle className="text-xl font-bold mb-2 capitalize">
-                  {selectedEvent.titulo}
-                </DialogTitle>
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className={`px-2 py-1 rounded-full text-xs font-semibold border uppercase tracking-wider ${getCorTipo(selectedEvent.tipoEvento)}`}>
-                    {formatarTipoEvento(selectedEvent.tipoEvento)}
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-semibold text-sm capitalize line-clamp-1">
+                    {evento.titulo}
+                  </h4>
+                  <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border uppercase ${getCorTipo(evento.tipoEvento)}`}>
+                    {formatarTipoEvento(evento.tipoEvento)}
                   </span>
-                  {isPeriodo(selectedEvent) && (
-                    <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded border border-indigo-100 uppercase">
-                      Período
-                    </span>
-                  )}
                 </div>
               </div>
-            </div>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-2">Descrição</h4>
-              <p className="text-sm text-muted-foreground">
-                {selectedEvent.descricao}
-              </p>
-            </div>
+            ))}
+          </div>
 
-            <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-2">Data</h4>
-              <div className="flex items-center text-sm text-muted-foreground">
-                <CalendarDays className={`w-4 h-4 mr-2 ${isPeriodo(selectedEvent) ? 'text-indigo-500' : 'text-blue-500'}`} />
-                {formatarIntervalo(selectedEvent.data, selectedEvent.dataFim)}
-              </div>
-            </div>
-
-            {selectedEvent.pularFinaisDeSemana && isPeriodo(selectedEvent) && (
-              <div className="text-xs text-muted-foreground bg-gray-50 p-2 rounded">
-                ℹ️ Finais de semana não são considerados neste período
-              </div>
-            )}
-
-            {selectedEvent.criador && (
-              <div>
-                <h4 className="text-sm font-semibold text-gray-700 mb-2">Criado por</h4>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <User className="w-4 h-4 mr-2 text-gray-400" />
-                  <span>{selectedEvent.criador.nome}</span>
-                </div>
-              </div>
+          {/* Botão de ação */}
+          <div className="pt-2">
+            {hasMoreEvents && !showAll ? (
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => setShowAll(true)}
+              >
+                Mostrar Mais
+                <ChevronRight className="w-4 h-4 ml-2" />
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => router.push('/responsavel/cronograma')}
+              >
+                Acessar Cronograma
+                <ChevronRight className="w-4 h-4 ml-2" />
+              </Button>
             )}
           </div>
-        </DialogContent>
-      </Dialog>
-    )}
-  </>
+        </CardContent>
+      </Card>
+
+      {/* Modal de Detalhes do Evento */}
+      {selectedEvent && (
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <DialogTitle className="text-xl font-bold mb-2 capitalize">
+                    {selectedEvent.titulo}
+                  </DialogTitle>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className={`px-2 py-1 rounded-full text-xs font-semibold border uppercase tracking-wider ${getCorTipo(selectedEvent.tipoEvento)}`}>
+                      {formatarTipoEvento(selectedEvent.tipoEvento)}
+                    </span>
+                    {isPeriodo(selectedEvent) && (
+                      <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded border border-indigo-100 uppercase">
+                        Período
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4">
+              <div>
+                <h4 className="text-sm font-semibold text-gray-700 mb-2">Descrição</h4>
+                <p className="text-sm text-muted-foreground">
+                  {selectedEvent.descricao}
+                </p>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-semibold text-gray-700 mb-2">Data</h4>
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <CalendarDays className={`w-4 h-4 mr-2 ${isPeriodo(selectedEvent) ? 'text-indigo-500' : 'text-blue-500'}`} />
+                  {formatarIntervalo(selectedEvent.data, selectedEvent.dataFim)}
+                </div>
+              </div>
+
+              {selectedEvent.pularFinaisDeSemana && isPeriodo(selectedEvent) && (
+                <div className="text-xs text-muted-foreground bg-gray-50 p-2 rounded">
+                  ℹ️ Finais de semana não são considerados neste período
+                </div>
+              )}
+
+              {selectedEvent.criador && (
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-700 mb-2">Criado por</h4>
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <User className="w-4 h-4 mr-2 text-gray-400" />
+                    <span>{selectedEvent.criador.nome}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   )
 }
