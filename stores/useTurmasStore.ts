@@ -73,6 +73,12 @@ export interface TurmaFilters {
   ano?: number;
 }
 
+export interface DiarioStatus {
+  alunoId: number;
+  temDiario: boolean;
+  diarioId: number | null;
+}
+
 export interface TotalAlunosFilters {
   turmaId?: number;
 }
@@ -106,6 +112,7 @@ interface TurmasState {
   vincularProfessor: (turmaId: number, usuarioId: number) => Promise<{ success: boolean; message: string }>;
   desvincularProfessor: (turmaId: number, usuarioId: number) => Promise<{ success: boolean; message: string }>;
   limparCache: () => void;
+  checkDiariesStatus: (turmaId: number, date?: string) => Promise<DiarioStatus[]>;
 }
 
 const mapeamentoTurmaGrupo: Record<string, string> = {
@@ -425,6 +432,24 @@ export const useTurmasStore = create<TurmasState>()(
 
     limparCache: () => {
       set({ turmas: [], grupos: [], turmasComTotal: [], mensalidadesPorTurma: null, pagination: null, error: null });
+    },
+
+    checkDiariesStatus: async (turmaId: number, date?: string) => {
+      try {
+        const params = new URLSearchParams();
+        if (date) params.append('date', date);
+
+        const response = await api(`/api/v1/turmas/${turmaId}/diarios/status?${params.toString()}`, {
+          method: 'GET'
+        });
+
+        if (!response.ok) return [];
+
+        return await response.json() as DiarioStatus[];
+      } catch (error) {
+        console.error('Error checking diaries status:', error);
+        return [];
+      }
     }
   })
 );

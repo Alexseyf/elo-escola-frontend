@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useTurmasStore, formatarNomeTurma } from '@/stores/useTurmasStore';
-import { verificarRegistroDiarioAluno } from '@/utils/alunos';
+
 import { RouteGuard } from '@/components/auth/RouteGuard';
 import { Search, User, CheckCircle2 } from 'lucide-react';
 import { CustomSelect } from '@/components/CustomSelect';
@@ -47,29 +47,29 @@ export default function ProfessorDiariosPage() {
 
   useEffect(() => {
     const checkStatus = async () => {
-      if (turmas.length > 0) {
+      if (profTurmas.length > 0) {
         setLoadingStatus(true);
-        const allAlunos = turmas.flatMap(t => t.alunos || []);
-        const uniqueAlunos = Array.from(new Set(allAlunos.map(a => a.id)))
-          .map(id => allAlunos.find(a => a.id === id)!);
+        const checkTurmas = turmaFilter ? profTurmas.filter(t => t.id === Number(turmaFilter)) : profTurmas;
 
         const statusMap: Record<number, { temDiario: boolean; diarioId?: number }> = {};
 
-        await Promise.all(uniqueAlunos.map(async (aluno) => {
-          const res = await verificarRegistroDiarioAluno(aluno.id);
-          statusMap[aluno.id] = {
-            temDiario: res?.temDiario || false,
-            diarioId: res?.diario?.id
-          };
+        await Promise.all(checkTurmas.map(async (turma) => {
+          const statuses = await useTurmasStore.getState().checkDiariesStatus(turma.id);
+          statuses.forEach(s => {
+            statusMap[s.alunoId] = {
+              temDiario: s.temDiario,
+              diarioId: s.diarioId || undefined
+            };
+          });
         }));
 
-        setDiariosStatus(statusMap);
+        setDiariosStatus(prev => ({ ...prev, ...statusMap }));
         setLoadingStatus(false);
       }
     };
 
     checkStatus();
-  }, [turmas]);
+  }, [profTurmas, turmaFilter]);
 
   const filteredTurmas = profTurmas
     .filter(t => turmaFilter === null || t.id === Number(turmaFilter))
