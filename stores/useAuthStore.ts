@@ -141,7 +141,8 @@ export const useAuthStore = create<AuthState>()(
           id: state.user.id,
           email: state.user.email,
           roles: state.user.roles,
-          primeiroAcesso: state.user.primeiroAcesso
+          primeiroAcesso: state.user.primeiroAcesso,
+          school: state.user.school
         } : null, 
         activeRole: state.activeRole,
         isAuthenticated: state.isAuthenticated 
