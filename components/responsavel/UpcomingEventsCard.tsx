@@ -129,6 +129,16 @@ export function UpcomingEventsCard() {
     return evtMonth !== now.getMonth() || evtYear !== now.getFullYear()
   }, [upcomingEvents])
 
+  const monthName = useMemo(() => {
+    if (upcomingEvents.length === 0) return ""
+    const date = new Date(upcomingEvents[0].data)
+    const name = date.toLocaleDateString("pt-BR", {
+      month: "long",
+      timeZone: "UTC",
+    })
+    return name.charAt(0).toUpperCase() + name.slice(1)
+  }, [upcomingEvents])
+
   const displayedEvents = useMemo(() => {
     if (showAll) {
       return upcomingEvents
@@ -202,7 +212,7 @@ export function UpcomingEventsCard() {
             Próximos Eventos - Cronograma
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            {upcomingEvents.length} {upcomingEvents.length === 1 ? 'evento' : 'eventos'} {isNextMonth ? 'no próximo mês' : 'este mês'}
+            {upcomingEvents.length} {upcomingEvents.length === 1 ? 'evento' : 'eventos'} em {monthName}
           </p>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -214,12 +224,9 @@ export function UpcomingEventsCard() {
                 onClick={() => handleEventClick(evento)}
                 className="flex items-center gap-3 p-3 rounded-lg border hover:bg-gray-50 transition-colors cursor-pointer"
               >
-                <div className="flex-shrink-0 text-center">
-                  <div className="text-2xl font-bold text-gray-900">
+                <div className="flex-shrink-0 w-12 text-center border-r pr-3">
+                  <div className="text-2xl font-bold text-gray-900 leading-none">
                     {new Date(evento.data).getUTCDate()}
-                  </div>
-                  <div className="text-xs text-muted-foreground uppercase">
-                    {formatarData(evento.data).split(' ')[1]}
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">
@@ -298,12 +305,6 @@ export function UpcomingEventsCard() {
                   {formatarIntervalo(selectedEvent.data, selectedEvent.dataFim)}
                 </div>
               </div>
-
-              {selectedEvent.pularFinaisDeSemana && isPeriodo(selectedEvent) && (
-                <div className="text-xs text-muted-foreground bg-gray-50 p-2 rounded">
-                  ℹ️ Finais de semana não são considerados neste período
-                </div>
-              )}
 
               {selectedEvent.criador && (
                 <div>
