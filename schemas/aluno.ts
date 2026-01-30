@@ -17,7 +17,7 @@ export const baseAlunoSchema = z.object({
   dataNasc: z.string().refine((val) => !isNaN(Date.parse(val)), "Data inválida")
     .refine((date) => date <= new Date().toISOString().split('T')[0], "Data futura não permitida"),
   turmaId: z.coerce.number().min(1, "Selecione uma turma"),
-  mensalidade: z.coerce.number().optional(),
+  mensalidade: z.coerce.number().min(0.01, "A mensalidade é obrigatória"),
 });
 
 export const alunoSchema = baseAlunoSchema;

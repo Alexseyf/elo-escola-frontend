@@ -90,13 +90,18 @@ export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProp
     }
   }, [open, aluno, isEditing, form, fetchTurmas]);
 
+  function onInvalid(errors: any) {
+    console.log('Aluno Form Errors:', errors);
+    toast.error('Por favor, preencha o valor da mensalidade.');
+  }
+
   async function onSubmit(data: AlunoFormValues) {
     try {
       let result;
       const payload: CreateAlunoData = {
         ...data,
         dataNasc: `${data.dataNasc}T00:00:00.000Z`,
-        mensalidade: data.mensalidade || 0
+        mensalidade: data.mensalidade
       };
 
       if (isEditing && aluno) {
@@ -159,7 +164,7 @@ export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProp
         </SheetHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-4 px-2">
+          <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-6 py-4 px-2">
 
             <FormField
               control={form.control}
