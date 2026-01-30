@@ -10,6 +10,7 @@ interface AtividadesState {
 
   fetchAtividades: () => Promise<void>;
   fetchAtividadeById: (id: number) => Promise<void>;
+  fetchUltimaAtividadePorTurma: (turmaId: number) => Promise<Atividade | null>;
   fetchProfessorAtividades: (professorId: number) => Promise<TurmaAtividadesResponse | null>;
   createAtividade: (data: CreateAtividadeInput) => Promise<Atividade | null>;
   limparCache: () => void;
@@ -58,6 +59,24 @@ export const useAtividadesStore = create<AtividadesState>()((set) => ({
       const message = error instanceof Error ? error.message : 'Erro ao buscar atividade';
       set({ isLoading: false, error: message });
       console.error('Error fetching atividade:', error);
+    }
+  },
+  
+  fetchUltimaAtividadePorTurma: async (turmaId: number) => {
+    try {
+      const response = await api(`/api/v1/atividades/last-by-turma/${turmaId}`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) return null;
+        throw new Error(`Erro ao buscar última atividade: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching last atividade for turma:', error);
+      return null;
     }
   },
 
