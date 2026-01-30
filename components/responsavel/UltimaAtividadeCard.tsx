@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getAlunosDoResponsavel } from "@/utils/alunos";
 import { useAtividadesStore } from "@/stores/useAtividadesStore";
 import { formatarCampoExperiencia } from "@/stores/useCamposStore";
+import { formatarNomeTurma } from "@/stores/useTurmasStore";
 import { Atividade } from "@/types/atividades";
 import { BookOpen, Calendar } from "lucide-react";
 
@@ -90,7 +91,7 @@ export function UltimaAtividadeCard() {
                 {atividadesPorTurma.map(({ turma, atividade }) => (
                     <div key={turma.id} className="space-y-3">
                         <h3 className="font-semibold text-gray-900 border-b pb-1">
-                            Turma: {turma.nome}
+                            Turma: {formatarNomeTurma(turma.nome)}
                         </h3>
 
                         {!atividade ? (
