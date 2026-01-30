@@ -9,8 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { getAlunosDoResponsavel } from "@/utils/alunos";
 import { Aluno } from "@/stores/useAlunosStore";
 import { useAtividadesStore } from "@/stores/useAtividadesStore";
+import { useTurmasStore, formatarNomeTurma } from "@/stores/useTurmasStore";
 import { Atividade } from "@/types/atividades";
 import { AtividadeCard } from "@/components/responsavel/AtividadeCard";
+import { Badge } from "@/components/ui/badge";
 import { BookOpen, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 
@@ -145,9 +147,16 @@ function AtividadesContent() {
                 {selectedAlunoId && (
                     <div className="space-y-4">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <h2 className="text-xl font-bold text-gray-900">
-                                Histórico de Atividades {selectedAluno && `- ${selectedAluno.turma?.nome}`}
-                            </h2>
+                            <div>
+                                <h2 className="text-xl font-bold text-gray-900">
+                                    Histórico de Atividades
+                                </h2>
+                                {selectedAluno?.turma && (
+                                    <Badge variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-100 font-medium px-2 py-0 mt-1 uppercase text-[10px]">
+                                        Turma: {formatarNomeTurma(selectedAluno.turma.nome)}
+                                    </Badge>
+                                )}
+                            </div>
                             {totalRecords > 0 && (
                                 <span className="text-xs text-muted-foreground bg-white px-3 py-1 rounded-full border border-gray-100 shadow-sm">
                                     Total de {totalRecords} registros
