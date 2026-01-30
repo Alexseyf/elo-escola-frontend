@@ -5,6 +5,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
+    DialogDescription,
 } from "@/components/ui/dialog";
 import { Atividade } from "@/types/atividades";
 import { formatarCampoExperiencia } from "@/stores/useCamposStore";
@@ -38,6 +39,9 @@ export function AtividadeDetalhesModal({
                         <FileText className="h-5 w-5 text-blue-600" />
                         Detalhes da Atividade
                     </DialogTitle>
+                    <DialogDescription className="sr-only">
+                        Informações detalhadas sobre a atividade pedagógica realizada.
+                    </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-6 pt-4">
