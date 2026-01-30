@@ -54,7 +54,12 @@ export default function ProfessorDiariosPage() {
         const statusMap: Record<number, { temDiario: boolean; diarioId?: number }> = {};
 
         await Promise.all(checkTurmas.map(async (turma) => {
-          const statuses = await useTurmasStore.getState().checkDiariesStatus(turma.id);
+          const today = new Date();
+          const localDate = today.getFullYear() + '-' +
+            String(today.getMonth() + 1).padStart(2, '0') + '-' +
+            String(today.getDate()).padStart(2, '0');
+
+          const statuses = await useTurmasStore.getState().checkDiariesStatus(turma.id, localDate);
           statuses.forEach(s => {
             statusMap[s.alunoId] = {
               temDiario: s.temDiario,
