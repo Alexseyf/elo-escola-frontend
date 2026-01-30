@@ -9,7 +9,6 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   ResponsiveContainer,
   Cell
 } from "recharts";
@@ -82,11 +81,7 @@ export default function MensalidadesChart({ minimal = false }: MensalidadesChart
               axisLine={false}
               tickFormatter={(value) => `R$${value}`}
             />
-            <Tooltip
-              cursor={{ fill: '#f8fafc' }}
-              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-              formatter={(value: number) => [formatCurrency(value), "Saldo Final"]}
-            />
+
             <Bar dataKey="saldo" radius={[4, 4, 0, 0]}>
               {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
