@@ -84,8 +84,7 @@ export function UpcomingEventsCard() {
     const currentMonth = now.getMonth()
     const currentYear = now.getFullYear()
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-
-    return cronogramas
+    const eventsThisMonth = cronogramas
       .filter((evento) => {
         const eventoDate = new Date(evento.data)
         const eventoMonth = eventoDate.getUTCMonth()
@@ -97,7 +96,38 @@ export function UpcomingEventsCard() {
           eventoDay >= today
       })
       .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
+
+    if (eventsThisMonth.length > 0) {
+      return eventsThisMonth
+    }
+
+    let nextMonth = currentMonth + 1
+    let nextYear = currentYear
+    if (nextMonth > 11) {
+      nextMonth = 0
+      nextYear++
+    }
+
+    return cronogramas
+      .filter((evento) => {
+        const eventoDate = new Date(evento.data)
+        const eventoMonth = eventoDate.getUTCMonth()
+        const eventoYear = eventoDate.getUTCFullYear()
+
+        return eventoYear === nextYear && eventoMonth === nextMonth
+      })
+      .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
   }, [cronogramas])
+
+  const isNextMonth = useMemo(() => {
+    if (upcomingEvents.length === 0) return false
+    const now = new Date()
+    const firstEvent = new Date(upcomingEvents[0].data)
+    const evtMonth = firstEvent.getUTCMonth()
+    const evtYear = firstEvent.getUTCFullYear()
+
+    return evtMonth !== now.getMonth() || evtYear !== now.getFullYear()
+  }, [upcomingEvents])
 
   const displayedEvents = useMemo(() => {
     if (showAll) {
@@ -156,7 +186,7 @@ export function UpcomingEventsCard() {
         <CardContent>
           <div className="text-center py-8 text-muted-foreground">
             <CalendarDays className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p className="text-sm">Nenhum evento programado para este mês</p>
+            <p className="text-sm">Nenhum evento programado</p>
           </div>
         </CardContent>
       </Card>
@@ -172,7 +202,7 @@ export function UpcomingEventsCard() {
             Próximos Eventos - Cronograma
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            {upcomingEvents.length} {upcomingEvents.length === 1 ? 'evento' : 'eventos'} este mês
+            {upcomingEvents.length} {upcomingEvents.length === 1 ? 'evento' : 'eventos'} {isNextMonth ? 'no próximo mês' : 'este mês'}
           </p>
         </CardHeader>
         <CardContent className="space-y-3">
