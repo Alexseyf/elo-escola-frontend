@@ -12,6 +12,7 @@ import { BookOpen, Calendar } from "lucide-react";
 
 interface AtividadeComTurma {
     turma: { id: number; nome: string };
+    alunos: string[];
     atividade: Atividade | null;
 }
 
@@ -27,17 +28,20 @@ export function UltimaAtividadeCard() {
                 const alunos = await getAlunosDoResponsavel();
 
                 // Agrupar alunos por turma para evitar chamadas duplicadas para a mesma turma
-                const turmasVistas = new Map<number, string>();
+                const turmasVistas = new Map<number, { nome: string; alunos: string[] }>();
                 alunos.forEach(aluno => {
                     if (aluno.turma) {
-                        turmasVistas.set(aluno.turma.id, aluno.turma.nome);
+                        const info = turmasVistas.get(aluno.turma.id) || { nome: aluno.turma.nome, alunos: [] };
+                        info.alunos.push(aluno.nome);
+                        turmasVistas.set(aluno.turma.id, info);
                     }
                 });
 
-                const promises = Array.from(turmasVistas.entries()).map(async ([id, nome]) => {
+                const promises = Array.from(turmasVistas.entries()).map(async ([id, info]) => {
                     const atividade = await fetchUltimaAtividade(id);
                     return {
-                        turma: { id, nome },
+                        turma: { id, nome: info.nome },
+                        alunos: info.alunos,
                         atividade
                     };
                 });
@@ -88,11 +92,16 @@ export function UltimaAtividadeCard() {
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-                {atividadesPorTurma.map(({ turma, atividade }) => (
+                {atividadesPorTurma.map(({ turma, atividade, alunos }) => (
                     <div key={turma.id} className="space-y-3">
-                        <h3 className="font-semibold text-gray-900 border-b pb-1">
-                            Turma: {formatarNomeTurma(turma.nome)}
-                        </h3>
+                        <div className="border-b pb-1">
+                            <h3 className="font-semibold text-gray-900">
+                                Turma: {formatarNomeTurma(turma.nome)}
+                            </h3>
+                            <p className="text-[10px] text-muted-foreground uppercase font-medium">
+                                Aluno(s): {alunos.join(", ")}
+                            </p>
+                        </div>
 
                         {!atividade ? (
                             <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
