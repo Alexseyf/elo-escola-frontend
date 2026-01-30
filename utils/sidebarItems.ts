@@ -167,6 +167,12 @@ export function getResponsavelSidebarItems(): SidebarItem[] {
       href: "/responsavel/diarios",
       icon: FileText,
     },
+    {
+      id: "atividades",
+      label: "Atividades Pedagógicas",
+      href: "/responsavel/atividades",
+      icon: ClipboardList,
+    },
     // {
     //   id: "comunicados",
     //   label: "Comunicados",
