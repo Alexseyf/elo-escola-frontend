@@ -117,15 +117,12 @@ export function FinancialDashboard() {
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                                 <XAxis dataKey="name" hide />
                                 <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `R$${value}`} />
-                                <Tooltip
-                                    cursor={{ fill: '#f8fafc' }}
-                                    contentStyle={{ borderRadius: '12px', border: '1px solid #f1f5f9', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-                                    formatter={(value: number) => [
-                                        new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value),
-                                        "Saldo Final"
-                                    ]}
-                                />
-                                <Bar dataKey="saldo" radius={[6, 6, 0, 0]}>
+                                <Bar
+                                    dataKey="saldo"
+                                    radius={[6, 6, 0, 0]}
+                                    isAnimationActive={false}
+                                    activeBar={false}
+                                >
                                     {chartData.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                                     ))}
