@@ -12,6 +12,7 @@ const nunitoSans = Nunito_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://meueloescola.com.br"),
   title: "Elo Escola",
   description: "Plataforma Elo Escola",
   icons: {
