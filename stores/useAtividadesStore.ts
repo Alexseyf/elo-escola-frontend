@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
-import type { Atividade, CreateAtividadeInput, TurmaAtividadesResponse } from '@/types/atividades';
+import type { Atividade, CreateAtividadeInput, TurmaAtividadesResponse, AtividadesPaginadasResponse } from '@/types/atividades';
 
 interface AtividadesState {
   atividades: Atividade[];
@@ -11,6 +11,7 @@ interface AtividadesState {
   fetchAtividades: () => Promise<void>;
   fetchAtividadeById: (id: number) => Promise<void>;
   fetchUltimaAtividadePorTurma: (turmaId: number) => Promise<Atividade | null>;
+  fetchAtividadesPaginadasPorTurma: (turmaId: number, page: number, limit: number) => Promise<AtividadesPaginadasResponse | null>;
   fetchProfessorAtividades: (professorId: number) => Promise<TurmaAtividadesResponse | null>;
   createAtividade: (data: CreateAtividadeInput) => Promise<Atividade | null>;
   limparCache: () => void;
@@ -76,6 +77,23 @@ export const useAtividadesStore = create<AtividadesState>()((set) => ({
       return await response.json();
     } catch (error) {
       console.error('Error fetching last atividade for turma:', error);
+      return null;
+    }
+  },
+
+  fetchAtividadesPaginadasPorTurma: async (turmaId: number, page: number = 1, limit: number = 5) => {
+    try {
+      const response = await api(`/api/v1/atividades/turma/${turmaId}?page=${page}&limit=${limit}`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar atividades: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching paginated atividades for turma:', error);
       return null;
     }
   },

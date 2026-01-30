@@ -105,3 +105,11 @@ export const GRUPO_POR_CAMPO_LABELS: Record<GRUPO_POR_CAMPO, string> = {
   [GRUPO_POR_CAMPO.CRIANCAS_PEQUENAS]: "Crianças pequenas (4 anos a 5 anos e 11 meses)",
   [GRUPO_POR_CAMPO.CRIANCAS_MAIORES]: "Crianças maiores (6 anos ou mais)"
 };
+
+export interface AtividadesPaginadasResponse {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  atividades: Atividade[];
+}
