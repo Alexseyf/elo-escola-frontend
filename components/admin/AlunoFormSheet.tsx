@@ -6,11 +6,11 @@ import { useAlunosStore, AlunoDetalhes, CreateAlunoData } from '@/stores/useAlun
 import { useTurmasStore } from '@/stores/useTurmasStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetHeader, 
-  SheetTitle, 
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
   SheetDescription,
   SheetFooter,
   SheetTrigger
@@ -58,7 +58,7 @@ export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProp
 
   const isEditing = !!aluno;
 
-  const form = useForm({
+  const form = useForm<AlunoFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(isEditing ? updateAlunoSchema : alunoSchema) as any,
     defaultValues: {
@@ -102,9 +102,9 @@ export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProp
       if (isEditing && aluno) {
         result = await updateAluno(aluno.id, payload);
       } else {
-        result = await createAluno(payload as CreateAlunoData);
+        result = await createAluno(payload);
       }
-      
+
       if (result.success) {
         toast.success(result.message);
         setOpen(false);
@@ -123,13 +123,13 @@ export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProp
     try {
       setIsToggling(true);
       if (aluno.isAtivo) {
-         const result = await deleteAluno(aluno.id);
-         if (result.success) toast.success(result.message);
-         else toast.error(result.message);
+        const result = await deleteAluno(aluno.id);
+        if (result.success) toast.success(result.message);
+        else toast.error(result.message);
       } else {
-         const result = await updateAluno(aluno.id, { isAtivo: true });
-         if (result.success) toast.success('Aluno ativado com sucesso!');
-         else toast.error(result.message);
+        const result = await updateAluno(aluno.id, { isAtivo: true });
+        if (result.success) toast.success('Aluno ativado com sucesso!');
+        else toast.error(result.message);
       }
       setOpen(false);
       if (onSuccess) onSuccess();
@@ -150,17 +150,17 @@ export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProp
           </Button>
         )}
       </SheetTrigger>
-      <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
+      <SheetContent className="w-[400px] sm:w-[540px]">
         <SheetHeader>
           <SheetTitle>{isEditing ? 'Editar Aluno' : 'Novo Aluno'}</SheetTitle>
           <SheetDescription>
             {isEditing ? 'Atualize os dados do aluno.' : 'Cadastre um novo aluno no sistema.'}
           </SheetDescription>
         </SheetHeader>
-        
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-4 px-2">
-            
+
             <FormField
               control={form.control}
               name="nome"
@@ -176,42 +176,42 @@ export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProp
             />
 
             <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="dataNasc"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Data de Nascimento</FormLabel>
-                      <FormControl>
-                        <Input type="date" max={new Date().toISOString().split('T')[0]} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <FormField
+                control={form.control}
+                name="dataNasc"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Data de Nascimento</FormLabel>
+                    <FormControl>
+                      <Input type="date" max={new Date().toISOString().split('T')[0]} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <FormField
-                  control={form.control}
-                  name="mensalidade"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Mensalidade (R$)</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="0,00" 
-                          value={field.value ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(Number(field.value)) : ''}
-                          onChange={(e) => {
-                            const rawValue = e.target.value.replace(/\D/g, '');
-                            const numberValue = rawValue ? Number(rawValue) / 100 : undefined;
-                            field.onChange(numberValue);
-                          }}
-                          maxLength={15}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <FormField
+                control={form.control}
+                name="mensalidade"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Mensalidade (R$)</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="0,00"
+                        value={field.value ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(Number(field.value)) : ''}
+                        onChange={(e) => {
+                          const rawValue = e.target.value.replace(/\D/g, '');
+                          const numberValue = rawValue ? Number(rawValue) / 100 : undefined;
+                          field.onChange(numberValue);
+                        }}
+                        maxLength={15}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <FormField
@@ -220,8 +220,8 @@ export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProp
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Turma</FormLabel>
-                  <Select 
-                    onValueChange={(val) => field.onChange(Number(val))} 
+                  <Select
+                    onValueChange={(val) => field.onChange(Number(val))}
                     value={field.value ? String(field.value) : undefined}
                   >
                     <FormControl>
@@ -230,11 +230,11 @@ export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProp
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                        {turmas.map((turma) => (
-                            <SelectItem key={turma.id} value={String(turma.id)}>
-                                {turma.nome}
-                            </SelectItem>
-                        ))}
+                      {turmas.map((turma) => (
+                        <SelectItem key={turma.id} value={String(turma.id)}>
+                          {turma.nome}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -243,40 +243,40 @@ export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProp
             />
 
             <SheetFooter className="flex-col sm:flex-row gap-2">
-               {isEditing && aluno && (
-                 <AlertDialog>
+              {isEditing && aluno && (
+                <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button 
-                        variant="outline"
-                        type="button" 
-                        disabled={isToggling}
-                        className={aluno.isAtivo
-                            ? "border-red-600 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950" 
-                            : "border-green-600 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950"}
+                    <Button
+                      variant="outline"
+                      type="button"
+                      disabled={isToggling}
+                      className={aluno.isAtivo
+                        ? "border-red-600 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                        : "border-green-600 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950"}
                     >
-                       {isToggling ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                            aluno.isAtivo ? <Power className="h-4 w-4 mr-2" /> : <CheckCircle2 className="h-4 w-4 mr-2" />
-                        )}
-                       {aluno.isAtivo ? "Desativar Aluno" : "Ativar Aluno"}
+                      {isToggling ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        aluno.isAtivo ? <Power className="h-4 w-4 mr-2" /> : <CheckCircle2 className="h-4 w-4 mr-2" />
+                      )}
+                      {aluno.isAtivo ? "Desativar Aluno" : "Ativar Aluno"}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>{aluno.isAtivo ? "Desativar Aluno?" : "Ativar Aluno?"}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        {aluno.isAtivo 
-                            ? <span>Esta ação irá inativar o aluno <strong>{aluno.nome}</strong>.</span>
-                            : <span>Esta ação irá ativar o aluno <strong>{aluno.nome}</strong> novamente.</span>
+                        {aluno.isAtivo
+                          ? <span>Esta ação irá inativar o aluno <strong>{aluno.nome}</strong>.</span>
+                          : <span>Esta ação irá ativar o aluno <strong>{aluno.nome}</strong> novamente.</span>
                         }
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction 
-                        onClick={handleToggleStatus} 
-                         className={aluno.isAtivo ? "bg-destructive text-white hover:bg-destructive/90" : "bg-green-600 hover:bg-green-700"}
+                      <AlertDialogAction
+                        onClick={handleToggleStatus}
+                        className={aluno.isAtivo ? "bg-destructive text-white hover:bg-destructive/90" : "bg-green-600 hover:bg-green-700"}
                       >
                         Confirmar {aluno.isAtivo ? "Inativação" : "Ativação"}
                       </AlertDialogAction>

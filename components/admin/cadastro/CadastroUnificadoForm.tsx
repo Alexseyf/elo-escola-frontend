@@ -3,9 +3,7 @@
 import { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useAlunosStore } from "@/stores/useAlunosStore";
-import { useUsuariosStore } from "@/stores/useUsuariosStore";
+import { useAlunosStore, CreateAlunoUnificadoData } from "@/stores/useAlunosStore";
 import { useTurmasStore } from "@/stores/useTurmasStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,32 +25,20 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2, Save, UserPlus, GraduationCap, Users, Plus, Trash2 } from "lucide-react";
-import { alunoSchema } from "@/schemas/aluno";
-import { usuarioSchema } from "@/schemas/usuario";
-
-const cadastroUnificadoSchema = z.object({
-  aluno: alunoSchema,
-  responsaveis: z.array(usuarioSchema.omit({ roles: true })).min(1, "Adicione pelo menos um responsável"),
-});
-
-type CadastroUnificadoValues = z.infer<typeof cadastroUnificadoSchema>;
+import { Loader2, Save, GraduationCap, Users, Plus, Trash2 } from "lucide-react";
+import { unifiedRegistrationSchema, UnifiedRegistrationValues } from "@/schemas/aluno";
 
 export function CadastroUnificadoForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { createAluno, adicionarResponsavelAluno } = useAlunosStore();
-  const { criarUsuario } = useUsuariosStore();
+  const { createAlunoUnificado } = useAlunosStore();
   const { turmas, fetchTurmas } = useTurmasStore();
 
-  const form = useForm<CadastroUnificadoValues>({
+  const form = useForm<UnifiedRegistrationValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(cadastroUnificadoSchema) as any,
+    resolver: zodResolver(unifiedRegistrationSchema) as any,
     defaultValues: {
       aluno: {
         nome: "",
@@ -78,89 +64,46 @@ export function CadastroUnificadoForm() {
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "responsaveis",
+    name: "responsaveis" as any,
   });
 
   useEffect(() => {
     fetchTurmas();
   }, [fetchTurmas]);
 
-  async function onSubmit(data: CadastroUnificadoValues) {
+  function onInvalid(errors: any) {
+    console.log('Form Validation Errors:', errors);
+    toast.error('Por favor, preencha todos os campos obrigatórios corretamente.');
+  }
+
+  async function onSubmit(data: UnifiedRegistrationValues) {
     setIsSubmitting(true);
+    console.log('Original Unified Data:', data);
     try {
-      const alunoPayload = {
-        ...data.aluno,
-        dataNasc: `${data.aluno.dataNasc}T00:00:00.000Z`,
-        mensalidade: data.aluno.mensalidade || 0,
+      const payload: CreateAlunoUnificadoData = {
+        aluno: {
+          nome: data.aluno.nome,
+          dataNasc: `${data.aluno.dataNasc}T00:00:00.000Z`,
+          turmaId: data.aluno.turmaId,
+          mensalidade: data.aluno.mensalidade || 0
+        },
+        responsaveis: data.responsaveis.map(resp => ({
+          ...resp,
+          dataNascimento: `${resp.dataNascimento}T00:00:00.000Z`
+        }))
       };
 
-      const alunoResult = await createAluno(alunoPayload);
+      console.log('Unified Payload:', payload);
+      const result = await createAlunoUnificado(payload);
 
-      if (!alunoResult.success || !alunoResult.data) {
-        toast.error(`Erro ao criar aluno: ${alunoResult.message}`);
-        setIsSubmitting(false);
-        return;
-      }
-
-      const alunoId = alunoResult.data.id;
-      toast.success("Aluno criado com sucesso!");
-
-      let successCount = 0;
-      for (const responsavel of data.responsaveis) {
-        const responsavelPayload = {
-          ...responsavel,
-          dataNascimento: `${responsavel.dataNascimento}T00:00:00.000Z`,
-          roles: ["RESPONSAVEL"],
-        };
-
-        const usuarioResult = await criarUsuario(responsavelPayload);
-
-        if (!usuarioResult) {
-          toast.error(`Erro ao criar responsável ${responsavel.nome}.`);
-          continue;
-        }
-
-        const responsavelId = usuarioResult.id;
-
-        const linkResult = await adicionarResponsavelAluno(alunoId, responsavelId);
-        if (linkResult.success) {
-          successCount++;
-        } else {
-          toast.error(`Erro ao vincular responsável ${responsavel.nome}: ${linkResult.message}`);
-        }
-      }
-
-      if (successCount === data.responsaveis.length) {
-        toast.success("Todos os responsáveis foram vinculados com sucesso!");
-        form.reset({
-          aluno: {
-            nome: "",
-            dataNasc: "",
-            turmaId: 0,
-            mensalidade: undefined,
-          },
-          responsaveis: [
-            {
-              nome: "",
-              email: "",
-              cpf: "",
-              rg: "",
-              dataNascimento: "",
-              telefone: "",
-              telefoneComercial: "",
-              enderecoLogradouro: "",
-              enderecoNumero: "",
-            }
-          ],
-        });
-      } else if (successCount > 0) {
-        toast.warning(`Cadastro concluído, mas apenas ${successCount} de ${data.responsaveis.length} responsáveis foram vinculados.`);
+      if (result.success) {
+        toast.success("Aluno e responsáveis cadastrados com sucesso!");
+        form.reset();
       } else {
-        toast.error("Erro ao vincular responsáveis.");
+        toast.error(result.message);
       }
-
     } catch (error) {
-      console.error(error);
+      console.error('Submit Unified Error:', error);
       toast.error("Erro inesperado durante o cadastro.");
     } finally {
       setIsSubmitting(false);
@@ -171,7 +114,7 @@ export function CadastroUnificadoForm() {
     <Card className="w-full max-w-4xl mx-auto shadow-md">
       <CardContent className="p-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-8">
 
             {/* --- Dados do Aluno --- */}
             <div className="space-y-4">

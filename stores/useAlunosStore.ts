@@ -22,6 +22,23 @@ export interface CreateAlunoData {
   mensalidade?: number;
 }
 
+export interface ResponsibleFormValues {
+  nome: string;
+  email: string;
+  cpf: string;
+  rg: string;
+  dataNascimento: string;
+  telefone: string;
+  telefoneComercial?: string;
+  enderecoLogradouro: string;
+  enderecoNumero: string;
+}
+
+export interface CreateAlunoUnificadoData {
+  aluno: CreateAlunoData;
+  responsaveis: ResponsibleFormValues[];
+}
+
 export interface AlunoDetalhes {
   id: number;
   nome: string;
@@ -96,6 +113,7 @@ interface AlunosState {
   fetchAlunosByTurma: (turmaId: number) => Promise<Aluno[]>;
   fetchAlunosDoResponsavel: () => Promise<Aluno[]>;
   createAluno: (data: CreateAlunoData) => Promise<{ success: boolean; message: string; data?: Aluno }>;
+  createAlunoUnificado: (data: CreateAlunoUnificadoData) => Promise<{ success: boolean; message: string; data?: Aluno }>;
   getAlunoDetalhes: (id: number) => Promise<AlunoDetalhes | null>;
   verificarRegistroDiarioAluno: (alunoId: number, data?: string) => Promise<VerificaDiarioResult | null>;
   adicionarResponsavelAluno: (alunoId: number, usuarioId: number) => Promise<{ success: boolean; message: string }>;
@@ -252,6 +270,37 @@ export const useAlunosStore = create<AlunosState>((set) => ({
       set({ isLoading: false, error: message });
       console.error('Error creating aluno:', _error);
       return { success: false, message: 'Erro ao cadastrar aluno' };
+    }
+  },
+
+  createAlunoUnificado: async (data: CreateAlunoUnificadoData) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await api('/api/v1/alunos/cadastro-unificado', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+            set({ isLoading: false });
+            return { success: false, message: 'Não autorizado' };
+        }
+        
+        const errorData = await response.json().catch(() => null);
+        const message = errorData?.message || errorData?.erro || `Erro ao cadastrar aluno: ${response.status}`;
+        set({ isLoading: false, error: message });
+        return { success: false, message };
+      }
+
+      const responseData = await response.json();
+      set({ isLoading: false, error: null });
+      return { success: true, message: 'Aluno e responsáveis cadastrados com sucesso', data: responseData };
+    } catch (_error) {
+      const message = 'Erro ao cadastrar aluno e responsáveis';
+      set({ isLoading: false, error: message });
+      console.error('Error creating unified aluno:', _error);
+      return { success: false, message: 'Erro ao cadastrar aluno e responsáveis' };
     }
   },
 
