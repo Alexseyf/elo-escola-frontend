@@ -70,12 +70,12 @@ export function ExpenseManagement({ mes, ano, isFechado }: ExpenseManagementProp
             <StandardCard className="p-0 overflow-hidden border-none sm:border">
                 {/* Mobile View: Card List */}
                 <div className="grid grid-cols-1 gap-4 p-4 md:hidden">
-                    {isLoading && pagamentos.length === 0 ? (
+                    {isLoading && (!pagamentos || pagamentos.length === 0) ? (
                         <div className="text-center py-20 flex flex-col items-center gap-4">
                             <div className="w-10 h-10 border-4 border-blue-100 border-t-blue-500 rounded-full animate-spin" />
                             <p className="text-gray-400 font-medium italic">Carregando lançamentos...</p>
                         </div>
-                    ) : pagamentos.length === 0 ? (
+                    ) : (!pagamentos || pagamentos.length === 0) ? (
                         <div className="text-center py-20 bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-100">
                             <Info className="h-10 w-10 text-gray-200 mx-auto mb-3" />
                             <p className="text-gray-400 font-medium">Nenhum pagamento registrado.</p>
@@ -151,13 +151,13 @@ export function ExpenseManagement({ mes, ano, isFechado }: ExpenseManagementProp
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50 bg-white">
-                            {isLoading && pagamentos.length === 0 ? (
+                            {isLoading && (!pagamentos || pagamentos.length === 0) ? (
                                 <tr>
                                     <td colSpan={6} className="px-6 py-10 text-center text-gray-400 animate-pulse font-medium">
                                         Carregando lançamentos...
                                     </td>
                                 </tr>
-                            ) : pagamentos.length === 0 ? (
+                            ) : (!pagamentos || pagamentos.length === 0) ? (
                                 <tr>
                                     <td colSpan={6} className="px-6 py-10 text-center text-gray-400 font-medium">
                                         Nenhum pagamento registrado neste mês.

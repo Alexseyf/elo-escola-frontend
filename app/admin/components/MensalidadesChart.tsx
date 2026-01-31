@@ -36,7 +36,7 @@ export default function MensalidadesChart({ minimal = false }: MensalidadesChart
     );
   }
 
-  if (!balanco || balanco.turmas.length === 0) {
+  if (!balanco || !balanco.turmas || balanco.turmas.length === 0) {
     return (
       <div className="h-48 flex items-center justify-center border border-dashed rounded-lg bg-muted/30">
         <p className="text-sm text-muted-foreground text-center px-4">
@@ -110,11 +110,11 @@ export default function MensalidadesChart({ minimal = false }: MensalidadesChart
         <div className="grid grid-cols-2 gap-4 pt-2">
           <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-100">
             <p className="text-[10px] uppercase font-semibold text-emerald-700">Receita Mês</p>
-            <p className="text-lg font-semibold text-emerald-900">{formatCurrency(balanco.totalReceitas)}</p>
+            <p className="text-lg font-semibold text-emerald-900">{formatCurrency(balanco?.totalReceitas || 0)}</p>
           </div>
           <div className="bg-rose-50 p-3 rounded-lg border border-rose-100">
             <p className="text-[10px] uppercase font-semibold text-rose-700">Despesa Mês</p>
-            <p className="text-lg font-semibold text-rose-900">{formatCurrency(balanco.totalDespesasTurmas + balanco.totalDespesasGeral)}</p>
+            <p className="text-lg font-semibold text-rose-900">{formatCurrency((balanco?.totalDespesasTurmas || 0) + (balanco?.totalDespesasGeral || 0))}</p>
           </div>
         </div>
       )}

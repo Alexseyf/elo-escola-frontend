@@ -28,10 +28,12 @@ export function FinancialDashboard() {
 
     if (!balanco) return null;
 
-    const totalDespesas = balanco.totalDespesasTurmas + balanco.totalDespesasGeral;
-    const saldoGeral = balanco.totalReceitas - totalDespesas;
+    const totalDespesas = (balanco?.totalDespesasTurmas || 0) + (balanco?.totalDespesasGeral || 0);
+    const saldoGeral = (balanco?.totalReceitas || 0) - totalDespesas;
 
-    const chartData = balanco.turmas.map(t => ({
+    const turmas = balanco?.turmas || [];
+
+    const chartData = turmas.map(t => ({
         name: formatarNomeTurma(t.nome),
         saldo: t.saldo,
         receita: t.receita,
@@ -50,7 +52,7 @@ export function FinancialDashboard() {
                         </div>
                     </div>
                     <div className="text-2xl font-semibold text-gray-900">
-                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(balanco.totalReceitas)}
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(balanco?.totalReceitas || 0)}
                     </div>
                     <p className="text-xs text-gray-400 mt-1 uppercase font-semibold tracking-wider">Mensalidades</p>
                 </StandardCard>
@@ -92,7 +94,7 @@ export function FinancialDashboard() {
                         </div>
                     </div>
                     <div className="text-2xl font-semibold text-gray-900">
-                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(balanco.totalDespesasGeral)}
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(balanco?.totalDespesasGeral || 0)}
                     </div>
                     <p className="text-xs text-gray-400 mt-1 uppercase font-semibold tracking-wider">Fixo + Administrativo</p>
                 </StandardCard>
@@ -159,7 +161,7 @@ export function FinancialDashboard() {
                     <div className="flex-1">
                         {/* Mobile View: Premium Cards */}
                         <div className="md:hidden p-4 space-y-4 bg-gray-50/50">
-                            {balanco.turmas.map((t) => (
+                            {turmas.map((t) => (
                                 <div
                                     key={t.turmaId}
                                     className={cn(
@@ -205,7 +207,7 @@ export function FinancialDashboard() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
-                                    {balanco.turmas.map((t) => (
+                                    {turmas.map((t) => (
                                         <tr key={t.turmaId} className="hover:bg-blue-50/30 transition-colors">
                                             <td className="px-6 py-4 font-semibold text-gray-900">{formatarNomeTurma(t.nome)}</td>
                                             <td className="px-6 py-4 text-rose-600 font-medium font-mono text-xs">
