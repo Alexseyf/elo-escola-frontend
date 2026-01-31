@@ -6,6 +6,7 @@ import { useFinancasStore } from "@/stores/useFinancasStore";
 import { FinancialDashboard } from "./components/FinancialDashboard";
 import { ExpenseManagement } from "./components/ExpenseManagement";
 import { MonthClosing } from "./components/MonthClosing";
+import { ClosingReport } from "./components/ClosingReport";
 import { Calendar } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PageHeader } from "@/components/PageHeader";
@@ -63,7 +64,7 @@ export default function FinanceiroPage() {
                             </Select>
                             <div className="h-4 w-[1px] bg-gray-200 mx-1" />
                             <Select value={ano.toString()} onValueChange={(v) => setAno(parseInt(v))}>
-                                <SelectTrigger className="w-[80px] border-none shadow-none focus:ring-0 h-8 font-semibold text-gray-700">
+                                <SelectTrigger className="w-[100px] border-none shadow-none focus:ring-0 h-8 font-semibold text-gray-700">
                                     <SelectValue placeholder="Ano" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl">
@@ -102,7 +103,7 @@ export default function FinanceiroPage() {
                             </div>
                             <div className="h-6 w-[1px] bg-slate-200" />
                             <Select value={ano.toString()} onValueChange={(v) => setAno(parseInt(v))}>
-                                <SelectTrigger className="w-[80px] border-none shadow-none focus:ring-0 h-8 font-bold text-slate-900">
+                                <SelectTrigger className="w-[100px] border-none shadow-none focus:ring-0 h-8 font-bold text-slate-900">
                                     <SelectValue placeholder="Ano" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl">
@@ -131,16 +132,26 @@ export default function FinanceiroPage() {
                 <Tabs defaultValue="balanco" className="w-full">
                     <TabsList className="grid w-full grid-cols-2 md:w-[400px]">
                         <TabsTrigger value="balanco">Balanço Mensal</TabsTrigger>
-                        <TabsTrigger value="pagamentos">Lançamentos</TabsTrigger>
+                        {isFechado ? (
+                            <TabsTrigger value="relatorio">Relatório</TabsTrigger>
+                        ) : (
+                            <TabsTrigger value="pagamentos">Lançamentos</TabsTrigger>
+                        )}
                     </TabsList>
 
                     <TabsContent value="balanco" className="space-y-4">
                         <FinancialDashboard />
                     </TabsContent>
 
-                    <TabsContent value="pagamentos" className="space-y-4">
-                        <ExpenseManagement mes={mes} ano={ano} isFechado={isFechado} />
-                    </TabsContent>
+                    {isFechado ? (
+                        <TabsContent value="relatorio" className="space-y-4">
+                            <ClosingReport />
+                        </TabsContent>
+                    ) : (
+                        <TabsContent value="pagamentos" className="space-y-4">
+                            <ExpenseManagement mes={mes} ano={ano} isFechado={isFechado} />
+                        </TabsContent>
+                    )}
                 </Tabs>
             </div>
         </div>
