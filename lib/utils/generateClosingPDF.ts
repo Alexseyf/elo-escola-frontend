@@ -213,5 +213,5 @@ export const generateClosingPDF = (balanco: BalancoMensal) => {
   }
 
   // Save
-  doc.save(`relatorio-fechamento-${balanco.mes}-${balanco.ano}.pdf`);
+  doc.save(`relatorio_financeiro_${balanco.mes.toString().padStart(2, '0')}_${balanco.ano}.pdf`);
 };
