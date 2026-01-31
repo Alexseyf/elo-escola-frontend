@@ -15,6 +15,7 @@ export interface Usuario {
   telefoneComercial?: string;
   enderecoLogradouro: string;
   enderecoNumero: string;
+  alunos?: any[];
 }
 
 export interface UsuariosPorRole {

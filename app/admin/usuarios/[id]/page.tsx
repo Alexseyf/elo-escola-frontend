@@ -4,9 +4,11 @@ import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useUsuariosStore, Usuario } from "@/stores/useUsuariosStore"
 import { RouteGuard } from "@/components/auth/RouteGuard"
+import { formatarNomeTurma } from "@/stores/useTurmasStore"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { User, Pencil, ChevronLeft } from "lucide-react"
+import { User, Pencil, ChevronLeft, Users } from "lucide-react"
 
 export default function UsuarioDetalhesPage() {
     const params = useParams()
@@ -141,6 +143,37 @@ export default function UsuarioDetalhesPage() {
                                         {usuario.enderecoLogradouro ? `${usuario.enderecoLogradouro}, ${usuario.enderecoNumero}` : '-'}
                                     </p>
                                 </div>
+
+                                {usuario?.roles?.includes('RESPONSAVEL') && usuario.alunos && usuario.alunos.length > 0 && (
+                                    <div className="md:col-span-2 pt-4 border-t border-slate-100 mt-2">
+                                        <p className="text-sm font-medium text-gray-500 mb-3 flex items-center gap-2">
+                                            <Users className="w-4 h-4" /> Alunos Vinculados
+                                        </p>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                            {usuario.alunos.map((aluno) => (
+                                                <div
+                                                    key={aluno.id}
+                                                    className="cursor-pointer hover:shadow-md hover:border-primary/50 transition-all border border-slate-200 rounded-xl group bg-white overflow-hidden"
+                                                    onClick={() => router.push(`/admin/alunos/${aluno.id}`)}
+                                                >
+                                                    <div className="p-2.5 flex items-center gap-3">
+                                                        <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors shrink-0">
+                                                            <User className="w-4 h-4" />
+                                                        </div>
+                                                        <div className="flex-1 overflow-hidden">
+                                                            <p className="font-semibold text-slate-900 truncate text-xs">{aluno.nome}</p>
+                                                            <div className="mt-0.5">
+                                                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-100 font-normal text-[9px] h-4 py-0 px-1.5">
+                                                                    {aluno.turma?.nome ? formatarNomeTurma(aluno.turma.nome) : 'Sem turma'}
+                                                                </Badge>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
 
                             </div>
                         </CardContent>
