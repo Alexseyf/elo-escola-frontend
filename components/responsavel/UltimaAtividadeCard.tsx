@@ -124,15 +124,6 @@ export function UltimaAtividadeCard() {
                                 <p className="text-sm text-gray-700 line-clamp-3">
                                     {atividade.descricao}
                                 </p>
-
-                                {atividade.objetivo && (
-                                    <div className="mt-2 pt-2 border-t border-gray-50">
-                                        <span className="text-[10px] font-bold text-gray-400 uppercase">Objetivo:</span>
-                                        <p className="text-xs text-gray-500 italic">
-                                            {atividade.objetivo.codigo} - {atividade.objetivo.descricao}
-                                        </p>
-                                    </div>
-                                )}
                             </div>
                         )}
                     </div>
