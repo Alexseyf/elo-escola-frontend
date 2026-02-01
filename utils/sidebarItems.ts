@@ -10,6 +10,7 @@ import {
   Building2,
   UserPlus,
   CircleDollarSign,
+  Calendar,
 } from "lucide-react";
 
 export interface SidebarItem {
@@ -66,21 +67,18 @@ export function getAdminSidebarItems(): SidebarItem[] {
       href: "/admin/atividades",
       icon: FileText,
     },
-    // {
-    //   id: "calendario",
-    //   label: "Calendário",
-    //   href: "/calendario?section=calendario",
-    //   icon: CalendarDays,
-    //   divider: true,
-    // },
     {
       id: "cronograma",
       label: "Cronograma Anual",
       href: "/admin/cronograma",
       icon: Clock,
     },
-    //   icon: BarChart3,
-    // },
+    {
+      id: "eventos",
+      label: "Eventos",
+      href: "/admin/eventos",
+      icon: Calendar,
+    },
     {
       id: "financeiro",
       label: "Financeiro",
@@ -104,6 +102,12 @@ export function getProfessorSidebarItems(): SidebarItem[] {
       label: "Minhas Turmas",
       href: "/professor/turmas",
       icon: BookOpen,
+    },
+    {
+      id: "eventos",
+      label: "Eventos",
+      href: "/professor/eventos",
+      icon: Calendar,
     },
     {
       id: "atividades",
@@ -160,6 +164,12 @@ export function getResponsavelSidebarItems(): SidebarItem[] {
       label: "Meus Filhos",
       href: "/responsavel/meus-filhos",
       icon: Users,
+    },
+    {
+      id: "eventos",
+      label: "Eventos da Turma",
+      href: "/responsavel/eventos",
+      icon: Calendar,
     },
     {
       id: "diarios",
