@@ -5,6 +5,7 @@ import { RouteGuard } from "@/components/auth/RouteGuard"
 import { UpcomingEventsCard } from "@/components/responsavel/UpcomingEventsCard"
 import { UltimosDiariosCard } from "@/components/responsavel/UltimosDiariosCard"
 import { UltimaAtividadeCard } from "@/components/responsavel/UltimaAtividadeCard"
+import { ProximosEventosTurmaCard } from "@/components/responsavel/ProximosEventosTurmaCard"
 
 export default function ResponsavelDashboard() {
   const user = useAuthStore((state) => state.user)
@@ -24,6 +25,7 @@ export default function ResponsavelDashboard() {
         <div className="space-y-6">
           <UltimosDiariosCard />
           <UltimaAtividadeCard />
+          <ProximosEventosTurmaCard />
           <UpcomingEventsCard />
         </div>
       </div>
