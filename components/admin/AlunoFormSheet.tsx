@@ -77,7 +77,7 @@ export function AlunoFormSheet({ aluno, onSuccess, trigger }: AlunoFormSheetProp
           nome: aluno.nome,
           dataNasc: aluno.dataNasc ? aluno.dataNasc.split('T')[0] : '',
           turmaId: aluno.turmaId || (aluno.turma?.id) || 0,
-          mensalidade: aluno.mensalidade || undefined
+          mensalidade: aluno.mensalidade !== null && aluno.mensalidade !== undefined ? aluno.mensalidade : undefined
         });
       } else {
         form.reset({
