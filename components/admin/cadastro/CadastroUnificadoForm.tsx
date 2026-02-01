@@ -191,10 +191,15 @@ export function CadastroUnificadoForm() {
                       <FormControl>
                         <Input
                           placeholder="0,00"
-                          value={field.value ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(Number(field.value)) : ''}
+                          value={
+                            field.value !== undefined && field.value !== null
+                              ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(Number(field.value))
+                              : ''
+                          }
                           onChange={(e) => {
                             const rawValue = e.target.value.replace(/\D/g, '');
-                            const numberValue = rawValue ? Number(rawValue) / 100 : undefined;
+                            // Se rawValue for vazio string, undefined. Se for '0' ou '00', é 0.
+                            const numberValue = rawValue === '' ? undefined : Number(rawValue) / 100;
                             field.onChange(numberValue);
                           }}
                           maxLength={15}
