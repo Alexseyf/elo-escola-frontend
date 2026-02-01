@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { CustomSelect } from "@/components/CustomSelect"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -215,29 +215,23 @@ export default function AlunoDetalhesPage() {
                                         )}
 
                                         {/* Add Responsible Form */}
-                                        <div className="flex gap-2 items-end max-w-sm bg-gray-50 p-3 rounded-lg">
+                                        <div className="flex gap-2 items-end max-w-lg bg-gray-50 p-3 rounded-lg">
                                             <div className="grid w-full gap-1.5">
                                                 <span className="text-sm font-medium">Adicionar Responsável</span>
-                                                <Select
+                                                <CustomSelect
+                                                    id="responsavel-select"
+                                                    name="responsavel-select"
                                                     value={newResponsavelId}
-                                                    onValueChange={setNewResponsavelId}
-                                                >
-                                                    <SelectTrigger className="w-full">
-                                                        <SelectValue placeholder="Selecione um responsável" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {usuarios.map((user) => (
-                                                            <SelectItem key={user.id} value={String(user.id)}>
-                                                                {user.nome}
-                                                            </SelectItem>
-                                                        ))}
-                                                        {usuarios.length === 0 && (
-                                                            <div className="p-2 text-sm text-gray-500 text-center">Nenhum responsável encontrado</div>
-                                                        )}
-                                                    </SelectContent>
-                                                </Select>
+                                                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewResponsavelId(e.target.value)}
+                                                    options={usuarios.map(user => ({
+                                                        value: String(user.id),
+                                                        label: `${user.nome} (${user.email})`
+                                                    }))}
+                                                    searchable
+                                                    className="w-full bg-white"
+                                                />
                                             </div>
-                                            <Button size="sm" onClick={handleAddResponsavel} disabled={isAddingResp}>
+                                            <Button size="sm" onClick={handleAddResponsavel} disabled={isAddingResp} className="h-11">
                                                 <Plus className="w-4 h-4" />
                                             </Button>
                                         </div>
