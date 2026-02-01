@@ -51,29 +51,15 @@ export function ExpenseForm({ isOpen, onClose, mes, ano }: ExpenseFormProps) {
                 tipo: "OUTRO",
                 turmaId: null
             });
-            setDisplayValor("0,00");
         }
     };
 
-    const [displayValor, setDisplayValor] = useState("0,00");
-
-    const formatCurrencyMask = (value: string) => {
-        const cleanValue = value.replace(/\D/g, "");
-        const cents = parseInt(cleanValue || "0") / 100;
-
-        return new Intl.NumberFormat('pt-BR', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(cents);
-    };
+    // Removed local displayValor state since we derive it directly from formData.valor
 
     const handleValorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        const formatted = formatCurrencyMask(value);
-
-        setDisplayValor(formatted);
-
-        const numericValue = parseFloat(formatted.replace(/\./g, "").replace(",", "."));
+        const rawValue = e.target.value.replace(/\D/g, '');
+        // Se rawValue for vazio string, undefined. Se for '0' ou '00', é 0.
+        const numericValue = rawValue === '' ? 0 : Number(rawValue) / 100;
         setFormData({ ...formData, valor: numericValue });
     };
 
@@ -128,7 +114,11 @@ export function ExpenseForm({ isOpen, onClose, mes, ano }: ExpenseFormProps) {
                                     inputMode="numeric"
                                     placeholder="0,00"
                                     className="pl-10 text-right font-bold bg-gray-50/50 border-gray-100"
-                                    value={displayValor}
+                                    value={
+                                        formData.valor !== undefined && formData.valor !== null
+                                            ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(formData.valor)
+                                            : ''
+                                    }
                                     onChange={handleValorChange}
                                     required
                                 />
