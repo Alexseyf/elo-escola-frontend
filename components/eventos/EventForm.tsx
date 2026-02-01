@@ -9,6 +9,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Turma } from "@/utils/turmas";
 import { formatarNomeTurma } from "@/stores/useTurmasStore";
 
+const formatarTipoEvento = (tipo: TipoEvento) => {
+    const tipos: Record<TipoEvento, string> = {
+        [TipoEvento.REUNIAO]: "Reunião",
+        [TipoEvento.FERIADO]: "Feriado",
+        [TipoEvento.RECESSO]: "Recesso",
+        [TipoEvento.EVENTO_ESCOLAR]: "Evento Escolar",
+        [TipoEvento.ATIVIDADE_PEDAGOGICA]: "Atividade Pedagógica",
+        [TipoEvento.OUTRO]: "Outro",
+    };
+    return tipos[tipo] || tipo;
+};
+
 interface EventFormProps {
     initialData?: Evento;
     turmas: Turma[];
@@ -101,7 +113,7 @@ export function EventForm({ initialData, turmas, onSubmit, onCancel }: EventForm
                                 <SelectContent>
                                     {Object.values(TipoEvento).map((tipo) => (
                                         <SelectItem key={tipo} value={tipo}>
-                                            {tipo.replace('_', ' ')}
+                                            {formatarTipoEvento(tipo)}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
