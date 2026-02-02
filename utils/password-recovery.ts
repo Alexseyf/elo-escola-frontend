@@ -24,7 +24,9 @@ export async function recuperaSenha(email: string): Promise<RecoveryResponse> {
     
     try {
       const data = await response.json();
-      return { success: false, message: data.erro || "Erro na solicitação", code: data.codigo };
+      // Verifica tanto 'message' (error.middleware) quanto 'erro' (validações diretas do controller)
+      const msg = data.message || data.erro || "Erro na solicitação";
+      return { success: false, message: msg, code: data.codigo };
     } catch {
        const text = await response.text();
        return { success: false, message: text || "Erro ao conectar com o servidor" };
@@ -54,7 +56,8 @@ export async function validaSenha(email: string, code: string, novaSenha: string
 
     try {
         const data = await response.json();
-        const msg = data.erro || "Erro na validação";
+        // Verifica tanto 'message' (error.middleware) quanto 'erro' (validações diretas do controller)
+        const msg = data.message || data.erro || "Erro na validação";
         return { success: false, message: msg, code: data.codigo };
     } catch {
         const text = await response.text();
