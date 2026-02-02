@@ -75,7 +75,7 @@ export function getAdminSidebarItems(): SidebarItem[] {
     },
     {
       id: "eventos",
-      label: "Eventos",
+      label: "Avisos",
       href: "/admin/eventos",
       icon: Calendar,
     },
@@ -105,7 +105,7 @@ export function getProfessorSidebarItems(): SidebarItem[] {
     },
     {
       id: "eventos",
-      label: "Eventos",
+      label: "Avisos",
       href: "/professor/eventos",
       icon: Calendar,
     },
@@ -167,7 +167,7 @@ export function getResponsavelSidebarItems(): SidebarItem[] {
     },
     {
       id: "eventos",
-      label: "Eventos da Turma",
+      label: "Avisos da Turma",
       href: "/responsavel/eventos",
       icon: Calendar,
     },

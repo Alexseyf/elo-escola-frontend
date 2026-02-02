@@ -52,7 +52,7 @@ export default function ProfessorEventosPage() {
         if (confirm("Tem certeza que deseja excluir este evento?")) {
             const result = await deleteEvento(id);
             if (result.success) {
-                toast.success("Evento excluído com sucesso");
+                toast.success("Aviso excluído com sucesso");
                 loadEvents();
             } else {
                 toast.error(result.message || "Erro ao excluir evento");
@@ -69,7 +69,7 @@ export default function ProfessorEventosPage() {
         }
 
         if (result.success) {
-            toast.success(editingEvent ? "Evento atualizado" : "Evento criado");
+            toast.success(editingEvent ? "Aviso atualizado" : "Aviso criado");
             setIsModalOpen(false);
             loadEvents();
         } else {
@@ -84,20 +84,20 @@ export default function ProfessorEventosPage() {
                     <div>
                         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
                             <Calendar className="w-8 h-8 text-blue-600" />
-                            Eventos da Turma
+                            Avisos da Turma
                         </h1>
                         <p className="text-sm text-muted-foreground mt-1">
-                            Gerencie os eventos e avisos para suas turmas.
+                            Gerencie os avisos para suas turmas.
                         </p>
                     </div>
                     <Button onClick={handleCreate}>
                         <Plus className="w-4 h-4 mr-2" />
-                        Novo Evento
+                        Novo Aviso
                     </Button>
                 </div>
 
                 {isLoading ? (
-                    <div className="text-center py-10">Carregando eventos...</div>
+                    <div className="text-center py-10">Carregando avisos...</div>
                 ) : (
                     <EventList
                         events={events}
@@ -110,7 +110,7 @@ export default function ProfessorEventosPage() {
                 <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                     <DialogContent className="max-w-xl">
                         <DialogHeader>
-                            <DialogTitle>{editingEvent ? "Editar Evento" : "Novo Evento"}</DialogTitle>
+                            <DialogTitle>{editingEvent ? "Editar Aviso" : "Novo Aviso"}</DialogTitle>
                             <DialogDescription>
                                 Preencha os dados do evento da turma.
                             </DialogDescription>

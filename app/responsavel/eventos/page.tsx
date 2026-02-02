@@ -84,21 +84,21 @@ export default function ResponsavelEventosPage() {
                 <div>
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
                         <Calendar className="w-8 h-8 text-blue-600" />
-                        Eventos da Turma
+                        Avisos da Turma
                     </h1>
                     <p className="text-sm text-muted-foreground mt-1">
-                        Acompanhe os próximos eventos da turma do seu filho(a).
+                        Acompanhe os próximos avisos da turma do seu filho(a).
                     </p>
                 </div>
 
                 {isLoading ? (
-                    <div className="text-center py-10">Carregando eventos...</div>
+                    <div className="text-center py-10">Carregando avisos...</div>
                 ) : eventosPorTurma.length === 0 ? (
                     <Card>
                         <CardContent className="py-10">
                             <div className="text-center text-muted-foreground">
                                 <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                                <p>Nenhum evento encontrado para as turmas dos seus filhos.</p>
+                                <p>Nenhum aviso encontrado para as turmas dos seus filhos.</p>
                             </div>
                         </CardContent>
                     </Card>

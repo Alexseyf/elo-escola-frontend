@@ -96,7 +96,7 @@ export function EventForm({ initialData, turmas, onSubmit, onCancel }: EventForm
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <Label htmlFor="tipo">Tipo de Evento</Label>
+                    <Label htmlFor="tipo">Tipo de Aviso</Label>
                     {(() => {
                         return (
                             <Select
