@@ -133,22 +133,30 @@ export function DiarioCard({ diario }: DiarioCardProps) {
             <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
               <h3 className="font-semibold text-gray-800 mb-3">Refeições</h3>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Lanche da manhã:</span>
-                  <span className="font-medium">{getRefeicaoLabel(diario.lancheManha)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Almoço:</span>
-                  <span className="font-medium">{getRefeicaoLabel(diario.almoco)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Lanche da tarde:</span>
-                  <span className="font-medium">{getRefeicaoLabel(diario.lancheTarde)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Leite:</span>
-                  <span className="font-medium">{getRefeicaoLabel(diario.leite)}</span>
-                </div>
+                {diario.lancheManha && diario.lancheManha !== 'NAO_SE_APLICA' && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Lanche da manhã:</span>
+                    <span className="font-medium">{getRefeicaoLabel(diario.lancheManha)}</span>
+                  </div>
+                )}
+                {diario.almoco && diario.almoco !== 'NAO_SE_APLICA' && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Almoço:</span>
+                    <span className="font-medium">{getRefeicaoLabel(diario.almoco)}</span>
+                  </div>
+                )}
+                {diario.lancheTarde && diario.lancheTarde !== 'NAO_SE_APLICA' && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Lanche da tarde:</span>
+                    <span className="font-medium">{getRefeicaoLabel(diario.lancheTarde)}</span>
+                  </div>
+                )}
+                {diario.leite && diario.leite !== 'NAO_SE_APLICA' && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Leite:</span>
+                    <span className="font-medium">{getRefeicaoLabel(diario.leite)}</span>
+                  </div>
+                )}
               </div>
             </div>
 
