@@ -136,7 +136,7 @@ export default function AlunosChart({ minimal = false }: AlunosChartProps) {
                   scope="col"
                   className="px-4 md:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Total de Alunos
+                  Alunos
                 </th>
                 <th
                   scope="col"
@@ -146,7 +146,7 @@ export default function AlunosChart({ minimal = false }: AlunosChartProps) {
                 </th>
                 <th
                   scope="col"
-                  className="hidden md:table-cell px-4 md:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-4 md:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
                   Status
                 </th>
@@ -189,7 +189,7 @@ export default function AlunosChart({ minimal = false }: AlunosChartProps) {
                     <td className="hidden sm:table-cell px-4 md:px-6 py-4 whitespace-nowrap text-center text-sm text-gray-600">
                       {percentual}%
                     </td>
-                    <td className="hidden md:table-cell px-4 md:px-6 py-4 whitespace-nowrap text-center">
+                    <td className="px-4 md:px-6 py-4 whitespace-nowrap text-center">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColor}`}>
                         {status}
                       </span>
