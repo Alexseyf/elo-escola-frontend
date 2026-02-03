@@ -124,7 +124,23 @@ export function ProximosEventosTurmaCard() {
         );
     }
 
-    if (eventosPorTurma.length === 0) return null;
+    if (eventosPorTurma.length === 0) {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Calendar className="h-5 w-5 text-blue-600" />
+                        Avisos da Turma
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="text-center py-6 text-muted-foreground text-sm">
+                        <p>Nenhum aviso programado no momento.</p>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
         <Card>
