@@ -114,7 +114,7 @@ export function ProximosEventosTurmaCard() {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Calendar className="h-5 w-5 text-blue-600" />
-                        Próximo Aviso da Turma
+                        Avisos da Turma
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -131,7 +131,7 @@ export function ProximosEventosTurmaCard() {
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Calendar className="h-5 w-5 text-blue-600" />
-                    Próximos Eventos da Turma
+                    Avisos da Turma
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
