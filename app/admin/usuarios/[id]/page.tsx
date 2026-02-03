@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useUsuariosStore, Usuario } from "@/stores/useUsuariosStore"
 import { RouteGuard } from "@/components/auth/RouteGuard"
@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { User, Pencil, ChevronLeft, Users } from "lucide-react"
+import { UserFormSheet } from "@/components/admin/UserFormSheet"
 
 export default function UsuarioDetalhesPage() {
     const params = useParams()
@@ -24,19 +25,20 @@ export default function UsuarioDetalhesPage() {
         fetchUsuarioDetalhes
     } = useUsuariosStore()
 
-    useEffect(() => {
-        async function loadData() {
-            try {
-                if (!isNaN(id)) {
-                    const data = await fetchUsuarioDetalhes(id);
-                    setUsuario(data);
-                }
-            } finally {
-                setIsInitializing(false);
+    const loadData = useCallback(async () => {
+        try {
+            if (!isNaN(id)) {
+                const data = await fetchUsuarioDetalhes(id);
+                setUsuario(data);
             }
+        } finally {
+            setIsInitializing(false);
         }
-        loadData();
     }, [id, fetchUsuarioDetalhes])
+
+    useEffect(() => {
+        loadData();
+    }, [loadData])
 
     const getRoleBadgeColor = (role: string) => {
         switch (role) {
@@ -178,10 +180,16 @@ export default function UsuarioDetalhesPage() {
                             </div>
                         </CardContent>
                         <CardFooter className="bg-gray-50 border-t p-4 flex justify-end">
-                            <Button variant="primary" className="flex items-center gap-2">
-                                <Pencil className="w-4 h-4" />
-                                Editar
-                            </Button>
+                            <UserFormSheet
+                                usuario={usuario}
+                                onSuccess={loadData}
+                                trigger={
+                                    <Button variant="primary" className="flex items-center gap-2">
+                                        <Pencil className="w-4 h-4" />
+                                        Editar
+                                    </Button>
+                                }
+                            />
                         </CardFooter>
                     </Card>
                 ) : (
