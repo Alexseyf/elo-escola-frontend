@@ -47,7 +47,7 @@ const formatarIntervalo = (inicio: string, fim?: string | null) => {
   if (!fim || inicio.split('T')[0] === fim.split('T')[0]) {
     return formatarData(inicio)
   }
-  
+
   return `${formatarData(inicio)} - ${formatarData(fim)}`
 }
 
@@ -75,6 +75,18 @@ const getCorTipo = (tipo: TipoEvento) => {
   return cores[tipo] || "bg-gray-100 text-gray-800 border-gray-200"
 }
 
+const getBorderColor = (tipo: TipoEvento) => {
+  const cores: Record<TipoEvento, string> = {
+    [TipoEvento.REUNIAO]: "border-l-blue-300",
+    [TipoEvento.FERIADO]: "border-l-red-300",
+    [TipoEvento.RECESSO]: "border-l-yellow-300",
+    [TipoEvento.EVENTO_ESCOLAR]: "border-l-green-300",
+    [TipoEvento.ATIVIDADE_PEDAGOGICA]: "border-l-purple-300",
+    [TipoEvento.OUTRO]: "border-l-gray-300",
+  }
+  return cores[tipo] || "border-l-gray-300"
+}
+
 export function CronogramaCard({ cronograma, onDelete }: CronogramaCardProps) {
   const isPeriodo = cronograma.dataFim && cronograma.data.split('T')[0] !== cronograma.dataFim.split('T')[0];
   const { user } = useAuthStore();
@@ -87,7 +99,7 @@ export function CronogramaCard({ cronograma, onDelete }: CronogramaCardProps) {
     setIsDeleting(true);
     try {
       const result = await deleteCronograma(cronograma.id);
-      
+
       if (result.success) {
         toast.success('Atividade removida com sucesso!');
         setIsAlertOpen(false);
@@ -105,7 +117,7 @@ export function CronogramaCard({ cronograma, onDelete }: CronogramaCardProps) {
 
   return (
     <>
-      <Card className={`hover:shadow-md transition-shadow border-l-4 ${isPeriodo ? 'border-l-indigo-500' : 'border-l-blue-500'} overflow-hidden cursor-pointer group`}>
+      <Card className={`hover:shadow-md transition-shadow border-l-4 ${getBorderColor(cronograma.tipoEvento)} overflow-hidden cursor-pointer group`}>
         <CardHeader className="pb-1">
           <div className="flex items-start justify-between gap-2">
             <CardTitle className="text-base font-bold leading-tight line-clamp-2 flex-1 capitalize">
@@ -141,7 +153,7 @@ export function CronogramaCard({ cronograma, onDelete }: CronogramaCardProps) {
                     </div>
                   </div>
                 </DialogHeader>
-                
+
                 <div className="space-y-4 py-4">
                   <div>
                     <h4 className="text-sm font-semibold text-gray-700 mb-2">Descrição</h4>
@@ -210,7 +222,7 @@ export function CronogramaCard({ cronograma, onDelete }: CronogramaCardProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Remover do Cronograma?</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja remover <span className="capitalize">{cronograma.titulo}</span> do cronograma? 
+              Tem certeza que deseja remover <span className="capitalize">{cronograma.titulo}</span> do cronograma?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
