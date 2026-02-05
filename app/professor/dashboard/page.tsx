@@ -7,6 +7,8 @@ import { RouteGuard } from "@/components/auth/RouteGuard"
 import AtividadesChart from "@/app/admin/components/AtividadesChart"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+import { PageHeader } from "@/components/PageHeader"
+
 export default function ProfessorDashboard() {
   const user = useAuthStore((state) => state.user)
   const { turmas, fetchTurmas, isLoading } = useTurmasStore()
@@ -22,11 +24,11 @@ export default function ProfessorDashboard() {
 
   return (
     <RouteGuard allowedRoles={['PROFESSOR']}>
-      <div className="p-4 md:p-8 max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-gray-900">Painel do Professor</h1>
-          <p className="text-gray-500 mt-1">Olá, {user?.nome?.split(' ')[0]}</p>
-        </div>
+      <div className="p-6 space-y-6">
+        <PageHeader
+          title="Painel do Professor"
+          subtitle={`Olá, ${user?.nome?.split(' ')[0]}`}
+        />
 
         <div className="space-y-8">
           {isLoading ? (
@@ -47,7 +49,7 @@ export default function ProfessorDashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
-                  <AtividadesChart turmaId={turma.id} />
+                  <AtividadesChart turmaId={turma.id} minimal />
                 </CardContent>
               </Card>
             ))

@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Calendar, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from '@/components/PageHeader';
 
 export default function ProfessorEventosPage() {
     const user = useAuthStore((state) => state.user);
@@ -79,22 +80,18 @@ export default function ProfessorEventosPage() {
 
     return (
         <RouteGuard allowedRoles={['PROFESSOR']}>
-            <div className="p-4 md:p-8 space-y-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
-                            <Calendar className="w-8 h-8 text-blue-600" />
-                            Avisos da Turma
-                        </h1>
-                        <p className="text-sm text-muted-foreground mt-1">
-                            Gerencie os avisos para suas turmas.
-                        </p>
-                    </div>
-                    <Button onClick={handleCreate}>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Novo Aviso
-                    </Button>
-                </div>
+            <div className="p-6 space-y-6">
+                <PageHeader
+                    title="Avisos da Turma"
+                    subtitle="Gerencie os avisos para suas turmas"
+                    backHref="/professor/dashboard"
+                    actions={
+                        <Button onClick={handleCreate}>
+                            <Plus className="w-4 h-4 mr-2" />
+                            Novo Aviso
+                        </Button>
+                    }
+                />
 
                 {isLoading ? (
                     <div className="text-center py-10">Carregando avisos...</div>

@@ -11,6 +11,7 @@ import { CustomSelect } from '@/components/CustomSelect';
 import { Search, Plus } from 'lucide-react';
 import { SEMESTRE_LABELS } from '@/types/atividades';
 import type { Atividade, AtividadeTurma } from '@/types/atividades';
+import { PageHeader } from '@/components/PageHeader';
 
 export default function ProfessorAtividadesPage() {
   const router = useRouter();
@@ -76,14 +77,12 @@ export default function ProfessorAtividadesPage() {
 
   return (
     <RouteGuard allowedRoles={['PROFESSOR']}>
-      <div className="min-h-screen bg-gray-50/50 p-4 md:p-8">
-        <div className="max-w-6xl mx-auto space-y-6">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Minhas Atividades</h1>
-              <p className="text-gray-500 mt-1">Visualize e gerencie suas atividades pedagógicas</p>
-            </div>
+      <div className="p-6 space-y-6">
+        <PageHeader
+          title="Minhas Atividades"
+          subtitle="Visualize e gerencie suas atividades pedagógicas"
+          backHref="/professor/dashboard"
+          actions={
             <button
               onClick={() => router.push('/professor/atividades/cadastrar')}
               className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
@@ -91,165 +90,165 @@ export default function ProfessorAtividadesPage() {
               <Plus className="w-5 h-5" />
               Nova Atividade
             </button>
-          </div>
+          }
+        />
 
-          {/* Filters */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Turma
-                </label>
-                <CustomSelect
-                  id="filtroTurma"
-                  name="filtroTurma"
-                  value={filtroTurma}
-                  onChange={(e) => setFiltroTurma(e.target.value)}
-                  options={turmasDisponiveis.map(t => ({
-                    value: t.id,
-                    label: formatarNomeTurma(t.nome)
-                  }))}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Ano
-                </label>
-                <CustomSelect
-                  id="filtroAno"
-                  name="filtroAno"
-                  value={filtroAno}
-                  onChange={(e) => setFiltroAno(Number(e.target.value))}
-                  options={[
-                    { value: new Date().getFullYear(), label: new Date().getFullYear().toString() },
-                    { value: new Date().getFullYear() - 1, label: (new Date().getFullYear() - 1).toString() }
-                  ]}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Período
-                </label>
-                <CustomSelect
-                  id="filtroPeriodo"
-                  name="filtroPeriodo"
-                  value={filtroPeriodo}
-                  onChange={(e) => setFiltroPeriodo(e.target.value)}
-                  options={[
-                    { value: '', label: 'Todos os períodos' },
-                    { value: 'PRIMEIRO_SEMESTRE', label: '1º Semestre' },
-                    { value: 'SEGUNDO_SEMESTRE', label: '2º Semestre' }
-                  ]}
-                />
-              </div>
-
-              <div className="flex items-end">
-                <button
-                  onClick={limparFiltros}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  Limpar Filtros
-                </button>
-              </div>
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Turma
+              </label>
+              <CustomSelect
+                id="filtroTurma"
+                name="filtroTurma"
+                value={filtroTurma}
+                onChange={(e) => setFiltroTurma(e.target.value)}
+                options={turmasDisponiveis.map(t => ({
+                  value: t.id,
+                  label: formatarNomeTurma(t.nome)
+                }))}
+              />
             </div>
-          </div>
 
-          {/* Content */}
-          {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-20 space-y-4">
-              <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-              <p className="text-gray-500 font-medium">Carregando atividades...</p>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Ano
+              </label>
+              <CustomSelect
+                id="filtroAno"
+                name="filtroAno"
+                value={filtroAno}
+                onChange={(e) => setFiltroAno(Number(e.target.value))}
+                options={[
+                  { value: new Date().getFullYear(), label: new Date().getFullYear().toString() },
+                  { value: new Date().getFullYear() - 1, label: (new Date().getFullYear() - 1).toString() }
+                ]}
+              />
             </div>
-          ) : error ? (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-              <p className="text-sm">{error}</p>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Período
+              </label>
+              <CustomSelect
+                id="filtroPeriodo"
+                name="filtroPeriodo"
+                value={filtroPeriodo}
+                onChange={(e) => setFiltroPeriodo(e.target.value)}
+                options={[
+                  { value: '', label: 'Todos os períodos' },
+                  { value: 'PRIMEIRO_SEMESTRE', label: '1º Semestre' },
+                  { value: 'SEGUNDO_SEMESTRE', label: '2º Semestre' }
+                ]}
+              />
+            </div>
+
+            <div className="flex items-end">
               <button
-                onClick={() => user?.id && fetchProfessorAtividades(user.id)}
-                className="mt-2 text-sm underline hover:text-red-800"
+                onClick={limparFiltros}
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
               >
-                Tentar novamente
+                Limpar Filtros
               </button>
             </div>
-          ) : atividadesFiltradas.length === 0 ? (
-            <div className="bg-white rounded-lg p-12 text-center border-2 border-dashed border-gray-200">
-              <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Search className="text-gray-300 w-8 h-8" />
+          </div>
+        </div>
+
+        {/* Content */}
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-20 space-y-4">
+            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            <p className="text-gray-500 font-medium">Carregando atividades...</p>
+          </div>
+        ) : error ? (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            <p className="text-sm">{error}</p>
+            <button
+              onClick={() => user?.id && fetchProfessorAtividades(user.id)}
+              className="mt-2 text-sm underline hover:text-red-800"
+            >
+              Tentar novamente
+            </button>
+          </div>
+        ) : atividadesFiltradas.length === 0 ? (
+          <div className="bg-white rounded-lg p-12 text-center border-2 border-dashed border-gray-200">
+            <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search className="text-gray-300 w-8 h-8" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900">Nenhuma atividade encontrada</h3>
+            <p className="text-gray-500 mt-2">
+              {atividades.length === 0
+                ? 'Você ainda não cadastrou nenhuma atividade.'
+                : 'Nenhuma atividade corresponde aos filtros selecionados.'}
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Campo de Experiência
+                      </th>
+                      <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Turma
+                      </th>
+                      <th className="hidden sm:table-cell px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Data
+                      </th>
+                      <th className="hidden md:table-cell px-4 md:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Horas
+                      </th>
+                      <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Ações
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {atividadesFiltradas.map((atividade: Atividade) => (
+                      <tr key={atividade.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-4 md:px-6 py-4 text-sm text-gray-600">
+                          <span className="inline-block max-w-xs text-xs">
+                            {formatarCampoExperiencia(atividade.campoExperiencia)}
+                          </span>
+                        </td>
+                        <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {atividade.turma?.nome ? formatarNomeTurma(atividade.turma.nome) : '-'}
+                        </td>
+                        <td className="hidden sm:table-cell px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          {formatarData(atividade.data)}
+                        </td>
+                        <td className="hidden md:table-cell px-4 md:px-6 py-4 whitespace-nowrap text-center text-sm text-gray-600">
+                          {atividade.quantHora}h
+                        </td>
+                        <td className="px-4 md:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <button
+                            className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1.5 rounded-md text-xs font-medium transition-colors border border-blue-100"
+                            onClick={() => router.push(`/professor/atividades/${atividade.id}`)}
+                          >
+                            Detalhar
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">Nenhuma atividade encontrada</h3>
-              <p className="text-gray-500 mt-2">
-                {atividades.length === 0
-                  ? 'Você ainda não cadastrou nenhuma atividade.'
-                  : 'Nenhuma atividade corresponde aos filtros selecionados.'}
+            </div>
+
+            {/* Summary */}
+            <div className="text-sm text-gray-600">
+              <p>
+                Exibindo <strong>{atividadesFiltradas.length}</strong> de{' '}
+                <strong>{atividades.length}</strong> atividades
               </p>
             </div>
-          ) : (
-            <>
-              <div className="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Campo de Experiência
-                        </th>
-                        <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Turma
-                        </th>
-                        <th className="hidden sm:table-cell px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Data
-                        </th>
-                        <th className="hidden md:table-cell px-4 md:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Horas
-                        </th>
-                        <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Ações
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {atividadesFiltradas.map((atividade: Atividade) => (
-                        <tr key={atividade.id} className="hover:bg-gray-50 transition-colors">
-                          <td className="px-4 md:px-6 py-4 text-sm text-gray-600">
-                            <span className="inline-block max-w-xs text-xs">
-                              {formatarCampoExperiencia(atividade.campoExperiencia)}
-                            </span>
-                          </td>
-                          <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {atividade.turma?.nome ? formatarNomeTurma(atividade.turma.nome) : '-'}
-                          </td>
-                          <td className="hidden sm:table-cell px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                            {formatarData(atividade.data)}
-                          </td>
-                          <td className="hidden md:table-cell px-4 md:px-6 py-4 whitespace-nowrap text-center text-sm text-gray-600">
-                            {atividade.quantHora}h
-                          </td>
-                          <td className="px-4 md:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button
-                              className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1.5 rounded-md text-xs font-medium transition-colors border border-blue-100"
-                              onClick={() => router.push(`/professor/atividades/${atividade.id}`)}
-                            >
-                              Detalhar
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Summary */}
-              <div className="text-sm text-gray-600">
-                <p>
-                  Exibindo <strong>{atividadesFiltradas.length}</strong> de{' '}
-                  <strong>{atividades.length}</strong> atividades
-                </p>
-              </div>
-            </>
-          )}
-        </div>
+          </>
+        )}
       </div>
     </RouteGuard>
   );

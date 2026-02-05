@@ -193,13 +193,13 @@ export default function CadastrarAtividadePage() {
 
   return (
     <RouteGuard allowedRoles={['PROFESSOR']}>
-      <div className="min-h-screen bg-gray-50/50 pb-8">
+      <div className="p-6 space-y-6">
         <PageHeader
           title="Cadastrar Nova Atividade"
           subtitle="Preencha os campos abaixo para cadastrar uma nova atividade pedagógica"
           backHref={() => router.back()}
         />
-        <div className="max-w-4xl mx-auto space-y-6 pt-6 px-4 md:px-8">
+        <div className="max-w-4xl mx-auto space-y-6">
 
           {/* Message */}
           {mensagem && (

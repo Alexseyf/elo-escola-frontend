@@ -7,6 +7,7 @@ import { getDiariosByAlunoId } from '@/utils/diarios';
 import { Diario } from '@/types/diario';
 import { RouteGuard } from '@/components/auth/RouteGuard';
 import { ArrowLeft, Calendar, FileText, ChevronRight, Moon, Clipboard } from 'lucide-react';
+import { PageHeader } from '@/components/PageHeader';
 
 export default function VisualizarDiariosPage() {
   const router = useRouter();
@@ -58,21 +59,14 @@ export default function VisualizarDiariosPage() {
 
   return (
     <RouteGuard allowedRoles={['PROFESSOR']}>
-      <div className="min-h-screen bg-gray-50/50 p-4 md:p-8">
+      <div className="p-6 space-y-6">
+        <PageHeader
+          title={currentAluno?.nome || 'Detalhes do Aluno'}
+          subtitle="Histórico de Diários"
+          backHref="/professor/diarios"
+        />
         <div className="max-w-6xl mx-auto space-y-6">
-          {/* Back button and title */}
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => router.push('/professor/diarios')}
-              className="p-2 hover:bg-white rounded-lg transition-all text-gray-400 hover:text-blue-600 border border-gray-200 hover:border-blue-100 shadow-sm"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{currentAluno?.nome}</h1>
-              <p className="text-gray-500 text-sm font-medium uppercase tracking-wider">Histórico de Diários</p>
-            </div>
-          </div>
+          {/* Back button removed as it is in PageHeader */}
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Sidebar: History List */}

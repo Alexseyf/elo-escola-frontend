@@ -136,7 +136,7 @@ export default function EditarDiarioPage() {
 
     return (
         <RouteGuard allowedRoles={['PROFESSOR']}>
-            <div className="min-h-screen bg-gray-50/30">
+            <div className="p-6 space-y-6">
                 <DiarioStepper
                     alunoNome={alunoNome}
                     initialData={initialData}

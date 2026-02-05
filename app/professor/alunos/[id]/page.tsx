@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { User, Calendar, BookOpen, ChevronLeft, Phone, Mail } from "lucide-react"
 
+import { PageHeader } from '@/components/PageHeader';
+
 export default function AlunoDetalhesPage() {
     const params = useParams()
     const router = useRouter()
@@ -39,18 +41,11 @@ export default function AlunoDetalhesPage() {
 
     return (
         <RouteGuard allowedRoles={['PROFESSOR']}>
-            <div className="min-h-screen bg-gray-50/50 p-3 sm:p-6">
-                <div className="flex items-center gap-2 mb-6">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => router.back()}
-                        className="h-8 w-8"
-                    >
-                        <ChevronLeft className="h-5 w-5" />
-                    </Button>
-                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Detalhes do Aluno</h1>
-                </div>
+            <div className="p-6 space-y-6">
+                <PageHeader
+                    title="Detalhes do Aluno"
+                    backHref="/professor/alunos"
+                />
 
                 {isLoading || isInitializing ? (
                     <div className="space-y-4 animate-pulse">

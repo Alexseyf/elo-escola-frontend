@@ -7,6 +7,8 @@ import { CronogramaList } from "@/components/cronograma/CronogramaList"
 import { RouteGuard } from "@/components/auth/RouteGuard"
 import { Calendar } from "lucide-react"
 
+import { PageHeader } from '@/components/PageHeader';
+
 export default function ProfessorCronogramaPage() {
   const [cronogramas, setCronogramas] = useState<Cronograma[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -24,16 +26,12 @@ export default function ProfessorCronogramaPage() {
 
   return (
     <RouteGuard allowedRoles={['PROFESSOR']}>
-      <div className="p-4 md:p-8 space-y-6">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
-            <Calendar className="w-8 h-8 text-blue-600" />
-            Cronograma Anual
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Fique por dentro das datas importantes e eventos escolares.
-          </p>
-        </div>
+      <div className="p-6 space-y-6">
+        <PageHeader
+          title="Cronograma Anual"
+          subtitle="Fique por dentro das datas importantes e eventos escolares"
+          backHref="/professor/dashboard"
+        />
 
         <CronogramaList cronogramas={cronogramas} isLoading={isLoading} onRefresh={loadData} />
       </div>

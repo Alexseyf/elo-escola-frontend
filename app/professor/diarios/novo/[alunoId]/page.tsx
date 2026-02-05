@@ -76,7 +76,7 @@ export default function NovoDiarioPage() {
 
   return (
     <RouteGuard allowedRoles={['PROFESSOR']}>
-      <div className="min-h-screen bg-gray-50/30">
+      <div className="p-6 space-y-6">
         <DiarioStepper
           alunoNome={currentAluno?.nome}
           onSubmit={handleSubmit}

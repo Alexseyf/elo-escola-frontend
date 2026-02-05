@@ -27,30 +27,33 @@ interface TurmaChartCardProps {
   turma: TurmaComCampos;
   index: number;
   colors: string[];
+  minimal?: boolean;
 }
 
-export default function TurmaChartCard({ turma, index: turmaIndex, colors: COLORS }: TurmaChartCardProps) {
+export default function TurmaChartCard({ turma, index: turmaIndex, colors: COLORS, minimal = false }: TurmaChartCardProps) {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const isAdmin = user?.roles?.includes('ADMIN');
 
   return (
-    <div className="rounded-lg bg-white p-3 sm:p-6 shadow">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">{turma.turma}</h3>
-        {isAdmin && (
-          <button
-            onClick={() => router.push(`/admin/atividades?turmaId=${turma.turmaId}`)}
-            className="px-3 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors whitespace-nowrap"
-          >
-            Detalhar
-          </button>
-        )}
-      </div>
+    <div className={minimal ? "p-0" : "rounded-lg bg-white p-3 sm:p-6 shadow"}>
+      {!minimal && (
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">{turma.turma}</h3>
+          {isAdmin && (
+            <button
+              onClick={() => router.push(`/admin/atividades?turmaId=${turma.turmaId}`)}
+              className="px-3 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors whitespace-nowrap"
+            >
+              Detalhar
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 sm:gap-6">
         <div>
-          <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-3 sm:mb-4">Distribuição por Campo</h4>
+          <h4 className="text-xs sm:text-sm font-bold text-gray-700 mb-3 sm:mb-4">Distribuição por Campo</h4>
           <div className="w-full min-h-48 sm:min-h-64 lg:min-h-[350px] -mx-3 sm:-mx-6 px-3 sm:px-6 overflow-x-auto">
             <ChartContainer
               config={Object.fromEntries(

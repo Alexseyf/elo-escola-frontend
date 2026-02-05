@@ -59,12 +59,12 @@ export default function AtividadeDetalhesPage() {
 
   return (
     <RouteGuard allowedRoles={['PROFESSOR']}>
-      <div className="min-h-screen bg-gray-50 pb-8">
+      <div className="p-6 space-y-6">
         <PageHeader
           title="Detalhes da Atividade"
           backHref={() => router.back()}
         />
-        <div className="max-w-3xl mx-auto space-y-6 pt-6 px-4 md:px-8">
+        <div className="max-w-3xl mx-auto space-y-6">
 
           {/* Content */}
           <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-200">

@@ -211,12 +211,13 @@ export default function AtividadesChart({ turmaId, minimal = false }: Atividades
         </div>
       </div>
 
-      {!minimal && turmasComCampos.map((turma, turmaIndex) => (
+      {turmasComCampos.map((turma, turmaIndex) => (
         <TurmaChartCard
           key={turma.turmaId}
           turma={turma}
           index={turmaIndex}
           colors={COLORS}
+          minimal={minimal}
         />
       ))}
     </div>
