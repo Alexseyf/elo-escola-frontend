@@ -73,3 +73,24 @@ export interface DiarioFormData {
   lancheDaTarde?: string;
   leite?: string;
 }
+
+export interface Frequencia {
+  id: number;
+  data: string;
+  presente: boolean;
+  alunoId: number;
+  turmaId: number;
+  aluno?: {
+    id: number;
+    nome: string;
+  };
+}
+
+export interface FrequenciaBatchInput {
+  data: string;
+  turmaId: number;
+  frequencias: {
+    alunoId: number;
+    presente: boolean;
+  }[];
+}

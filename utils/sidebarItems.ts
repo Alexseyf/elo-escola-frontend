@@ -11,6 +11,7 @@ import {
   UserPlus,
   CircleDollarSign,
   Calendar,
+  CheckSquare,
 } from "lucide-react";
 
 export interface SidebarItem {
@@ -32,6 +33,12 @@ export function getAdminSidebarItems(): SidebarItem[] {
       icon: LayoutDashboard,
     },
     {
+      id: "cadastro-unificado",
+      label: "Cadastro",
+      href: "/admin/cadastro/aluno-responsavel",
+      icon: UserPlus,
+    },
+    {
       id: "usuarios",
       label: "Usuários",
       href: "/admin/usuarios",
@@ -49,12 +56,6 @@ export function getAdminSidebarItems(): SidebarItem[] {
       href: "/admin/turmas",
       icon: BookOpen,
     },
-    {
-      id: "cadastro-unificado",
-      label: "Cadastro",
-      href: "/admin/cadastro/aluno-responsavel",
-      icon: UserPlus,
-    },
     // {
     //   id: "diarios",
     //   label: "Diários",
@@ -68,16 +69,22 @@ export function getAdminSidebarItems(): SidebarItem[] {
       icon: FileText,
     },
     {
-      id: "cronograma",
-      label: "Cronograma Anual",
-      href: "/admin/cronograma",
-      icon: Clock,
+      id: "relatorios",
+      label: "Diários de Classe",
+      href: "/admin/relatorios",
+      icon: FileText,
     },
     {
       id: "eventos",
       label: "Avisos",
       href: "/admin/eventos",
       icon: Calendar,
+    },
+    {
+      id: "cronograma",
+      label: "Cronograma Anual",
+      href: "/admin/cronograma",
+      icon: Clock,
     },
     {
       id: "financeiro",
@@ -104,10 +111,16 @@ export function getProfessorSidebarItems(): SidebarItem[] {
       icon: BookOpen,
     },
     {
-      id: "eventos",
-      label: "Avisos",
-      href: "/professor/eventos",
-      icon: Calendar,
+      id: "alunos",
+      label: "Alunos",
+      href: "/professor/alunos",
+      icon: GraduationCap,
+    },
+    {
+      id: "chamada",
+      label: "Chamada",
+      href: "/professor/chamada",
+      icon: CheckSquare,
     },
     {
       id: "atividades",
@@ -116,37 +129,29 @@ export function getProfessorSidebarItems(): SidebarItem[] {
       icon: FileText,
     },
     {
-      id: "alunos",
-      label: "Alunos",
-      href: "/professor/alunos",
-      icon: GraduationCap,
-    },
-    {
       id: "diarios",
       label: "Diários",
       href: "/professor/diarios",
       icon: ClipboardList,
-      
     },
-    // {
-    //   id: "calendario",
-    //   label: "Calendário",
-    //   href: "/calendario?section=calendario",
-    //   icon: CalendarDays,
-    //   divider: true,
-    // },
+    {
+      id: "relatorios",
+      label: "Diários de Classe",
+      href: "/professor/relatorios",
+      icon: FileText,
+    },
+    {
+      id: "eventos",
+      label: "Avisos",
+      href: "/professor/eventos",
+      icon: Calendar,
+    },
     {
       id: "cronograma",
       label: "Cronograma Anual",
       href: "/professor/cronograma",
       icon: Clock,
     },
-    // {
-    //   id: "relatorios",
-    //   label: "Relatórios",
-    //   href: "/relatorios?section=relatorios",
-    //   icon: BarChart3,
-    // },
   ];
 }
 
@@ -183,12 +188,6 @@ export function getResponsavelSidebarItems(): SidebarItem[] {
       href: "/responsavel/atividades",
       icon: ClipboardList,
     },
-    // {
-    //   id: "comunicados",
-    //   label: "Comunicados",
-    //   href: "/comunicados?section=comunicados",
-    //   icon: ClipboardList,
-    // },
     {
       id: "cronograma",
       label: "Cronograma Anual",

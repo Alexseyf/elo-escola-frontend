@@ -19,6 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { RelatorioDiarioDialog } from "./components/RelatorioDiarioDialog"
 import {
   Sheet,
   SheetContent,
@@ -35,14 +36,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
+import { FileText, Settings, Calendar } from "lucide-react"
 
 export default function TurmaDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const id = Number(params.id);
 
-  const { fetchTurmaById, vincularProfessor, desvincularProfessor, isLoading: isTurmaLoading, fetchTurmas } = useTurmasStore();
+  const { fetchTurmaById, vincularProfessor, desvincularProfessor, updateTurma, isLoading: isTurmaLoading, fetchTurmas } = useTurmasStore();
   const { fetchUsuarios, usuarios } = useUsuariosStore();
 
   const [turma, setTurma] = useState<TurmaData | null>(null);
@@ -100,6 +104,19 @@ export default function TurmaDetailsPage() {
     setIsUnlinking(false);
   }
 
+  async function handleToggleDiario(checked: boolean) {
+    if (!turma) return;
+
+    const success = await updateTurma(id, { temDiarioClasse: checked });
+
+    if (success) {
+      toast.success(`Diário de Classe ${checked ? 'habilitado' : 'desabilitado'} com sucesso`);
+      loadTurma();
+    } else {
+      toast.error('Erro ao atualizar configuração');
+    }
+  }
+
   const professoresDisponiveis = usuarios.filter(u => u.roles.includes('PROFESSOR'));
 
   if (loading && !turma) {
@@ -152,6 +169,38 @@ export default function TurmaDetailsPage() {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Configurações Section */}
+          <Card className="md:col-span-2">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <div className="space-y-1">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Settings className="h-5 w-5" />
+                  Configurações da Turma
+                </CardTitle>
+                <CardDescription>Gerencie as funcionalidades disponíveis para esta turma</CardDescription>
+              </div>
+
+              {turma.temDiarioClasse && (
+                <RelatorioDiarioDialog turmaId={turma.id} turmaNome={turma.nome} />
+              )}
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between p-4 border rounded-lg bg-gray-50">
+                <div className="space-y-0.5">
+                  <Label htmlFor="diario-classe" className="text-base font-medium">Diário de Classe</Label>
+                  <p className="text-sm text-gray-500">
+                    Habilita o registro de presença e geração de relatórios mensais para esta turma.
+                  </p>
+                </div>
+                <Switch
+                  id="diario-classe"
+                  checked={turma.temDiarioClasse || false}
+                  onCheckedChange={handleToggleDiario}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Professores Section */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">

@@ -35,6 +35,7 @@ export interface TurmaData {
   ano: number;
   professores: Professor[];
   alunos: Aluno[];
+  temDiarioClasse?: boolean;
 }
 
 export interface TurmaComTotalAlunos {
@@ -109,6 +110,7 @@ interface TurmasState {
   mapearTurmaParaGrupo: (nomeTurma: string) => string;
   mapearGrupoParaId: (nomeGrupo: string) => number;
   cadastrarTurma: (nome: TURMA) => Promise<boolean>;
+  updateTurma: (id: number, data: Partial<TurmaData>) => Promise<boolean>;
   vincularProfessor: (turmaId: number, usuarioId: number) => Promise<{ success: boolean; message: string }>;
   desvincularProfessor: (turmaId: number, usuarioId: number) => Promise<{ success: boolean; message: string }>;
   limparCache: () => void;
@@ -379,6 +381,37 @@ export const useTurmasStore = create<TurmasState>()(
         console.error('Error cadastrando turma:', error);
         return false;
       }
+    },
+
+    updateTurma: async (id: number, data: Partial<TurmaData>) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await api(`/api/v1/turmas/${id}`, {
+                method: 'PATCH',
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.message || `Erro ao atualizar turma: ${response.status}`);
+            }
+
+            const updatedTurma = await response.json();
+            updatedTurma.nome = formatarNomeTurma(updatedTurma.nome);
+
+            set(state => ({
+                turmas: state.turmas.map(t => t.id === id ? { ...t, ...updatedTurma } : t),
+                isLoading: false,
+                error: null
+            }));
+            
+            return true;
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Erro ao atualizar turma';
+            set({ isLoading: false, error: message });
+            console.error('Error updateTurma:', error);
+            return false;
+        }
     },
 
     vincularProfessor: async (turmaId: number, usuarioId: number) => {
