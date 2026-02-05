@@ -42,10 +42,11 @@ export default function FinanceiroPage() {
     const isFechado = balanco?.tipo === 'SNAPSHOT';
 
     return (
-        <div className="min-h-screen bg-soft-gray">
+        <div className="p-6 space-y-6">
             <PageHeader
                 title="Módulo Financeiro"
                 subtitle="Gestão de despesas, balanço mensal e lucratividade por turma."
+                backHref="/admin/dashboard"
                 actions={
                     <div className="flex items-center gap-2">
                         <div className="hidden sm:flex items-center gap-2 bg-white border border-gray-100 rounded-xl px-3 py-1.5 shadow-sm">
@@ -81,7 +82,7 @@ export default function FinanceiroPage() {
                 }
             />
 
-            <div className="max-w-screen-2xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-500">
+            <div className="space-y-8 animate-in fade-in duration-500">
                 {/* Mobile Date Filter (Sticky below PageHeader if needed or just inline) */}
                 <div className="sm:hidden">
                     <StandardCard className="p-3">

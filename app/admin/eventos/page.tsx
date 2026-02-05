@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, Plus, Filter } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function AdminEventosPage() {
     const { turmas, fetchTurmas } = useTurmasStore();
@@ -81,22 +82,18 @@ export default function AdminEventosPage() {
 
     return (
         <RouteGuard allowedRoles={['ADMIN', 'PLATFORM_ADMIN']}>
-            <div className="p-4 md:p-8 space-y-6">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
-                            <Calendar className="w-8 h-8 text-blue-600" />
-                            Gestão de Avisos
-                        </h1>
-                        <p className="text-sm text-muted-foreground mt-1">
-                            Gerencie os avisos de todas as turmas da escola.
-                        </p>
-                    </div>
-                    <Button onClick={handleCreate}>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Novo Aviso
-                    </Button>
-                </div>
+            <div className="p-6 space-y-6">
+                <PageHeader
+                    title="Gestão de Avisos"
+                    subtitle="Gerencie os avisos de todas as turmas da escola."
+                    backHref="/admin/dashboard"
+                    actions={
+                        <Button onClick={handleCreate}>
+                            <Plus className="w-4 h-4 mr-2" />
+                            Novo Aviso
+                        </Button>
+                    }
+                />
 
                 {/* Filter Bar */}
                 <div className="bg-white p-4 rounded-lg border border-gray-200 flex items-center gap-4">

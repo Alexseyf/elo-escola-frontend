@@ -9,21 +9,19 @@ export default function AlunosGraficosPage() {
 
   return (
     <RouteGuard allowedRoles={['ADMIN']}>
-      <div className="min-h-screen bg-background pb-12">
+      <div className="p-6 space-y-6">
         <PageHeader
           title="Estatísticas de Alunos"
           backHref="/admin/dashboard"
         />
-        <div className="p-3 sm:p-6 max-w-7xl mx-auto">
-          <Card className="mb-6 w-full">
-            <CardHeader className="p-3 sm:p-6">
-              <CardTitle className="text-lg sm:text-xl">Quantidade de Alunos por Turma</CardTitle>
-            </CardHeader>
-            <CardContent className="p-3 sm:p-6">
-              <AlunosChart />
-            </CardContent>
-          </Card>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Quantidade de Alunos por Turma</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AlunosChart />
+          </CardContent>
+        </Card>
       </div>
     </RouteGuard>
   )

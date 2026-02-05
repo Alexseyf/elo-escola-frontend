@@ -14,6 +14,10 @@ const ITEMS_PER_PAGE = 10;
 
 type TabType = 'todos' | 'ADMIN' | 'PROFESSOR' | 'RESPONSAVEL';
 
+import { PageHeader } from "@/components/PageHeader"
+
+// ... imports
+
 export default function UsuariosPage() {
     const {
         usuarios,
@@ -85,10 +89,12 @@ export default function UsuariosPage() {
         <RouteGuard allowedRoles={['ADMIN']}>
             <div className="p-6 space-y-6">
 
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <h1 className="text-2xl font-bold">Gerenciar Usuários</h1>
-                    <UserFormSheet onSuccess={() => fetchUsuarios()} />
-                </div>
+                <PageHeader
+                    title="Gerenciar Usuários"
+                    subtitle="Gestão de usuários e permissões"
+                    backHref="/admin/dashboard"
+                    actions={<UserFormSheet onSuccess={() => fetchUsuarios()} />}
+                />
 
                 <Card>
                     <CardHeader>

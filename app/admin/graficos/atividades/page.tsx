@@ -9,21 +9,19 @@ export default function AtividadesGraficosPage() {
 
   return (
     <RouteGuard allowedRoles={['ADMIN']}>
-      <div className="min-h-screen bg-background pb-12">
+      <div className="p-6 space-y-6">
         <PageHeader
           title="Análise de Atividades"
           backHref="/admin/dashboard"
         />
-        <div className="p-3 sm:p-6 max-w-7xl mx-auto">
-          <Card className="mb-6 w-full">
-            <CardHeader className="p-3 sm:p-6">
-              <CardTitle className="text-lg sm:text-xl">Atividades Pedagógicas por Campo de Experiência</CardTitle>
-            </CardHeader>
-            <CardContent className="p-3 sm:p-6">
-              <AtividadesChart />
-            </CardContent>
-          </Card>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Atividades Pedagógicas por Campo de Experiência</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AtividadesChart />
+          </CardContent>
+        </Card>
       </div>
     </RouteGuard>
   )

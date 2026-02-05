@@ -21,7 +21,7 @@ export function PageHeader({
     backHref,
     actions,
     className,
-    sticky = true,
+    sticky = false,
 }: PageHeaderProps) {
     const router = useRouter();
 
@@ -68,7 +68,7 @@ export function PageHeader({
                 </div>
 
                 {actions && (
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto [&>*]:w-full sm:[&>*]:w-auto">
                         {actions}
                     </div>
                 )}

@@ -4,32 +4,19 @@ import { CronogramaForm } from "@/components/cronograma/CronogramaForm"
 import { RouteGuard } from "@/components/auth/RouteGuard"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, CalendarPlus } from "lucide-react"
+import { PageHeader } from "@/components/PageHeader"
 
 export default function CadastrarCronogramaPage() {
   const router = useRouter()
 
   return (
     <RouteGuard allowedRoles={['ADMIN']}>
-      <div className="p-4 md:p-8 space-y-8">
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => router.back()}
-            className="hover:bg-gray-100 rounded-full"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              Cadastrar Evento
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Adicione um novo evento ao cronograma anual da escola.
-            </p>
-          </div>
-        </div>
+      <div className="p-6 space-y-6">
+        <PageHeader
+          title="Cadastrar Evento"
+          subtitle="Adicione um novo evento ao cronograma."
+          backHref="/admin/cronograma"
+        />
 
         <CronogramaForm />
       </div>

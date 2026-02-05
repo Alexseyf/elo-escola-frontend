@@ -61,119 +61,117 @@ export default function AtividadeDetails() {
 
     return (
         <RouteGuard allowedRoles={['ADMIN']}>
-            <div className="min-h-screen bg-gray-50/50 pb-8">
+            <div className="p-6 space-y-6">
                 <PageHeader
                     title="Detalhes da Atividade"
                     subtitle="Informações completas da atividade pedagógica"
                     backHref={() => router.back()}
                 />
-                <div className="max-w-4xl mx-auto space-y-6 pt-6 px-4 md:px-8">
 
-                    {/* Content */}
-                    <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
-                        <div className="p-6 space-y-6">
-                            {/* Ano e Período */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                                        <Calendar className="w-4 h-4" />
-                                        <span className="font-medium">Ano</span>
-                                    </div>
-                                    <p className="text-lg font-semibold text-gray-900">{atividadeAtual.ano}</p>
-                                </div>
-                                <div>
-                                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                                        <Calendar className="w-4 h-4" />
-                                        <span className="font-medium">Período</span>
-                                    </div>
-                                    <p className="text-lg font-semibold text-gray-900">
-                                        {SEMESTRE_LABELS[atividadeAtual.periodo]}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Data e Horas */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                                        <Calendar className="w-4 h-4" />
-                                        <span className="font-medium">Data de Realização</span>
-                                    </div>
-                                    <p className="text-lg font-semibold text-gray-900">
-                                        {formatarData(atividadeAtual.data)}
-                                    </p>
-                                </div>
-                                <div>
-                                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                                        <Clock className="w-4 h-4" />
-                                        <span className="font-medium">Quantidade de Horas</span>
-                                    </div>
-                                    <p className="text-lg font-semibold text-gray-900">{atividadeAtual.quantHora}h</p>
-                                </div>
-                            </div>
-
-                            {/* Turma */}
+                {/* Content */}
+                <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+                    <div className="p-6 space-y-6">
+                        {/* Ano e Período */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                                    <BookOpen className="w-4 h-4" />
-                                    <span className="font-medium">Turma</span>
+                                    <Calendar className="w-4 h-4" />
+                                    <span className="font-medium">Ano</span>
+                                </div>
+                                <p className="text-lg font-semibold text-gray-900">{atividadeAtual.ano}</p>
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                                    <Calendar className="w-4 h-4" />
+                                    <span className="font-medium">Período</span>
                                 </div>
                                 <p className="text-lg font-semibold text-gray-900">
-                                    {atividadeAtual.turma?.nome ? formatarNomeTurma(atividadeAtual.turma.nome) : '-'}
+                                    {SEMESTRE_LABELS[atividadeAtual.periodo]}
                                 </p>
                             </div>
+                        </div>
 
-                            {/* Campo de Experiência */}
+                        {/* Data e Horas */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                                    <Calendar className="w-4 h-4" />
+                                    <span className="font-medium">Data de Realização</span>
+                                </div>
+                                <p className="text-lg font-semibold text-gray-900">
+                                    {formatarData(atividadeAtual.data)}
+                                </p>
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                                    <Clock className="w-4 h-4" />
+                                    <span className="font-medium">Quantidade de Horas</span>
+                                </div>
+                                <p className="text-lg font-semibold text-gray-900">{atividadeAtual.quantHora}h</p>
+                            </div>
+                        </div>
+
+                        {/* Turma */}
+                        <div>
+                            <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                                <BookOpen className="w-4 h-4" />
+                                <span className="font-medium">Turma</span>
+                            </div>
+                            <p className="text-lg font-semibold text-gray-900">
+                                {atividadeAtual.turma?.nome ? formatarNomeTurma(atividadeAtual.turma.nome) : '-'}
+                            </p>
+                        </div>
+
+                        {/* Campo de Experiência */}
+                        <div>
+                            <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                                <Target className="w-4 h-4" />
+                                <span className="font-medium">Campo de Experiência</span>
+                            </div>
+                            <p className="text-lg font-semibold text-gray-900">
+                                {formatarCampoExperiencia(atividadeAtual.campoExperiencia)}
+                            </p>
+                        </div>
+
+                        {/* Objetivo */}
+                        {atividadeAtual.objetivo && (
                             <div>
                                 <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
                                     <Target className="w-4 h-4" />
-                                    <span className="font-medium">Campo de Experiência</span>
+                                    <span className="font-medium">Objetivo de Aprendizagem</span>
                                 </div>
-                                <p className="text-lg font-semibold text-gray-900">
-                                    {formatarCampoExperiencia(atividadeAtual.campoExperiencia)}
-                                </p>
+                                <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                                    <p className="text-sm font-medium text-blue-900 mb-1">
+                                        {atividadeAtual.objetivo.codigo}
+                                    </p>
+                                    <p className="text-sm text-blue-700">
+                                        {atividadeAtual.objetivo.descricao}
+                                    </p>
+                                </div>
                             </div>
+                        )}
 
-                            {/* Objetivo */}
-                            {atividadeAtual.objetivo && (
-                                <div>
-                                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                                        <Target className="w-4 h-4" />
-                                        <span className="font-medium">Objetivo de Aprendizagem</span>
-                                    </div>
-                                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                                        <p className="text-sm font-medium text-blue-900 mb-1">
-                                            {atividadeAtual.objetivo.codigo}
-                                        </p>
-                                        <p className="text-sm text-blue-700">
-                                            {atividadeAtual.objetivo.descricao}
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Descrição */}
-                            <div>
-                                <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                                    <span className="font-medium">Descrição da Atividade</span>
-                                </div>
-                                <p className="text-gray-900 leading-relaxed whitespace-pre-wrap">
-                                    {atividadeAtual.descricao}
-                                </p>
+                        {/* Descrição */}
+                        <div>
+                            <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                                <span className="font-medium">Descrição da Atividade</span>
                             </div>
-
-                            {/* Professor */}
-                            {atividadeAtual.professor && (
-                                <div className="pt-6 border-t border-gray-200">
-                                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                                        <User className="w-4 h-4" />
-                                        <span className="font-medium">Cadastrado por</span>
-                                    </div>
-                                    <p className="text-gray-900">{atividadeAtual.professor.nome}</p>
-                                    <p className="text-sm text-gray-500">{atividadeAtual.professor.email}</p>
-                                </div>
-                            )}
+                            <p className="text-gray-900 leading-relaxed whitespace-pre-wrap">
+                                {atividadeAtual.descricao}
+                            </p>
                         </div>
+
+                        {/* Professor */}
+                        {atividadeAtual.professor && (
+                            <div className="pt-6 border-t border-gray-200">
+                                <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                                    <User className="w-4 h-4" />
+                                    <span className="font-medium">Cadastrado por</span>
+                                </div>
+                                <p className="text-gray-900">{atividadeAtual.professor.nome}</p>
+                                <p className="text-sm text-gray-500">{atividadeAtual.professor.email}</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

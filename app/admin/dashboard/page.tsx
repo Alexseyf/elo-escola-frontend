@@ -17,77 +17,75 @@ export default function AdminDashboard() {
 
   return (
     <RouteGuard allowedRoles={['ADMIN']}>
-      <div className="min-h-screen bg-soft-gray pb-12">
+      <div className="p-6 space-y-6">
         <PageHeader
           title="Dashboard"
           subtitle={`Bem-vindo de volta, ${user?.nome?.split(' ')[0]}`}
         />
 
-        <div className="max-w-screen-2xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-500">
-          <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-            <StandardCard className="flex flex-col p-0 overflow-hidden">
-              <div className="p-6 pb-2">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
-                    <BarChart3 className="w-5 h-5" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900">Atividades Pedagógicas</h3>
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 animate-in fade-in duration-500">
+          <StandardCard className="flex flex-col p-0 overflow-hidden">
+            <div className="p-6 pb-2">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
+                  <BarChart3 className="w-5 h-5" />
                 </div>
-                <AtividadesChart minimal={true} />
+                <h3 className="font-semibold text-gray-900">Atividades Pedagógicas</h3>
               </div>
-              <div className="p-6 mt-auto border-t border-gray-50">
-                <Button
-                  onClick={() => router.push("/admin/graficos/atividades")}
-                  className="w-full"
-                  variant="soft"
-                >
-                  Detalhar
-                </Button>
-              </div>
-            </StandardCard>
+              <AtividadesChart minimal={true} />
+            </div>
+            <div className="p-6 mt-auto border-t border-gray-50">
+              <Button
+                onClick={() => router.push("/admin/graficos/atividades")}
+                className="w-full"
+                variant="soft"
+              >
+                Detalhar
+              </Button>
+            </div>
+          </StandardCard>
 
-            <StandardCard className="flex flex-col p-0 overflow-hidden">
-              <div className="p-6 pb-2">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
-                    <Users className="w-5 h-5" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900">Alunos por Turma</h3>
+          <StandardCard className="flex flex-col p-0 overflow-hidden">
+            <div className="p-6 pb-2">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+                  <Users className="w-5 h-5" />
                 </div>
-                <AlunosChart minimal={true} />
+                <h3 className="font-semibold text-gray-900">Alunos por Turma</h3>
               </div>
-              <div className="p-6 mt-auto border-t border-gray-50">
-                <Button
-                  onClick={() => router.push("/admin/graficos/alunos")}
-                  className="w-full"
-                  variant="soft"
-                >
-                  Detalhar
-                </Button>
-              </div>
-            </StandardCard>
+              <AlunosChart minimal={true} />
+            </div>
+            <div className="p-6 mt-auto border-t border-gray-50">
+              <Button
+                onClick={() => router.push("/admin/graficos/alunos")}
+                className="w-full"
+                variant="soft"
+              >
+                Detalhar
+              </Button>
+            </div>
+          </StandardCard>
 
-            <StandardCard className="flex flex-col p-0 overflow-hidden">
-              <div className="p-6 pb-2">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
-                    <BarChart3 className="w-5 h-5" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900">Balanço Financeiro</h3>
+          <StandardCard className="flex flex-col p-0 overflow-hidden">
+            <div className="p-6 pb-2">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
+                  <BarChart3 className="w-5 h-5" />
                 </div>
-                <MensalidadesChart minimal={true} />
+                <h3 className="font-semibold text-gray-900">Balanço Financeiro</h3>
               </div>
-              <div className="p-6 mt-auto border-t border-gray-50">
-                <Button
-                  onClick={() => router.push("/admin/financeiro")}
-                  className="w-full"
-                  variant="success"
-                >
-                  Gerenciar Finanças
-                </Button>
-              </div>
-            </StandardCard>
-          </div>
+              <MensalidadesChart minimal={true} />
+            </div>
+            <div className="p-6 mt-auto border-t border-gray-50">
+              <Button
+                onClick={() => router.push("/admin/financeiro")}
+                className="w-full"
+                variant="success"
+              >
+                Gerenciar Finanças
+              </Button>
+            </div>
+          </StandardCard>
         </div>
       </div>
     </RouteGuard>

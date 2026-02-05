@@ -8,6 +8,7 @@ import { CronogramaList } from "@/components/cronograma/CronogramaList"
 import { Button } from "@/components/ui/button"
 import { RouteGuard } from "@/components/auth/RouteGuard"
 import { Plus, Calendar } from "lucide-react"
+import { PageHeader } from "@/components/PageHeader"
 
 export default function AdminCronogramaPage() {
   const router = useRouter()
@@ -27,25 +28,22 @@ export default function AdminCronogramaPage() {
 
   return (
     <RouteGuard allowedRoles={['ADMIN']}>
-      <div className="p-4 md:p-8 space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
-              Cronograma Anual
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Visualize e gerencie os eventos e datas importantes da escola.
-            </p>
-          </div>
-          <Button 
-            onClick={() => router.push("/admin/cronograma/cadastrar")}
-            variant="primary"
-            className="flex items-center gap-2 shadow-sm"
-          >
-            <Plus className="w-4 h-4" />
-            Novo Evento
-          </Button>
-        </div>
+      <div className="p-6 space-y-6">
+        <PageHeader
+          title="Cronograma Anual"
+          subtitle="Visualize e gerencie os eventos e datas importantes da escola."
+          backHref="/admin/dashboard"
+          actions={
+            <Button
+              onClick={() => router.push("/admin/cronograma/cadastrar")}
+              variant="primary"
+              className="flex items-center gap-2 shadow-sm"
+            >
+              <Plus className="w-4 h-4" />
+              Novo Evento
+            </Button>
+          }
+        />
 
         <CronogramaList cronogramas={cronogramas} isLoading={isLoading} onRefresh={loadData} />
       </div>
