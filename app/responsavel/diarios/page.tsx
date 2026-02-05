@@ -13,6 +13,7 @@ import { Diario } from '@/types/diario';
 import { Aluno } from '@/stores/useAlunosStore';
 import { Calendar, X } from 'lucide-react';
 import { DiarioCard } from '@/components/responsavel/DiarioCard';
+import { PageHeader } from '@/components/PageHeader';
 
 export default function DiariosPage() {
   return (
@@ -101,8 +102,11 @@ function DiariosContent() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-5xl">
-      <h1 className="text-3xl font-bold mb-6">{titulo}</h1>
+    <div className="p-6 space-y-6">
+      <PageHeader
+        title={titulo}
+        backHref="/responsavel/dashboard"
+      />
 
       {/* Seleção de filho (se múltiplos) */}
       {alunos.length > 1 && (

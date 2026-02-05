@@ -124,13 +124,13 @@ export function getProfessorSidebarItems(): SidebarItem[] {
     },
     {
       id: "atividades",
-      label: "Atividades",
+      label: "Atividades Pedagógicas",
       href: "/professor/atividades",
       icon: FileText,
     },
     {
       id: "diarios",
-      label: "Diários",
+      label: "Diários dos Alunos",
       href: "/professor/diarios",
       icon: ClipboardList,
     },
@@ -142,7 +142,7 @@ export function getProfessorSidebarItems(): SidebarItem[] {
     },
     {
       id: "eventos",
-      label: "Avisos",
+      label: "Avisos da Turma",
       href: "/professor/eventos",
       icon: Calendar,
     },

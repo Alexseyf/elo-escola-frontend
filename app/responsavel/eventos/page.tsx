@@ -9,6 +9,7 @@ import { getAlunosDoResponsavel } from "@/utils/alunos";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
 import { formatarNomeTurma } from "@/stores/useTurmasStore";
+import { PageHeader } from "@/components/PageHeader";
 
 interface EventosPorTurma {
     turmaId: number;
@@ -80,16 +81,12 @@ export default function ResponsavelEventosPage() {
 
     return (
         <RouteGuard allowedRoles={['RESPONSAVEL']}>
-            <div className="p-4 md:p-8 space-y-6">
-                <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
-                        <Calendar className="w-8 h-8 text-blue-600" />
-                        Avisos da Turma
-                    </h1>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        Acompanhe os próximos avisos da turma do seu filho(a).
-                    </p>
-                </div>
+            <div className="p-6 space-y-6">
+                <PageHeader
+                    title="Avisos da Turma"
+                    subtitle="Acompanhe os próximos avisos da turma do seu filho(a)"
+                    backHref="/responsavel/dashboard"
+                />
 
                 {isLoading ? (
                     <div className="text-center py-10">Carregando avisos...</div>

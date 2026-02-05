@@ -107,13 +107,14 @@ function AtividadesContent() {
     const selectedAluno = alunos.find(a => a.id === selectedAlunoId);
 
     return (
-        <div className="min-h-screen bg-gray-50/50 pb-12">
+        <div className="p-6 space-y-6">
             <PageHeader
                 title="Atividades Pedagógicas"
                 subtitle="Confira o que foi trabalhado em sala de aula"
+                backHref="/responsavel/dashboard"
             />
 
-            <div className="max-w-5xl mx-auto px-4 md:px-8 space-y-6 pt-6">
+            <div className="max-w-5xl mx-auto space-y-6">
                 {/* Seleção de Aluno (se múltiplos) */}
                 {alunos.length > 1 && (
                     <Card className="border-gray-200 shadow-sm">

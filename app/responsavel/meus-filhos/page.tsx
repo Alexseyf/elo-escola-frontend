@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CustomSelect } from "@/components/CustomSelect"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Users, Calendar, DollarSign, GraduationCap } from "lucide-react"
+import { PageHeader } from "@/components/PageHeader"
 
 const formatarTurma = (nome: string) => {
   const turmas: Record<string, string> = {
@@ -35,14 +36,14 @@ const formatarData = (dataString: string) => {
 const calcularIdade = (dataNasc: string) => {
   const hoje = new Date()
   const nascimento = new Date(dataNasc)
-  
+
   let anos = hoje.getFullYear() - nascimento.getFullYear()
   const mes = hoje.getMonth() - nascimento.getMonth()
-  
+
   if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
     anos--
   }
-  
+
   if (anos < 1) {
     let meses = mes
     if (meses < 0) {
@@ -53,7 +54,7 @@ const calcularIdade = (dataNasc: string) => {
     }
     return meses === 1 ? '1 mês' : `${meses} meses`
   }
-  
+
   return anos === 1 ? '1 ano' : `${anos} anos`
 }
 
@@ -67,11 +68,11 @@ export default function MeusFilhosPage() {
       setIsLoading(true)
       const data = await getAlunosDoResponsavel()
       setAlunos(data)
-      
+
       if (data.length === 1) {
         setSelectedAlunoId(data[0].id)
       }
-      
+
       setIsLoading(false)
     }
 
@@ -127,16 +128,13 @@ export default function MeusFilhosPage() {
 
   return (
     <RouteGuard allowedRoles={['RESPONSAVEL']}>
-      <div className="p-4 md:p-8 space-y-6 max-w-5xl mx-auto">
+      <div className="p-6 space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-            {alunos.length === 1 ? 'Meu Filho' : 'Meus Filhos'}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Informações cadastrais dos alunos
-          </p>
-        </div>
+        <PageHeader
+          title={alunos.length === 1 ? 'Meu Filho' : 'Meus Filhos'}
+          subtitle="Informações cadastrais dos alunos"
+          backHref="/responsavel/dashboard"
+        />
 
         {/* Seletor de Aluno (apenas se houver mais de um) */}
         {alunos.length > 1 && (
