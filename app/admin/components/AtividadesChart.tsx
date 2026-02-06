@@ -135,26 +135,8 @@ export default function AtividadesChart({ turmaId, minimal = false }: Atividades
     );
   }
 
-  const totalAtividades = relatorio.resumo.totalAtividades;
-
   return (
     <div className="space-y-4 sm:space-y-6 w-full">
-      {!minimal && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-          <div className="rounded-lg bg-blue-50 border border-blue-200 p-3 sm:p-4">
-            <p className="text-xs sm:text-sm font-medium text-blue-700">Total de Atividades</p>
-            <p className="text-xl sm:text-2xl font-semibold text-blue-900 mt-1 sm:mt-2">{totalAtividades}</p>
-          </div>
-          <div className="rounded-lg bg-green-50 border border-green-200 p-3 sm:p-4">
-            <p className="text-xs sm:text-sm font-medium text-green-700">Campos de Experiência</p>
-            <p className="text-xl sm:text-2xl font-semibold text-green-900 mt-1 sm:mt-2">{relatorio.resumo.totalCampos}</p>
-          </div>
-          <div className="rounded-lg bg-purple-50 border border-purple-200 p-3 sm:p-4">
-            <p className="text-xs sm:text-sm font-medium text-purple-700">Turmas</p>
-            <p className="text-xl sm:text-2xl font-semibold text-purple-900 mt-1 sm:mt-2">{turmasComCampos.length}</p>
-          </div>
-        </div>
-      )}
 
       <div className={minimal ? "" : "rounded-lg bg-white p-3 sm:p-6 shadow"}>
         {!minimal && <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-900">Total de Atividades por Campo de Experiência</h3>}
@@ -211,7 +193,7 @@ export default function AtividadesChart({ turmaId, minimal = false }: Atividades
         </div>
       </div>
 
-      {turmasComCampos.map((turma, turmaIndex) => (
+      {!minimal && turmasComCampos.map((turma, turmaIndex) => (
         <TurmaChartCard
           key={turma.turmaId}
           turma={turma}

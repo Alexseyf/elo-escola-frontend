@@ -11,6 +11,8 @@ import {
   COLORS as CHART_COLORS,
   type ChartConfig,
 } from '@/components/ui/chart';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Users } from "lucide-react";
 
 const COLORS = CHART_COLORS;
 
@@ -74,9 +76,21 @@ export default function AlunosChart({ minimal = false }: AlunosChartProps) {
   return (
     <div className="space-y-6 w-full">
       {!minimal && (
-        <div className="rounded-lg bg-blue-50 border border-blue-200 p-4 w-fit">
-          <p className="text-sm font-medium text-blue-700">Total de Alunos</p>
-          <p className="text-2xl font-semibold text-blue-900 mt-2">{totalAlunos}</p>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total de Alunos
+              </CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{totalAlunos}</div>
+              <p className="text-xs text-muted-foreground">
+                Matriculados em {turmasComTotal.length} turmas
+              </p>
+            </CardContent>
+          </Card>
         </div>
       )}
 
