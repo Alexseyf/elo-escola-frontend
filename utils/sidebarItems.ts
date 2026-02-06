@@ -12,6 +12,7 @@ import {
   CircleDollarSign,
   Calendar,
   CheckSquare,
+  ScrollText,
 } from "lucide-react";
 
 export interface SidebarItem {
@@ -91,6 +92,12 @@ export function getAdminSidebarItems(): SidebarItem[] {
       label: "Financeiro",
       href: "/admin/financeiro",
       icon: CircleDollarSign,
+    },
+    {
+      id: "logs",
+      label: "Logs do Sistema",
+      href: "/admin/logs",
+      icon: ScrollText,
     },
   ];
 }
