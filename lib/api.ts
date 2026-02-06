@@ -4,7 +4,7 @@ interface ApiRequestOptions extends RequestInit {
   headers?: Record<string, string>;
 }
 
-export const api = async (endpoint: string, options: ApiRequestOptions = {}) => {
+export const api = async (endpoint: string, options: ApiRequestOptions = {}): Promise<Response> => {
   const { useAuthStore } = await import('@/stores/useAuthStore');
   const { useTenantStore } = await import('@/stores/useTenantStore');
 
@@ -93,6 +93,30 @@ export const api = async (endpoint: string, options: ApiRequestOptions = {}) => 
     ...options,
     headers,
   });
+
+  // 1. Tratar Sessão Expirada ou Sem Permissão (401)
+  if (response.status === 401 && !isPublicEndpoint) {
+    const data = await response.clone().json().catch(() => ({}));
+    
+    if (typeof window !== 'undefined') {
+      const { useAuthStore } = await import('@/stores/useAuthStore');
+      
+      // 1. Limpa o localStorage imediatamente (síncrono) para prevenir re-logins automáticos
+      localStorage.clear();
+
+      // 2. Define o caminho de redirecionamento
+      const redirectPath = data.code === 'TOKEN_EXPIRED' 
+        ? '/login?error=expired' 
+        : '/login?error=unauthorized';
+        
+      // 3. Redireciona o navegador (força o recarregamento total da página)
+      window.location.href = redirectPath;
+      
+      // 4. Retorna uma Promise que nunca resolve. 
+      // Isso "congela" o componente atual e evita que ele tente processar dados nulos ou renderizar erros.
+      return new Promise<Response>(() => {});
+    }
+  }
 
   /* 
     Relatórios de atividades podem retornar 403 se o usuário não tiver permissão (ex: professor acessando rota de admin).

@@ -59,11 +59,14 @@ function LoginForm() {
       toast.error('Acesso negado: você foi desconectado por segurança', {
         description: 'Tentativa de acesso a dados de outra escola detectada.',
       });
+    } else if (errorParam === 'expired') {
+      toast.error('Sessão expirada! Faça login novamente.');
     } else if (errorParam === 'unauthorized') {
-      toast.error('Sessão expirada', {
-        description: 'Por favor, faça login novamente.',
-      });
+      toast.error('Sessão inválida. Faça login novamente.');
     }
+
+    // Limpa a URL 
+    window.history.replaceState({}, '', window.location.pathname);
   }, [searchParams]);
 
   if (isChecking) {

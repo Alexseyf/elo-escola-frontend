@@ -31,7 +31,7 @@ interface AuthState {
   activeRole: string | null;
   setActiveRole: (role: string) => void;
   login: (credentials: LoginCredentials) => Promise<boolean>;
-  logout: () => void;
+  logout: (redirectPath?: string) => void;
   checkAuth: () => boolean;
   _hasHydrated: boolean;
   setHasHydrated: (state: boolean) => void;
@@ -112,7 +112,7 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      logout: () => {
+      logout: (redirectPath?: string) => {
         set({ token: null, user: null, activeRole: null, isAuthenticated: false, error: null });
         
         if (typeof window !== 'undefined') {
@@ -121,7 +121,7 @@ export const useAuthStore = create<AuthState>()(
             
             setTimeout(() => {
               localStorage.clear();
-              window.location.href = '/login';
+              window.location.href = redirectPath || '/login';
             }, 50);
           });
         }
