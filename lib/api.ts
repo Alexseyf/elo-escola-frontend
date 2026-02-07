@@ -101,19 +101,14 @@ export const api = async (endpoint: string, options: ApiRequestOptions = {}): Pr
     if (typeof window !== 'undefined') {
       const { useAuthStore } = await import('@/stores/useAuthStore');
       
-      // 1. Limpa o localStorage imediatamente (síncrono) para prevenir re-logins automáticos
-      localStorage.clear();
-
-      // 2. Define o caminho de redirecionamento
       const redirectPath = data.code === 'TOKEN_EXPIRED' 
         ? '/login?error=expired' 
         : '/login?error=unauthorized';
         
-      // 3. Redireciona o navegador (força o recarregamento total da página)
-      window.location.href = redirectPath;
+      // O método logout já lida com a limpeza e o redirecionamento de forma segura
+      useAuthStore.getState().logout(redirectPath);
       
-      // 4. Retorna uma Promise que nunca resolve. 
-      // Isso "congela" o componente atual e evita que ele tente processar dados nulos ou renderizar erros.
+      // Retorna uma Promise que nunca resolve para "congelar" o componente e evitar erros de renderização
       return new Promise<Response>(() => {});
     }
   }
@@ -133,9 +128,11 @@ export const api = async (endpoint: string, options: ApiRequestOptions = {}): Pr
       
       if (typeof window !== 'undefined') {
         const { useAuthStore } = await import('@/stores/useAuthStore');
-        useAuthStore.getState().logout();
         
-        window.location.href = '/login?error=tenant-mismatch';
+        // Unifica o redirecionamento pelo método logout para evitar duplo redirect
+        useAuthStore.getState().logout('/login?error=tenant-mismatch');
+        
+        return new Promise<Response>(() => {});
       }
     }
   }

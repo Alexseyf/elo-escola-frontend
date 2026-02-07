@@ -24,6 +24,15 @@ function LoginForm() {
 
   useTenant();
 
+  // Trava de segurança: Se o usuário chegar no /login mas o estado diz que está autenticado,
+  // e não há progresso, damos um timeout e liberamos a tela.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsChecking(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     if (!_hasHydrated) return;
 

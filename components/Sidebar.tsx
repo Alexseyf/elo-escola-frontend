@@ -303,7 +303,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
   // Render regular sidebar
   return (
     <SidebarProvider>
-      <AppSidebar items={items} logout={useAuthStore.getState().logout} user={user} />
+      <AppSidebar items={items} logout={() => useAuthStore.getState().logout()} user={user} />
       <SidebarInset>
         <MobileHeader />
         <div className="">

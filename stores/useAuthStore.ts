@@ -116,14 +116,23 @@ export const useAuthStore = create<AuthState>()(
         set({ token: null, user: null, activeRole: null, isAuthenticated: false, error: null });
         
         if (typeof window !== 'undefined') {
+          // 1. Limpeza disparada imediatamente para o context de tenant (opcional)
           import('./useTenantStore').then(({ useTenantStore }) => {
             useTenantStore.getState().clearTenant();
-            
-            setTimeout(() => {
+          }).catch(err => console.error('Failed to clear tenant store:', err));
+          
+          // 2. Limpeza de storage e redirecionamento com proteção
+          setTimeout(() => {
+            try {
               localStorage.clear();
-              window.location.href = redirectPath || '/login';
-            }, 50);
-          });
+            } catch (e) {
+              console.error('Failed to clear localStorage:', e);
+            }
+            
+            // Garante que o path seja uma string absoluta ou padrão /login
+            const finalPath = typeof redirectPath === 'string' ? redirectPath : '/login';
+            window.location.href = finalPath;
+          }, 50);
         }
       },
 
