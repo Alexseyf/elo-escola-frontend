@@ -4,7 +4,7 @@ interface ApiRequestOptions extends RequestInit {
   headers?: Record<string, string>;
 }
 
-export const api = async (endpoint: string, options: ApiRequestOptions = {}): Promise<Response> => {
+export const api = async (endpoint: string, options: ApiRequestOptions = {}) => {
   const { useAuthStore } = await import('@/stores/useAuthStore');
   const { useTenantStore } = await import('@/stores/useTenantStore');
 
@@ -94,25 +94,6 @@ export const api = async (endpoint: string, options: ApiRequestOptions = {}): Pr
     headers,
   });
 
-  // 1. Tratar Sessão Expirada ou Sem Permissão (401)
-  if (response.status === 401 && !isPublicEndpoint) {
-    const data = await response.clone().json().catch(() => ({}));
-    
-    if (typeof window !== 'undefined') {
-      const { useAuthStore } = await import('@/stores/useAuthStore');
-      
-      const redirectPath = data.code === 'TOKEN_EXPIRED' 
-        ? '/login?error=expired' 
-        : '/login?error=unauthorized';
-        
-      // O método logout já lida com a limpeza e o redirecionamento de forma segura
-      useAuthStore.getState().logout(redirectPath);
-      
-      // Retorna uma Promise que nunca resolve para "congelar" o componente e evitar erros de renderização
-      return new Promise<Response>(() => {});
-    }
-  }
-
   /* 
     Relatórios de atividades podem retornar 403 se o usuário não tiver permissão (ex: professor acessando rota de admin).
     Nesse caso, não queremos deslogar, apenas falhar a requisição para que a UI trate o erro.
@@ -128,11 +109,9 @@ export const api = async (endpoint: string, options: ApiRequestOptions = {}): Pr
       
       if (typeof window !== 'undefined') {
         const { useAuthStore } = await import('@/stores/useAuthStore');
+        useAuthStore.getState().logout();
         
-        // Unifica o redirecionamento pelo método logout para evitar duplo redirect
-        useAuthStore.getState().logout('/login?error=tenant-mismatch');
-        
-        return new Promise<Response>(() => {});
+        window.location.href = '/login?error=tenant-mismatch';
       }
     }
   }

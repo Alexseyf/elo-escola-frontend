@@ -24,15 +24,6 @@ function LoginForm() {
 
   useTenant();
 
-  // Trava de segurança: Se o usuário chegar no /login mas o estado diz que está autenticado,
-  // e não há progresso, damos um timeout e liberamos a tela.
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsChecking(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
-
   useEffect(() => {
     if (!_hasHydrated) return;
 
@@ -68,14 +59,11 @@ function LoginForm() {
       toast.error('Acesso negado: você foi desconectado por segurança', {
         description: 'Tentativa de acesso a dados de outra escola detectada.',
       });
-    } else if (errorParam === 'expired') {
-      toast.error('Sessão expirada! Faça login novamente.');
     } else if (errorParam === 'unauthorized') {
-      toast.error('Sessão inválida. Faça login novamente.');
+      toast.error('Sessão expirada', {
+        description: 'Por favor, faça login novamente.',
+      });
     }
-
-    // Limpa a URL 
-    window.history.replaceState({}, '', window.location.pathname);
   }, [searchParams]);
 
   if (isChecking) {
